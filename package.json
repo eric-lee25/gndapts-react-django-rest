@@ -12,6 +12,10 @@
     "lintjs": "eslint -c .eslintrc src/static tests/js || true",
     "lintscss": "sass-lint --verbose --no-exit || true"
   },
+  "engines": {
+      "node": "6.2.1",
+      "npm": "3.9.3"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://bitbucket.org/seedstarsdev/django-react-redux-jwt-base.git"
