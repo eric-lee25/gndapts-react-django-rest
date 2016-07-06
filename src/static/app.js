@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import './styles/semantic/dist/semantic.min.css';
 import './styles/semantic/dist/components/transition';
 import './styles/semantic/dist/components/dropdown';
+import './styles/semantic/dist/components/form';
 
 class App extends React.Component {
 

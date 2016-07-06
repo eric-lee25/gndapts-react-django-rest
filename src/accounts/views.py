@@ -17,6 +17,7 @@ from lib.utils import AtomicMixin
 class UserRegisterView(AtomicMixin, CreateModelMixin, GenericAPIView):
     serializer_class = UserRegistrationSerializer
     authentication_classes = ()
+    permission_classes = ()
 
     def post(self, request):
         """User registration view."""

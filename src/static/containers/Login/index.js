@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import * as actionCreators from '../../actions/auth';
 import classNames from 'classnames';
 import { push } from 'react-router-redux';
+import ReactDOM from 'react-dom';
+import { Link } from 'react-router';
 import './style.scss';
 
 class LoginView extends React.Component {
@@ -20,27 +22,76 @@ class LoginView extends React.Component {
     constructor(props) {
         super(props);
 
-        const redirectRoute = this.props.location ? this.props.location.query.next || '/' : '/';
+        const redirectRoute = this.props.location ? this.props.location.query.next || '/home' : '/home';
         this.state = {
             email: '',
             password: '',
             redirectTo: redirectRoute
         };
     }
+
     componentDidMount() {
-        console.log(this.refs);
+        $(ReactDOM.findDOMNode(this.refs.loginForm))
+            .form({
+                fields: {
+                    email: {
+                        identifier  : 'email',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : 'Please enter your e-mail'
+                            },
+                            {
+                                type   : 'email',
+                                prompt : 'Please enter a valid e-mail'
+                            }
+                        ]
+                    },
+                    password: {
+                        identifier  : 'password',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : 'Please enter your password'
+                            },
+                            {
+                                type   : 'length[6]',
+                                prompt : 'Your password must be at least 6 characters'
+                            }
+                        ]
+                    }
+                }
+            });
+
+        // To prevent the redirect on form submission
+        $(ReactDOM.findDOMNode(this.refs.loginForm)).submit(function(e) {
+            this.login();
+            return false;
+        }.bind(this));
     }
+
     componentWillMount() {
         if (this.props.isAuthenticated) {
-            this.props.dispatch(push('/'));
+            this.props.dispatch(push('/home'));
         }
+    }
 
+    // This runs when props come in. If the status text came back with an auth error,
+    // say so in the error field
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.statusText && 
+            nextProps.statusText.indexOf('Authentication Error') === 0) {
+            $(ReactDOM.findDOMNode(this.refs.loginForm)).form('add errors', ["Wrong email and/or password. Try again."]);
+        }
     }
 
     login = (e) => {
-        e.preventDefault();
-        this.props.actions.authLoginUser(this.state.email, this.state.password, this.state.redirectTo);
+        $(ReactDOM.findDOMNode(this.refs.loginForm)).form('validate form');
+        if ($(ReactDOM.findDOMNode(this.refs.loginForm)).form('is valid')) {
+            this.props.actions.authLoginUser(this.state.email, this.state.password, this.state.redirectTo);
+        }
     };
+
 
     handleInputChange = (e, state) => {
         this.setState({
@@ -49,8 +100,14 @@ class LoginView extends React.Component {
     };
 
     render() {
+        const buttonClass = classNames({
+            loading: this.props.isAuthenticating,
+        });
+
         let statusText = null;
+
         if (this.props.statusText) {
+
             const statusTextClassNames = classNames({
                 alert: true,
                 alert__error: this.props.statusText.indexOf('Authentication Error') === 0,
@@ -71,16 +128,13 @@ class LoginView extends React.Component {
         return (
             <div className="ui middle aligned center aligned grid">
                 <div className="column">
-                    <h2 className="ui teal image header">
-                        <img src="assets/images/logo.png" role="presentation" className="image"/>
-                        <div className="content">
-                            Log-in to your account
-                        </div>
+                    <h2 className="ui header">
+                        Login
                     </h2>
-                    <form className="ui large form" ref="loginForm">
+                    <form className="ui large form" ref="loginForm" >
                         <div className="ui stacked segment">
                             <div className="field">
-                                <div className="ui left icon input">
+                                <div className="ui big left icon input">
                                     <i className="user icon"></i>
                                     <input type="text"
                                         name="email"
@@ -90,24 +144,31 @@ class LoginView extends React.Component {
                                 </div>
                             </div>
                             <div className="field">
-                                <div className="ui left icon input">
+                                <div className="ui big left icon input">
                                     <i className="lock icon"></i>
-                                    <input type="text"
+                                    <input type="password"
                                         name="password"
                                         placeholder="Password"
                                         onChange={(e) => { this.handleInputChange(e, 'password'); }}
                                     />
                                 </div>
                             </div>
-                            <div className="ui fluid large teal submit button">Login</div>
                         </div>
 
-                        <div className="ui error message"></div>
+                        <div className={"ui fluid large green submit button " + buttonClass}
+                            type="submit" onClick={this.login}
+                        >
+                            Login
+                        </div>
+
+                        <div className="ui error message">sdsd</div>
 
                     </form>
 
                     <div className="ui message">
-                        New to us? <a href="#">Sign Up</a>
+                        <Link to="signup">Sign up</Link>
+                        <br/>
+                        Forgot your password? • Contact us
                     </div>
                 </div>
             </div>

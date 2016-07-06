@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ReactDom from 'react-dom';
+import { authLogoutAndRedirect } from '../../actions/auth';
 
 
 class HomeView extends React.Component {
@@ -16,10 +17,19 @@ class HomeView extends React.Component {
     componentDidUpdate() {
         $(ReactDom.findDOMNode(this.refs.dropdown)).dropdown('refresh');
     }
+    logout = () => {
+        this.props.dispatch(authLogoutAndRedirect());
+    };
 
     render() {
         return (
             <div className="ui container">
+                <div className={"ui fluid large green submit button"}
+                    onClick={this.logout}
+                >
+                    Login
+                </div>
+
                 <div className="ui selection dropdown" ref="dropdown">
                     <input type="hidden" name="gender"/>
                     <i className="dropdown icon"></i>
@@ -37,6 +47,13 @@ class HomeView extends React.Component {
 const mapStateToProps = (state) => {
     return {
         statusText: state.auth.statusText
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        dispatch,
+        actions: bindActionCreators(actionCreators, dispatch)
     };
 };
 

@@ -45,12 +45,12 @@ export function authLogout() {
 export function authLogoutAndRedirect() {
     return (dispatch, state) => {
         dispatch(authLogout());
-        dispatch(push('/login'));
+        dispatch(push('/'));
         return Promise.resolve(); // TOOD: we need  promise here because of tests, find a better way
     };
 }
 
-export function authLoginUser(email, password, redirect = '/') {
+export function authLoginUser(email, password, redirect = '/home') {
     return (dispatch) => {
         dispatch(authLoginUserRequest());
         return fetch(`${SERVER_URL}/api/v1/accounts/login/`, {
