@@ -13,8 +13,8 @@
     "lintscss": "sass-lint --verbose --no-exit || true"
   },
   "engines": {
-      "node": "6.2.2",
-      "npm": "3.9.3"
+    "node": "6.2.2",
+    "npm": "3.9.3"
   },
   "repository": {
     "type": "git",
@@ -55,6 +55,7 @@
     "jquery": "2.2.3",
     "jsonwebtoken": "6.2.0",
     "jwt-decode": "2.0.1",
+    "leaflet": "^0.7.7",
     "less": "2.7.1",
     "less-loader": "2.2.3",
     "method-override": "2.3.5",
@@ -62,7 +63,9 @@
     "postcss-import": "8.1.0",
     "postcss-loader": "0.9.1",
     "react": "15.0.2",
+    "react-document-title": "^2.0.2",
     "react-dom": "15.0.2",
+    "react-leaflet": "^0.12.1",
     "react-mixin": "3.0.5",
     "react-redux": "4.4.5",
     "react-router": "2.4.0",

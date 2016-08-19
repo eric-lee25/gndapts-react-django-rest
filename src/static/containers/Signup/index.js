@@ -5,6 +5,7 @@ import * as accountActionCreators from '../../actions/account';
 import { bindActionCreators } from 'redux';
 import classNames from 'classnames';
 import { push } from 'react-router-redux';
+import DocumentTitle from 'react-document-title';
 
 class SignupView extends React.Component {
 
@@ -183,9 +184,11 @@ class SignupView extends React.Component {
         }
 
         return (
-            <div className="ui middle aligned center aligned grid">
-                { body }
-            </div>
+            <DocumentTitle title='Sign up'>
+                <div className="ui middle aligned center aligned grid">
+                    { body }
+                </div>
+            </DocumentTitle>
         );
     }
 };

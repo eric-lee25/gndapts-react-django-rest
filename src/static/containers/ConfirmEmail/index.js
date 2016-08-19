@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import * as authActionCreators from '../../actions/auth';
 import * as accountActionCreators from '../../actions/account';
 import { push } from 'react-router-redux';
+import DocumentTitle from 'react-document-title';
 
 class ConfirmEmailView extends React.Component {
     static propTypes = {
@@ -54,14 +55,16 @@ class ConfirmEmailView extends React.Component {
         }
 
         return (
-            <div className="ui middle aligned center aligned grid">
-                <div className="column">
-                    <h2 className="ui header">
-                        Email confirmation
-                    </h2>
-                    { body }
+            <DocumentTitle title='Confirm email'>
+                <div className="ui middle aligned center aligned grid">
+                    <div className="column">
+                        <h2 className="ui header">
+                            Email confirmation
+                        </h2>
+                        { body }
+                    </div>
                 </div>
-            </div>
+            </DocumentTitle>
         )
     }
 }

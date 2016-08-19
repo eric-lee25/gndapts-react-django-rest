@@ -112,10 +112,11 @@ export function accountConfirmEmail(code, redirect = '/home') {
                     dispatch(accountConfirmEmailSuccess());
                     
                     // Validate if token is valid
+                    jwtDecode(response.token);
+
                     dispatch(authLoginUserSuccess(response.token));
                     dispatch(push(redirect));
                 } catch (e) {
-                    console.log(e);
                     dispatch(accountConfirmEmailFailure({
                         response: {
                             status: 403,

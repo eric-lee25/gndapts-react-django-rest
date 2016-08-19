@@ -29,7 +29,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         files = {
             'from': 'gndapts@mail.gndapts.com',
             'to': user.email,
-            'subject': "Confirm your account on GNDAPTs",
+            'subject': "Confirm your account on GNDAPTS",
             'html': email_text
             }
 

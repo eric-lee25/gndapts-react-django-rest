@@ -2,6 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ReactDom from 'react-dom';
 import { authLogoutAndRedirect } from '../../actions/auth';
+import DocumentTitle from 'react-document-title';
+import './style.scss';
+import { push } from 'react-router-redux';
 
 
 class HomeView extends React.Component {
@@ -11,35 +14,34 @@ class HomeView extends React.Component {
     };
 
     componentDidMount() {
-        $(ReactDom.findDOMNode(this.refs.dropdown)).dropdown();
     }
 
     componentDidUpdate() {
-        $(ReactDom.findDOMNode(this.refs.dropdown)).dropdown('refresh');
     }
-    logout = () => {
-        this.props.dispatch(authLogoutAndRedirect());
-    };
-
+    
     render() {
         return (
-            <div className="ui container">
-                <div className={"ui fluid large green submit button"}
-                    onClick={this.logout}
-                >
-                    Login
-                </div>
-
-                <div className="ui selection dropdown" ref="dropdown">
-                    <input type="hidden" name="gender"/>
-                    <i className="dropdown icon"></i>
-                    <div className="default text">Gender</div>
-                    <div className="menu">
-                        <div className="item" data-value="1">Male</div>
-                        <div className="item" data-value="0">Female</div>
+            <DocumentTitle title='Home'>
+                <div className="ui middle aligned center aligned grid">
+                    <div className="column">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                        <div onClick={() => this.props.dispatch(push('/map'))} className={"ui massive green button"}>
+                            <i className="fa fa-map-marker" aria-hidden="true"></i> Map
+                        </div>
                     </div>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    i need copy for this page
                 </div>
-            </div>
+            </DocumentTitle>
         );
     }
 }

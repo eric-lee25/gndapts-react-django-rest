@@ -9,7 +9,10 @@ import jwtDecode from 'jwt-decode';
 
 const initialState = {
     token: null,
-    userName: null,
+    userID: null,
+    firstName: null,
+    lastName: null,
+    emailAddress: null,
     isAuthenticated: false,
     isAuthenticating: false,
     statusText: null
@@ -27,7 +30,10 @@ export default createReducer(initialState, {
             isAuthenticating: false,
             isAuthenticated: true,
             token: payload.token,
-            userName: jwtDecode(payload.token).username,
+            userID: jwtDecode(payload.token).user_id,
+            firstName: jwtDecode(payload.token).user_firstname,
+            lastName: jwtDecode(payload.token).user_lastname,
+            emailAddress: jwtDecode(payload.token).email_address,
             statusText: 'You have been successfully logged in.'
         });
     },

@@ -7,6 +7,7 @@ import { push } from 'react-router-redux';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import './style.scss';
+import DocumentTitle from 'react-document-title';
 
 class LoginView extends React.Component {
 
@@ -105,52 +106,54 @@ class LoginView extends React.Component {
         });
 
         return (
-            <div className="ui middle aligned center aligned grid">
-                <div className="column">
-                    <h2 className="ui header">
-                        Login
-                    </h2>
-                    <form className="ui large form" ref="loginForm" >
-                        <div className="ui stacked segment">
-                            <div className="field">
-                                <div className="ui big left icon input">
-                                    <i className="user icon"></i>
-                                    <input type="text"
-                                        name="email"
-                                        placeholder="E-mail address"
-                                        onChange={(e) => { this.handleInputChange(e, 'email'); }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="field">
-                                <div className="ui big left icon input">
-                                    <i className="lock icon"></i>
-                                    <input type="password"
-                                        name="password"
-                                        placeholder="Password"
-                                        onChange={(e) => { this.handleInputChange(e, 'password'); }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className={"ui fluid large green submit button " + buttonClass}
-                            type="submit" onClick={this.login}
-                        >
+            <DocumentTitle title='Login'>
+                <div className="ui middle aligned center aligned grid">
+                    <div className="column">
+                        <h2 className="ui header">
                             Login
+                        </h2>
+                        <form className="ui large form" ref="loginForm" >
+                            <div className="ui stacked segment">
+                                <div className="field">
+                                    <div className="ui big left icon input">
+                                        <i className="user icon"></i>
+                                        <input type="text"
+                                            name="email"
+                                            placeholder="E-mail address"
+                                            onChange={(e) => { this.handleInputChange(e, 'email'); }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <div className="ui big left icon input">
+                                        <i className="lock icon"></i>
+                                        <input type="password"
+                                            name="password"
+                                            placeholder="Password"
+                                            onChange={(e) => { this.handleInputChange(e, 'password'); }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={"ui fluid large green submit button " + buttonClass}
+                                type="submit" onClick={this.login}
+                            >
+                                Login
+                            </div>
+
+                            <div className="ui error message">sdsd</div>
+
+                        </form>
+
+                        <div className="ui message">
+                            <Link to="signup">Sign up</Link>
+                            <br/>
+                            Forgot your password • Contact us
                         </div>
-
-                        <div className="ui error message">sdsd</div>
-
-                    </form>
-
-                    <div className="ui message">
-                        <Link to="signup">Sign up</Link>
-                        <br/>
-                        Forgot your password • Contact us
                     </div>
                 </div>
-            </div>
+            </DocumentTitle>
         );
     }
 }
