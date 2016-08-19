@@ -2,6 +2,10 @@ import dj_database_url
 
 from gndapts.settings.base import *  # NOQA (ignore all errors on this line)
 
+# TODO - CHANGE THIS
+MAILGUN_API_KEY = 'key-442e50acc9cba4977bbcdd955bd00db4'
+MAILGUN_DOMAIN = 'sandbox6601c4f014a44e0e87c37cc9baef28f1.mailgun.org'
+
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
