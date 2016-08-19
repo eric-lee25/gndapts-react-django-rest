@@ -2,8 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
 import * as accountActionCreators from '../../actions/account';
-import * as authActionCreators from '../../actions/auth';
 import { bindActionCreators } from 'redux';
+import classNames from 'classnames';
+import { push } from 'react-router-redux';
 
 class SignupView extends React.Component {
 
@@ -15,6 +16,12 @@ class SignupView extends React.Component {
             'lastname': '',
             'email': '',
             'password': ''
+        }
+    }
+
+    componentWillMount() {
+        if (this.props.isAuthenticated) {
+            this.props.dispatch(push('/home'));
         }
     }
 
@@ -68,7 +75,7 @@ class SignupView extends React.Component {
             }
         });
 
-        // To prevent the redirect on form submission
+        // To prevent the redirect on form subactionCreators2mission
         $(ReactDOM.findDOMNode(this.refs.signupForm)).submit(function(e) {
             this.signup();
             return false;
@@ -82,9 +89,8 @@ class SignupView extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        // Once the account has been created, log the user in
-        if (nextProps.isCreated && nextProps.isCreated == true) {
-            this.props.actions.authLoginUser(this.state.email, this.state.password);
+        if (nextProps.statusText != null) {
+            $(ReactDOM.findDOMNode(this.refs.signupForm)).form('add errors', [nextProps.statusText]);
         }
     }
 
@@ -97,8 +103,14 @@ class SignupView extends React.Component {
     }
 
     render() {
-        return (
-            <div className="ui middle aligned center aligned grid">
+        let body = null;
+
+        if (this.props.isCreated == false) {
+            const buttonClass = classNames({
+                loading: this.props.isCreating || this.props.isAuthenticating
+            });
+
+            body = (
                 <div className="column">
                     <h2 className="ui header">
                         Signup
@@ -143,16 +155,36 @@ class SignupView extends React.Component {
                             </div>
                         </div>
 
-                        <div className={"ui fluid large green submit button " + 'aa'}
+                        <div className={"ui fluid large green submit button " + buttonClass }
                             type="submit" onClick={this.signup}
                         >
                             Create account
                         </div>
 
-                        <div className="ui error message"></div>
+                        <div className="ui error message">
+                        </div>
 
                     </form>
                 </div>
+            )
+        }
+        
+        else {
+            body = (
+                <div className="column">
+                    <h2 className="ui header">
+                        Confirmation email sent
+                    </h2>
+                    <div>
+                        Please check your email.
+                    </div>
+                </div>
+            )
+        }
+
+        return (
+            <div className="ui middle aligned center aligned grid">
+                { body }
             </div>
         );
     }
@@ -162,6 +194,8 @@ const mapStateToProps = (state) => {
     return {
         isCreating: state.account.isCreating,
         isCreated: state.account.isCreated,
+        isAuthenticating: state.auth.isAuthenticating,
+        isAuthenticated: state.auth.isAuthenticated,
         statusText: state.account.statusText
     };
 };
@@ -169,7 +203,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch,
-        actions: bindActionCreators({ ...authActionCreators, ...accountActionCreators}, dispatch)
+        //actions: bindActionCreators({ ...authActionCreators, ...accountActionCreators}, dispatch)
+        actions: bindActionCreators({ ...accountActionCreators}, dispatch)
     };
 };
 

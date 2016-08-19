@@ -7,6 +7,9 @@ TEMPLATE_DEBUG = DEBUG
 
 PAGE_CACHE_SECONDS = 60
 
+# MAILGUN_API_KEY = os.environ['MAILGUN_API_KEY']
+# MAILGUN_DOMAIN = os.environ['MAILGUN_DOMAIN']
+
 # TODO: n a real production server this should have a proper url
 ALLOWED_HOSTS = ['*']
 
@@ -16,6 +19,8 @@ DATABASES['default'] = dj_database_url.config()
 REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'django_rest_logger.handlers.rest_exception_handler'  # NOQA (ignore all errors on this line)
 
 WSGI_APPLICATION = 'gndapts.wsgi.application'
+
+DOMAIN = "http://gndapts.herokuapp.com"
 
 # Note turned off sentry. We're going to use the default debugging
 

@@ -3,3 +3,4 @@ export LoginView from './Login/index';
 export SignupView from './Signup/index';
 export ProtectedView from './Protected/index';
 export NotFoundView from './NotFound/index';
+export ConfirmEmailView from './ConfirmEmail/index';

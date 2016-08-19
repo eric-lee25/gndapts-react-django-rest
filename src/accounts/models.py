@@ -1,7 +1,5 @@
 import uuid
-from datetime import timedelta
 
-from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.utils import timezone
@@ -69,13 +67,6 @@ class User(AbstractBaseUser):
     def get_short_name(self):
         return self.first_name
 
-    def activation_expired(self):
-        return self.date_joined + timedelta(
-                days=settings.ACCOUNT_ACTIVATION_DAYS) < timezone.now()
-
     def confirm_email(self):
-        if not self.activation_expired() and not self.confirmed_email:
-            self.confirmed_email = True
-            self.save()
-            return True
-        return False
+        self.confirmed_email = True
+        self.save()

@@ -104,27 +104,6 @@ class LoginView extends React.Component {
             loading: this.props.isAuthenticating,
         });
 
-        let statusText = null;
-
-        if (this.props.statusText) {
-
-            const statusTextClassNames = classNames({
-                alert: true,
-                alert__error: this.props.statusText.indexOf('Authentication Error') === 0,
-                alert__success: this.props.statusText.indexOf('Authentication Error') !== 0
-            });
-
-            statusText = (
-                <div className="row">
-                    <div className="small-12 columns">
-                        <div className={statusTextClassNames}>
-                            {this.props.statusText}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
         return (
             <div className="ui middle aligned center aligned grid">
                 <div className="column">
@@ -168,7 +147,7 @@ class LoginView extends React.Component {
                     <div className="ui message">
                         <Link to="signup">Sign up</Link>
                         <br/>
-                        Forgot your password? • Contact us
+                        Forgot your password • Contact us
                     </div>
                 </div>
             </div>

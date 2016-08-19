@@ -1,17 +1,17 @@
-from django.shortcuts import get_object_or_404
 from django_rest_logger import log
 from rest_framework import status, parsers, renderers
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.serializers import JSONWebTokenSerializer
 from rest_framework_jwt.utils import jwt_response_payload_handler
+from django.core.exceptions import ObjectDoesNotExist
 
 from accounts.models import User
 from accounts.serializers import UserRegistrationSerializer
 from lib.utils import AtomicMixin
+from rest_framework_jwt.settings import api_settings
 
 
 class UserRegisterView(AtomicMixin, CreateModelMixin, GenericAPIView):
@@ -20,7 +20,6 @@ class UserRegisterView(AtomicMixin, CreateModelMixin, GenericAPIView):
     permission_classes = ()
 
     def post(self, request):
-        """User registration view."""
         return self.create(request)
 
 
@@ -47,34 +46,29 @@ class UserLoginView(APIView):
 
             return Response(response_data)
 
-        log.warning(message='Authentication failed.', details={'http_status_code': status.HTTP_401_UNAUTHORIZED})
+        log.warning(
+                message='Authentication failed.',
+                details={'http_status_code': status.HTTP_401_UNAUTHORIZED})
         return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
-class UserConfirmEmailView(AtomicMixin, GenericAPIView):
+class UserConfirmEmailView(GenericAPIView):
     serializer_class = None
     authentication_classes = ()
+    permission_classes = ()
 
     def get(self, request, activation_key):
-        """
-        View for confirm email.
+        try:
+            user = User.objects.get(activation_key=str(activation_key))
+        except ObjectDoesNotExist:
+            return Response({'message': 'Invalid confirmation code'},
+                            status=status.HTTP_404_NOT_FOUND)
 
-        Receive an activation key as parameter and confirm email.
-        """
-        user = get_object_or_404(User, activation_key=str(activation_key))
-        if user.confirm_email():
-            return Response(status=status.HTTP_200_OK)
+        user.confirm_email()
 
-        log.warning(message='Email confirmation key not found.',
-                    details={'http_status_code': status.HTTP_404_NOT_FOUND})
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-
-class UserEmailConfirmationStatusView(GenericAPIView):
-    serializer_class = None
-    authentication_classes = (JSONWebTokenAuthentication,)
-
-    def get(self, request):
-        """Retrieve user current confirmed_email status."""
-        user = self.request.user
-        return Response({'status': user.confirmed_email}, status=status.HTTP_200_OK)
+        # Generate JWT from just the user object
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        payload = jwt_payload_handler(user)
+        return Response({'token': jwt_encode_handler(payload)},
+                        status=status.HTTP_200_OK)
