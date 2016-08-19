@@ -39,6 +39,13 @@ class HomeView extends React.Component {
                     <br/>
                     <br/>
                     <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
                     i need copy for this page
                 </div>
             </DocumentTitle>
