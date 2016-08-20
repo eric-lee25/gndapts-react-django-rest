@@ -4,6 +4,7 @@ import ReactDom from 'react-dom';
 import { authLogoutAndRedirect } from '../../actions/auth';
 import DocumentTitle from 'react-document-title';
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
+import './style.scss';
 
 
 class MapView extends React.Component {
@@ -19,18 +20,23 @@ class MapView extends React.Component {
     }
     
     render() {
-        const position = [51.505, -0.09];
+        const position = [12.0564936,-61.7345381];
+        // parent div is 4em padding - in jj
+        const s = {height: window.innerHeight-64}
 
         return (
             <DocumentTitle title='Map'>
-                <div>
-                    <Map center={position} zoom={5} style={{height:400}}>
-                        <TileLayer
-                            url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
-                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                        />
-                    </Map>
-                </div>
+                <Map style={s} center={position} zoom={13}>
+                    <TileLayer
+                        url='http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png'
+                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    <Marker position={position}>
+                        <Popup>
+                            <span>go lakers!!</span>
+                        </Popup>
+                    </Marker>
+                </Map>
             </DocumentTitle>
         );
     }

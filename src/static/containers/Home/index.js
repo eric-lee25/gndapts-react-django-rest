@@ -21,6 +21,7 @@ class HomeView extends React.Component {
     
     render() {
         return (
+            <div className="ui container">
             <DocumentTitle title='Home'>
                 <div className="ui middle aligned center aligned grid">
                     <div className="column">
@@ -49,6 +50,7 @@ class HomeView extends React.Component {
                     i need copy for this page
                 </div>
             </DocumentTitle>
+        </div>
         );
     }
 }

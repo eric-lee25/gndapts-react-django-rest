@@ -65,7 +65,7 @@ class LoggedInView extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className="ui main ">
+                <div className="main">
                     {this.props.children}
                 </div>
             </div>
