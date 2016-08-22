@@ -6,3 +6,4 @@ export NotFoundView from './NotFound/index';
 export ConfirmEmailView from './ConfirmEmail/index';
 export LoggedInView from './LoggedIn/index';
 export MapView from './Map/index';
+export AddBuildingView from './Building/add';

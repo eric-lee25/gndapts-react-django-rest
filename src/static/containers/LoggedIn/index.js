@@ -9,7 +9,7 @@ class LoggedInView extends React.Component {
 
     static propTypes = {
         isAuthenticated: React.PropTypes.bool.isRequired,
-        children: React.PropTypes.object.isRequired,
+        children: React.PropTypes.element.isRequired,
         dispatch: React.PropTypes.func.isRequired,
         firstName: React.PropTypes.string.isRequired,
         pathName: React.PropTypes.string.isRequired
@@ -78,13 +78,6 @@ const mapStateToProps = (state, ownProps) => {
         isAuthenticated: state.auth.isAuthenticated,
         firstName: state.auth.firstName,
         pathName: ownProps.location.pathname
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        dispatch,
-        actions: bindActionCreators(actionCreators, dispatch)
     };
 };
 

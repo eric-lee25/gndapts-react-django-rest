@@ -1,7 +1,9 @@
-#map-view-container { 
+#add-building-container { 
     .leaflet-container {
-        height: 3000px;
+        height: 200px;
         width: 100%;
         margin: 0 auto;
     }
+
+    margin-top: 25px;
 }

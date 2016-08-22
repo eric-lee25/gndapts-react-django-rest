@@ -21,7 +21,7 @@ class HomeView extends React.Component {
     
     render() {
         return (
-            <div className="ui container">
+            <div id="home-view-container" className="ui container">
             <DocumentTitle title='Home'>
                 <div className="ui middle aligned center aligned grid">
                     <div className="column">
