@@ -1,9 +1,14 @@
-import uuid
+from uuid import uuid4
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from json import JSONEncoder
+from gndapts.utils import NewJSONEncoder
+
+
+JSONEncoder.default = NewJSONEncoder
 
 
 class MyUserManager(BaseUserManager):
@@ -38,8 +43,8 @@ class MyUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    user_uuid = models.UUIDField(unique=True, default=uuid.uuid4,
-                                 editable=False)
+    uuid = models.UUIDField(primary_key=True, unique=True, default=uuid4,
+                            editable=False)
     first_name = models.CharField(_('First Name'), max_length=50)
     last_name = models.CharField(_('Last Name'), max_length=50)
     email = models.EmailField(_('Email address'), unique=True)
@@ -52,7 +57,7 @@ class User(AbstractBaseUser):
 
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
 
-    activation_key = models.UUIDField(unique=True, default=uuid.uuid4)  # email
+    activation_key = models.UUIDField(unique=True, default=uuid4)  # email
 
     USERNAME_FIELD = 'email'
 

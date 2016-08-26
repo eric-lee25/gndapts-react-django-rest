@@ -45,18 +45,15 @@ class LoggedInView extends React.Component {
                             <i className="fa fa-map-marker" aria-hidden="true"></i>&nbsp;Map
                         </a>
                         <div className="right menu">
-                            <a href="#" className="right item">
-                                Post
-                            </a>
-                            <a href="#" className="right item">
-                                Post (LL)
-                            </a>
-                            <a href="#" className="right item">
-                                Review
-                            </a>
                             <div className="ui simple dropdown item">
                                 {this.props.firstName} <i className="dropdown icon"></i>
                                 <div className="menu">
+                                    <a className="item" href="#" onClick={() => this.props.dispatch(push('/building/add'))}>
+                                        Add building
+                                    </a>
+                                    <a className="item" href="#" onClick={() => this.props.dispatch(push('/unit/add'))}>
+                                        Add unit
+                                    </a>
                                     <a className="item" href="#" onClick={this.logout}>
                                         Logout
                                     </a>

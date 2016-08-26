@@ -6,6 +6,9 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from base.models import Building, Unit
+from base.serializers import BuildingSerializer, UnitSerializer
+from rest_framework import viewsets, mixins
 
 
 class IndexView(View):
@@ -15,8 +18,31 @@ class IndexView(View):
         return HttpResponse(content=abspath.read())
 
 
-class ProtectedDataView(GenericAPIView):
+class BuildingViewset(
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    queryset = Building.objects.all()
+    serializer_class = BuildingSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
+
+class UnitViewset(
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    queryset = Unit.objects.all()
+    serializer_class = UnitSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
+
+class ProtectedDataView(GenericAPIView):
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def get(self, request):

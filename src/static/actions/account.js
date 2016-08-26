@@ -6,6 +6,7 @@ import { ACCOUNT_CREATE_USER_REQUEST, ACCOUNT_CREATE_USER_FAILURE, ACCOUNT_CREAT
     from '../constants';
 import { authLoginUserSuccess } from './auth';
 import { push } from 'react-router-redux';
+import jwtDecode from 'jwt-decode';
 
 export function accountCreateUserSuccess() {
     return {

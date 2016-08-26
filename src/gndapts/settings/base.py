@@ -20,11 +20,9 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
-
     'rest_framework',
     'django_extensions',
     'rest_framework_jwt',
-
     'accounts',
     'base'
 )
@@ -97,8 +95,8 @@ JWT_AUTH = {
     'JWT_PAYLOAD_HANDLER':
         'accounts.utils.jwt_payload_handler',
 
-    'JWT_PAYLOAD_GET_USER_ID_HANDLER':
-        'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+    'JWT_PAYLOAD_GET_USERNAME_HANDLER':
+        'accounts.utils.jwt_payload_get_username_handler',
 
     'JWT_RESPONSE_PAYLOAD_HANDLER':
         'rest_framework_jwt.utils.jwt_response_payload_handler',

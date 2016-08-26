@@ -5,7 +5,10 @@ import classNames from 'classnames';
 import { Map, Marker, Popup, TileLayer, setIconDefaultImagePath } from 'react-leaflet';
 import DocumentTitle from 'react-document-title';
 import './style.scss';
-import logoImage from './img/marker-icon-red.png';
+import redMarkerIcon from '../../images/marker-icons/marker-icon-red.png';
+import * as buildingActionCreators from '../../actions/building';
+import { bindActionCreators } from 'redux';
+import ReactDOM from 'react-dom';
 
 
 class AddBuildingView extends React.Component {
@@ -17,11 +20,47 @@ class AddBuildingView extends React.Component {
                 lat: 12.0000325,
                 lng: -61.7738056
             },
-            zoom: 15
+            zoom: 15,
+            title: null,
+            description: null,
+            leaseType: null
         };
     }
 
     componentDidMount() {
+        $(ReactDOM.findDOMNode(this.refs.createBuildingForm))
+            .form({
+                fields: {
+                    title: {
+                        identifier  : 'title',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : 'Please enter a title'
+                            },
+                        ]
+                    },
+                    leaseType: {
+                        identifier  : 'leaseType',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : 'Please enter a lease type'
+                            },
+                        ]
+                    },
+                    description: {
+                        identifier  : 'description',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : 'Please enter a description'
+                            },
+                        ]
+                    }
+                },
+                inline:true
+            });
     }
 
     updatePosition = () => {
@@ -41,22 +80,24 @@ class AddBuildingView extends React.Component {
         this.setState({zoom: e.target._zoom});
     }
 
+    createBuilding = (e) => {
+        $(ReactDOM.findDOMNode(this.refs.createBuildingForm)).form('validate form');
+        if ($(ReactDOM.findDOMNode(this.refs.createBuildingForm)).form('is valid')) {
+            this.props.actions.createBuilding(
+                this.props.token,
+                this.state.title, this.state.leaseType, this.state.description,
+                this.state.marker.lat, this.state.marker.lng,
+                '/map');
+        }
+    }
+
     render() {
-            const buttonClass = classNames({
-                loading: this.props.isCreating || this.props.isAuthenticating
-            });
-            /*title = models.CharField(max_length=128)
-    type_lease = models.CharField(max_length=64)
-    description = models.TextField()
-    latitude = models.DecimalField(max_digits=10, decimal_places=3, null=True)
-    longitude = models.DecimalField(max_digits=10, decimal_places=3, null=True)
-    photos = JSONField()
-    creator = models.ForeignKey(User)
-    date_created = models.DateTimeField(auto_now_add=True)
-    */
+        const buttonClass = classNames({
+            loading: this.props.isCreating
+        });
+
         const center = [this.state.marker.lat, this.state.marker.lng];
         const markerPosition = [this.state.marker.lat, this.state.marker.lng]
-        const s = logoImage.toString();
 
         return (
             <div id="add-building-container">
@@ -65,7 +106,7 @@ class AddBuildingView extends React.Component {
                         <h2 className="ui header">
                             Add building
                         </h2>
-                        <form className="ui form" ref="addBuildingForm" >
+                        <form className="ui form" ref="createBuildingForm" >
                             <div className="six wide field">
                                 <label>Title</label>
                                 <div className="ui input">
@@ -86,7 +127,11 @@ class AddBuildingView extends React.Component {
                             </div>
                             <div className="eight wide field">
                                 <label>Description</label>
-                                <textarea rows="2"></textarea> 
+                                <textarea 
+                                    name="description"
+                                    rows="2"
+                                    onChange={(e) => { this.handleInputChange(e, 'description')}}
+                                ></textarea> 
                             </div>
                             
                             <div className="sixteen wide field">
@@ -104,7 +149,7 @@ class AddBuildingView extends React.Component {
                                         draggable="true"
                                         icon={
                                             L.icon({
-                                                iconUrl: logoImage,
+                                                iconUrl: redMarkerIcon,
                                                 iconSize: [25, 41],
                                                 iconAnchor: [0,25]
                                             })
@@ -117,7 +162,7 @@ class AddBuildingView extends React.Component {
 
 
                             <div className={"ui green button " + buttonClass }
-                                type="submit" onClick={this.signup}
+                                type="submit" onClick={this.createBuilding}
                             >
                                 Submit
                             </div>
@@ -133,5 +178,20 @@ class AddBuildingView extends React.Component {
     }
 };
 
-export default connect()(AddBuildingView);
+const mapStateToProps = (state) => {
+    return {
+        isCreated: state.building.isCreated,
+        isCreating: state.building.isCreating,
+        statusText: state.building.statusText
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        dispatch,
+        actions: bindActionCreators(buildingActionCreators, dispatch)
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddBuildingView);
 export { AddBuildingView as AddBuildingViewNotConnected };

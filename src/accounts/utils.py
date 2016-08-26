@@ -1,6 +1,8 @@
 from rest_framework_jwt.settings import api_settings
 from datetime import datetime
 from calendar import timegm
+from accounts.models import User
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 
 def jwt_payload_handler(user):
@@ -21,3 +23,11 @@ def jwt_payload_handler(user):
         )
 
     return payload
+
+
+def jwt_payload_get_username_handler(data):
+    try:
+        u = User.objects.get(pk=data['user_id'])
+        return u.email
+    except ObjectDoesNotExist:
+        raise ValidationError('This user does not exist.')
