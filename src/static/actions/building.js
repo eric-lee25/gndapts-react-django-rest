@@ -51,8 +51,8 @@ export function createBuilding(token, title, leaseType, description, latitude, l
             },
             body: JSON.stringify({
                 title, "type_lease": leaseType, description, 
-                "latitude": parseFloat(latitude).toFixed(3),
-                "longitude": parseFloat(longitude).toFixed(3),
+                "latitude": parseFloat(latitude).toFixed(6),
+                "longitude": parseFloat(longitude).toFixed(6),
             })
         })
             .then(checkHttpStatus)

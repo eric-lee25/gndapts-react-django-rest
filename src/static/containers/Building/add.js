@@ -9,6 +9,9 @@ import redMarkerIcon from '../../images/marker-icons/marker-icon-red.png';
 import * as buildingActionCreators from '../../actions/building';
 import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
+import 'drmonty-leaflet-awesome-markers';
+import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
+import 'leaflet/dist/leaflet.css';
 
 
 class AddBuildingView extends React.Component {
@@ -148,10 +151,11 @@ class AddBuildingView extends React.Component {
                                         onDragend={this.updatePosition}
                                         draggable="true"
                                         icon={
-                                            L.icon({
-                                                iconUrl: redMarkerIcon,
-                                                iconSize: [25, 41],
-                                                iconAnchor: [0,25]
+                                            L.AwesomeMarkers.icon({
+                                                prefix: 'fa',
+                                                shadowSize: [0,0],
+                                                icon: 'fa-building',
+                                                markerColor: 'red'
                                             })
                                         }
                                         ref="marker"

@@ -1,51 +1,33 @@
 import React from 'react';
-import { push } from 'react-router-redux';
 import classNames from 'classnames';
+import { Marker, Popup} from 'react-leaflet';
+import 'drmonty-leaflet-awesome-markers';
+import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
+import 'leaflet/dist/leaflet.css';
 
-class SideMenu extends React.Component {
+class BuildingMarker extends React.Component {
 
     static propTypes = {
-        dispatch: React.PropTypes.func.isRequired,
-        pathName: React.PropTypes.string.isRequired
-    };
-
-    goToIndex = () => {
-        this.props.dispatch(push('/'));
-    };
-
-    goToProtected = () => {
-        this.props.dispatch(push('/protected'));
     };
 
     render() {
-        const homeClass = classNames({
-            active: this.props.pathName === '/'
-        });
-        const protectedClass = classNames({
-            active: this.props.pathName === '/protected'
-        });
-
         return (
-            <div className="side-menu">
-                <ul>
-                    <li className={homeClass}
-                        onClick={this.goToIndex}
-                    >
-                        <a>
-                            <i className="fa fa-map-marker fa-fw"></i> Home
-                        </a>
-                    </li>
-                    <li className={protectedClass}
-                        onClick={this.goToProtected}
-                    >
-                        <a>
-                            <i className="fa fa-map fa-fw"></i> Protected
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <Marker key={this.props.key} position={this.props.position}
+                icon={
+                    L.AwesomeMarkers.icon({
+                        prefix: 'fa',
+                        shadowSize: [0,0],
+                        icon: 'fa-building',
+                        markerColor: 'red'
+                    })
+                }
+            > 
+                <Popup>
+                    <span>go lakers!!</span>
+                </Popup>
+            </Marker>
         );
     }
 }
 
-export default (SideMenu);
+export default (BuildingMarker);

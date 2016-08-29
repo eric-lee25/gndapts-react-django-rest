@@ -4,4 +4,17 @@
         width: 100%;
         margin: 0 auto;
     }
+    #aa {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        background-color: white;
+        margin-left: 25px;
+        margin-bottom: 25px;
+        width: 200px;
+    }
+
+    .info-text {
+        float:right;
+    }
 }
