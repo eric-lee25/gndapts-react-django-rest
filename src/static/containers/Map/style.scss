@@ -19,4 +19,8 @@
     .info-text {
         float:right;
     }
+
+    .ui.loading.form:before {
+        background: rgba(0,0,0,.8);
+    }
 }
