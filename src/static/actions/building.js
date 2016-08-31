@@ -99,10 +99,16 @@ export function buildingListRequest() {
     };
 }
 
-export function listBuildings(token) {
+export function listBuildings(token, rent=null, numBeds=null, numBaths=null) {
+    let queryParams="";
+
+    if (rent != null && numBeds != null && numBaths != null) {
+        queryParams = "?rent=" + rent + "&num_beds=" + numBeds + "&num_baths=" + numBaths;
+    }
+
     return (dispatch) => {
         dispatch(buildingListRequest());
-        return fetch(`${SERVER_URL}/api/v1/base/buildings`, {
+        return fetch(`${SERVER_URL}/api/v1/base/buildings${queryParams}`, {
             method: 'get',
             credentials: 'include',
             headers: {

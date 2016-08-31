@@ -15,7 +15,6 @@ import './range.js';
 import './range.css';
 
 
-
 class MapView extends React.Component {
 
     static propTypes = {
@@ -28,12 +27,39 @@ class MapView extends React.Component {
         this.state = {
             maximumRent: 1500,
             numberBedrooms: 0,
-            numberBathrooms: 0
+            numberBathrooms: 0,
+            flag: false
         };
     }
 
+    updateBuildings() {
+        this.props.actions.listBuildings(this.props.token, this.state.maximumRent, this.state.numberBedrooms, this.state.numberBathrooms);
+    }
+
     componentDidMount() {
-        this.props.actions.listBuildings(this.props.token);
+        this.updateBuildings();
+
+        // Set a flag to true if they are dragging a slider.
+        $(ReactDOM.findDOMNode(this.refs.rentSlider)).mousedown(function() {
+            this.setState({flag: true});
+        }.bind(this));
+
+        $(ReactDOM.findDOMNode(this.refs.bedroomSlider)).mousedown(function() {
+            this.setState({flag: true});
+        }.bind(this));
+
+        $(ReactDOM.findDOMNode(this.refs.bathroomSlider)).mousedown(function() {
+            this.setState({flag: true});
+        }.bind(this));
+
+        // If they release the mouse button and the flag is set, that means
+        // they just finished dragging the rent slider
+        $('body').mouseup(function(e) {
+            if (this.state.flag) {
+                this.setState({flag: false});
+                this.updateBuildings();
+            }
+        }.bind(this));
 
         $(ReactDOM.findDOMNode(this.refs.rentSlider)).range({
             min: 0,
@@ -128,7 +154,7 @@ class MapView extends React.Component {
                         </Map>
                     </DocumentTitle>
                 </form>
-                <div id="aa" className="ui raised segments">
+                <div id="filter-box" className="ui raised segments">
                     <div className="ui segment">
                         <p>Rent <span className="info-text"><b>&lt;${this.state.maximumRent}</b></span></p>
                         <div className="ui range" ref="rentSlider"></div>

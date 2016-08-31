@@ -4,7 +4,8 @@
         width: 100%;
         margin: 0 auto;
     }
-    #aa {
+
+    #filter-box {
         position: fixed;
         left: 0;
         bottom: 0;
@@ -12,6 +13,7 @@
         margin-left: 25px;
         margin-bottom: 25px;
         width: 200px;
+        z-index: 100;
     }
 
     .info-text {

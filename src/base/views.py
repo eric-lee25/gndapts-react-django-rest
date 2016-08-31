@@ -23,8 +23,22 @@ class BuildingViewset(
         mixins.ListModelMixin,
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
-    queryset = Building.objects.all()
     serializer_class = BuildingSerializer
+
+    def get_queryset(self):
+        try:
+            rent = self.request.query_params.get('rent')
+            num_beds = self.request.query_params.get('num_beds')
+            num_baths = self.request.query_params.get('num_baths')
+            building_ids = Unit.objects.all().\
+                filter(rent__lte=rent, num_beds__gte=num_beds,
+                       num_baths__gte=num_baths).\
+                values_list('building', flat=True)
+            queryset = Building.objects.all().filter(pk__in=building_ids)
+            return queryset
+        # If no  or bad params, return everything
+        except ValueError:
+            return Building.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)

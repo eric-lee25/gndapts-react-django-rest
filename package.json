@@ -40,6 +40,7 @@
     "classnames": "2.2.5",
     "css-loader": "0.23.1",
     "dotenv": "2.0.0",
+    "draggable": "^4.0.4",
     "drmonty-leaflet-awesome-markers": "^2.0.2",
     "errorhandler": "1.4.3",
     "es6-promise": "3.2.1",
