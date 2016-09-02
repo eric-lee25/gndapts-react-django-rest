@@ -6,6 +6,8 @@ import './styles/semantic/dist/semantic.min.css';
 import './styles/semantic/dist/components/transition';
 import './styles/semantic/dist/components/dropdown';
 import './styles/semantic/dist/components/form';
+import './styles/semantic/dist/components/rating';
+import './styles/semantic/dist/components/checkbox';
 
 class App extends React.Component {
 

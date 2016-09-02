@@ -9,3 +9,4 @@ export MapView from './Map/index';
 export AddBuildingView from './Building/add';
 export PaddedContainer from './Padded/index';
 export AddUnitView from './Unit/add';
+export AddReviewView from './Review/add';

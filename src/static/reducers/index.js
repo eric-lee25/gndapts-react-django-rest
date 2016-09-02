@@ -5,6 +5,7 @@ import dataReducer from './data';
 import accountReducer from './account';
 import buildingReducer from './building';
 import unitReducer from './unit';
+import reviewReducer from './review';
 
 export default combineReducers({
     auth: authReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
     building: buildingReducer,
     routing: routerReducer,
     unit: unitReducer,
+    review: reviewReducer,
     account: accountReducer
 });

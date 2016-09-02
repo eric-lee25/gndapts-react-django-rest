@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 import App from './app';
 import { HomeView, LoginView, ProtectedView, NotFoundView, SignupView,
-    ConfirmEmailView, LoggedInView, MapView, AddBuildingView, PaddedContainer, AddUnitView} from './containers';
+    ConfirmEmailView, LoggedInView, MapView, AddBuildingView, PaddedContainer, AddUnitView, AddReviewView} from './containers';
 import { requireAuthentication } from './utils/requireAuthentication';
 
 export default(
@@ -16,6 +16,7 @@ export default(
             <Route component={PaddedContainer}>
                 <Route path="building/add" component={requireAuthentication(AddBuildingView)}/>
                 <Route path="unit/add" component={requireAuthentication(AddUnitView)}/>
+                <Route path="review/add" component={requireAuthentication(AddReviewView)}/>
             </Route>
         </Route>
         <Route path="protected" component={requireAuthentication(ProtectedView)}/>

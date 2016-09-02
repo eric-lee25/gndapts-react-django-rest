@@ -35,3 +35,15 @@ class Unit(models.Model):
     photos = JSONField(blank=True, null=True)
     creator = models.ForeignKey(User)
     date_created = models.DateTimeField(auto_now_add=True)
+
+
+class Review(models.Model):
+    uuid = models.UUIDField(
+           unique=True, default=uuid.uuid4, editable=False,
+           primary_key=True)
+    building = models.ForeignKey(Building)
+    rating = models.PositiveIntegerField()
+    comments = models.TextField()
+    anonymous = models.BooleanField()
+    creator = models.ForeignKey(User)
+    date_created = models.DateTimeField(auto_now_add=True)

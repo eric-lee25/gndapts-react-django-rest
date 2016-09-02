@@ -6,8 +6,9 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from base.models import Building, Unit
-from base.serializers import BuildingSerializer, UnitSerializer
+from base.models import Building, Unit, Review
+from base.serializers import BuildingSerializer,\
+        UnitSerializer, ReviewSerializer
 from rest_framework import viewsets, mixins
 
 
@@ -51,6 +52,17 @@ class UnitViewset(
         viewsets.GenericViewSet):
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
+
+class ReviewViewset(
+        mixins.CreateModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
