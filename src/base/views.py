@@ -2,10 +2,6 @@ import os
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.generic import View
-from rest_framework import status
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from base.models import Building, Unit, Review
 from base.serializers import BuildingSerializer,\
         UnitSerializer, ReviewSerializer
@@ -37,6 +33,7 @@ class BuildingViewset(
                 values_list('building', flat=True)
             queryset = Building.objects.all().filter(pk__in=building_ids)
             return queryset
+
         # If no  or bad params, return everything
         except ValueError:
             return Building.objects.all()
@@ -56,6 +53,11 @@ class UnitViewset(
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
+    # TODO: change this + error proof it
+    def get_queryset(self):
+        queryset = Unit.objects.filter(creator=self.request.user)
+        return queryset
+
 
 class ReviewViewset(
         mixins.CreateModelMixin,
@@ -66,16 +68,3 @@ class ReviewViewset(
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
-
-
-class ProtectedDataView(GenericAPIView):
-    authentication_classes = (JSONWebTokenAuthentication,)
-
-    def get(self, request):
-        """Process GET request and return protected data."""
-
-        data = {
-            'data': 'THIS IS THE PROTECTED STRING FROM SERVER',
-        }
-
-        return Response(data, status=status.HTTP_200_OK)

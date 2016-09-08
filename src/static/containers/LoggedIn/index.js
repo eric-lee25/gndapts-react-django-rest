@@ -57,6 +57,9 @@ class LoggedInView extends React.Component {
                                     <a className="item" href="#" onClick={() => this.props.dispatch(push('/review/add'))}>
                                         Add review
                                     </a>
+                                    <a className="item" href="#" onClick={() => this.props.dispatch(push('/unit/list'))}>
+                                        My units
+                                    </a>
                                     <a className="item" href="#" onClick={this.logout}>
                                         Logout
                                     </a>

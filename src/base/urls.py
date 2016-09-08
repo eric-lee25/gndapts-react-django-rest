@@ -11,6 +11,4 @@ router.register(r'reviews', base_views.ReviewViewset)
 
 urlpatterns = [
         url(r'^', include(router.urls)),
-        url(r'', base_views.ProtectedDataView.as_view(),
-            name='protected_data'),
 ]

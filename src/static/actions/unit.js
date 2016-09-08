@@ -3,7 +3,14 @@ import { push } from 'react-router-redux';
 import jwtDecode from 'jwt-decode';
 import { SERVER_URL } from '../utils/config';
 import { checkHttpStatus, parseJSON } from '../utils';
-import { UNIT_CREATE_REQUEST, UNIT_CREATE_SUCCESS, UNIT_CREATE_FAILURE } from '../constants';
+import {
+    UNIT_CREATE_REQUEST,
+    UNIT_CREATE_FAILURE,
+    UNIT_CREATE_SUCCESS,
+    UNIT_LIST_REQUEST,
+    UNIT_LIST_FAILURE,
+    UNIT_LIST_SUCCESS
+} from '../constants';
 
 
 export function unitCreateSuccess(unitID) {
@@ -64,6 +71,61 @@ export function createUnit(token, number, numBeds, numBaths, title, amenities, d
             })
             .catch(error => {
                 dispatch(unitCreateFailure(error));
+            });
+    };
+}
+
+export function unitListSuccess(unitList) {
+    return {
+        type: UNIT_LIST_SUCCESS,
+        payload: unitList
+    };
+}
+
+export function unitListFailure(error) {
+    return {
+        type: UNIT_LIST_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function unitListRequest() {
+    return {
+        type: UNIT_LIST_REQUEST
+    };
+}
+
+export function listUnits(token) {
+    return (dispatch) => {
+        dispatch(unitListRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/units`, {
+            method: 'get',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(unitListSuccess(response));
+                } catch (e) {
+                    dispatch(unitListFailure({
+                        response: {
+                            status: 403,
+                            statusText: e
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(unitListFailure(error));
             });
     };
 }

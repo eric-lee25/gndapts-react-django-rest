@@ -11,6 +11,7 @@ class BuildingSerializer(serializers.ModelSerializer):
 
 
 class UnitSerializer(serializers.ModelSerializer):
+    building_data = BuildingSerializer(read_only=True, source='building')
     photos = serializers.JSONField(required=False, allow_null=True)
     creator = serializers.UUIDField(required=False)
 
