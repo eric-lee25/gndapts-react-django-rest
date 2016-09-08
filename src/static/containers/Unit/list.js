@@ -63,7 +63,7 @@ class ListUnitsView extends React.Component {
                 <DocumentTitle title='List units'>
                     <div className="ui container">
                         <h2 className="ui header">
-                            List units
+                            My units
                         </h2>
                         <form className={"ui form " + formClass} ref="createUnitForm" >
                             <table className="ui fixed table">
