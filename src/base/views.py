@@ -55,7 +55,8 @@ class UnitViewset(
 
     # TODO: change this + error proof it
     def get_queryset(self):
-        queryset = Unit.objects.filter(creator=self.request.user)
+        queryset = Unit.objects.filter(creator=self.request.user).\
+                order_by('date_created')
         return queryset
 
 
