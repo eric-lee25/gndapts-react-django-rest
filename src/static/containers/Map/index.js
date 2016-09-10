@@ -94,7 +94,7 @@ class MapView extends React.Component {
     
     render() {
         const centerPosition = [12.0000325,-61.7738056];
-        const stGeorgeUniversityPosition = [12.000033,-61.773806];
+        const stGeorgeUniversityPosition = [12.000933,-61.773806];
         
         // parent div is 4em padding - header height
         const mapStyle = {height: window.innerHeight-56}
@@ -108,6 +108,11 @@ class MapView extends React.Component {
             buildingList = 
             this.props.buildingList.results.map(function(s, i){
                 const p = [parseFloat(s.latitude), parseFloat(s.longitude)]
+                const lt = 
+                    s.unit_summary.lease_types.map(function(t,j) {
+                        return <span key={j}>{t}{j==s.unit_summary.lease_types.length-1 ? "" : ", "}</span>
+                    }); 
+
                 return (
                     <Marker key={i} position={p}
                         icon={
@@ -119,8 +124,37 @@ class MapView extends React.Component {
                             })
                         }
                     > 
-                        <Popup>
-                            <span>go lakers!!</span>
+                        <Popup closeButton="false" maxWidth="200" minWidth="200">
+                            <div className="ui info-window grid">
+                                <div className="name sixteen wide column">
+                                    <h4 className="ui header">
+                                        {s.title}
+                                    </h4>
+                                </div>
+                                <div className="details-left eight wide column">
+                                    <div className="ui list">
+                                        <div className="item">
+                                            <div className="header">Rent</div>
+                                            ${s.unit_summary.rent__min} - ${s.unit_summary.rent__max}
+                                        </div>
+                                        <div className="item">
+                                            <div className="header">Bedroom</div>
+                                            {s.unit_summary.num_beds__min} - {s.unit_summary.num_beds__max}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="details-right eight wide column">
+                                    <div className="ui list">
+                                        <div className="item">
+                                            <div className="header">Lease type</div>
+                                            {lt}
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="fluid mini ui primary button">
+                                      View units
+                                  </button>
+                            </div>
                         </Popup>
                     </Marker>
                 )
@@ -146,9 +180,6 @@ class MapView extends React.Component {
                                     })
                                 }
                             > 
-                                <Popup>
-                                    <span>go lakers!!</span>
-                                </Popup>
                             </Marker>
                             {buildingList}
                         </Map>

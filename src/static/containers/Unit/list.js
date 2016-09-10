@@ -49,7 +49,7 @@ class ListUnitsView extends React.Component {
                         <tr key={i}>
                             <td>{s.title}</td>
                             <td>{s.building_data.title}</td>
-                            <td>{s.rent}</td>
+                            <td>${s.rent}</td>
                             <td>{s.num_beds}</td>
                             <td>{s.num_baths}</td>
                         </tr>
@@ -60,7 +60,7 @@ class ListUnitsView extends React.Component {
 
         return (
             <div id="list-unit-container">
-                <DocumentTitle title='List units'>
+                <DocumentTitle title='My units'>
                     <div className="ui container">
                         <h2 className="ui header">
                             My units
@@ -81,7 +81,7 @@ class ListUnitsView extends React.Component {
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th>{unitCount} units</th>
+                                        <th>{unitCount} unit(s)</th>
                                         <th></th>
                                         <th></th>
                                         <th></th>

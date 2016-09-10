@@ -10,7 +10,6 @@ class Building(models.Model):
             unique=True, default=uuid.uuid4, editable=False,
             primary_key=True)
     title = models.CharField(max_length=128)
-    type_lease = models.CharField(max_length=64)
     description = models.TextField()
     latitude = models.DecimalField(max_digits=10, decimal_places=6)
     longitude = models.DecimalField(max_digits=10, decimal_places=6)
@@ -24,6 +23,7 @@ class Unit(models.Model):
            unique=True, default=uuid.uuid4, editable=False,
            primary_key=True)
     building = models.ForeignKey(Building)
+    type_lease = models.CharField(max_length=64)
     number = models.PositiveIntegerField()
     num_beds = models.PositiveIntegerField()
     num_baths = models.PositiveIntegerField()

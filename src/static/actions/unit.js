@@ -38,7 +38,7 @@ export function unitCreateRequest() {
     };
 }
 
-export function createUnit(token, number, numBeds, numBaths, title, amenities, description, rent, securityDeposit, buildingID, redirect) {
+export function createUnit(token, number, numBeds, numBaths, leaseType, title, amenities, description, rent, securityDeposit, buildingID, redirect) {
     return (dispatch) => {
         dispatch(unitCreateRequest());
         return fetch(`${SERVER_URL}/api/v1/base/units`, {
@@ -50,7 +50,7 @@ export function createUnit(token, number, numBeds, numBaths, title, amenities, d
                 Authorization: `JWT ${token}`
             },
             body: JSON.stringify({
-                number, "num_beds":numBeds, "num_baths":numBaths, title, amenities, description, rent, "security_deposit":securityDeposit,
+                "type_lease": leaseType, number, "num_beds":numBeds, "num_baths":numBaths, title, amenities, description, rent, "security_deposit":securityDeposit,
                 "building":buildingID
             })
         })

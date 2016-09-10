@@ -26,7 +26,6 @@ class AddBuildingView extends React.Component {
             zoom: 15,
             title: null,
             description: null,
-            leaseType: null
         };
     }
 
@@ -40,15 +39,6 @@ class AddBuildingView extends React.Component {
                             {
                                 type   : 'empty',
                                 prompt : 'Please enter a title'
-                            },
-                        ]
-                    },
-                    leaseType: {
-                        identifier  : 'leaseType',
-                        rules: [
-                            {
-                                type   : 'empty',
-                                prompt : 'Please enter a lease type'
                             },
                         ]
                     },
@@ -88,7 +78,7 @@ class AddBuildingView extends React.Component {
         if ($(ReactDOM.findDOMNode(this.refs.createBuildingForm)).form('is valid')) {
             this.props.actions.createBuilding(
                 this.props.token,
-                this.state.title, this.state.leaseType, this.state.description,
+                this.state.title, this.state.description,
                 this.state.marker.lat, this.state.marker.lng,
                 '/map');
         }
@@ -116,15 +106,6 @@ class AddBuildingView extends React.Component {
                                     <input type="text"
                                         name="title"
                                         onChange={(e) => { this.handleInputChange(e, 'title'); }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="four wide field">
-                                <label>Type of lease</label>
-                                <div className="ui input">
-                                    <input type="text"
-                                        name="leaseType"
-                                        onChange={(e) => { this.handleInputChange(e, 'leaseType'); }}
                                     />
                                 </div>
                             </div>

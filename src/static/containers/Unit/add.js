@@ -22,7 +22,8 @@ class AddUnitView extends React.Component {
             amenities: null,
             description: null,
             rent: null,
-            securityDeposit: null
+            securityDeposit: null,
+            leaseType: null
         };
     }
 
@@ -46,6 +47,15 @@ class AddUnitView extends React.Component {
                             {
                                 type   : 'empty',
                                 prompt : 'Please select a building'
+                            },
+                        ]
+                    },
+                    leaseType: {
+                        identifier  : 'leaseType',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : 'Please enter a lease type'
                             },
                         ]
                     },
@@ -158,7 +168,7 @@ class AddUnitView extends React.Component {
         if ($(ReactDOM.findDOMNode(this.refs.createUnitForm)).form('is valid')) {
             this.props.actions.createUnit(
                 this.props.token,
-                this.state.number, this.state.numBeds, this.state.numBaths,
+                this.state.number, this.state.numBeds, this.state.numBaths, this.state.leaseType,
                 this.state.title, this.state.amenities, this.state.description,
                 this.state.rent, this.state.securityDeposit, this.state.buildingID,
                 '/map');
@@ -237,6 +247,15 @@ class AddUnitView extends React.Component {
                                     <input type="text"
                                         name="numBaths"
                                         onChange={(e) => { this.handleInputChange(e, 'numBaths'); }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="four wide field">
+                                <label>Type of lease</label>
+                                <div className="ui input">
+                                    <input type="text"
+                                        name="leaseType"
+                                        onChange={(e) => { this.handleInputChange(e, 'leaseType'); }}
                                     />
                                 </div>
                             </div>

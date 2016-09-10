@@ -38,7 +38,7 @@ export function buildingCreateRequest() {
     };
 }
 
-export function createBuilding(token, title, leaseType, description, latitude, longitude, redirect) {
+export function createBuilding(token, title, description, latitude, longitude, redirect) {
     return (dispatch) => {
         dispatch(buildingCreateRequest());
         return fetch(`${SERVER_URL}/api/v1/base/buildings`, {
@@ -50,7 +50,7 @@ export function createBuilding(token, title, leaseType, description, latitude, l
                 Authorization: `JWT ${token}`
             },
             body: JSON.stringify({
-                title, "type_lease": leaseType, description, 
+                title, description, 
                 "latitude": parseFloat(latitude).toFixed(6),
                 "longitude": parseFloat(longitude).toFixed(6),
             })
