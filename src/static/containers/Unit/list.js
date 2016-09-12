@@ -62,9 +62,21 @@ class ListUnitsView extends React.Component {
             <div id="list-unit-container">
                 <DocumentTitle title='My units'>
                     <div className="ui container">
-                        <h2 className="ui header">
-                            My units
-                        </h2>
+                        <div className="ui right aligned grid">
+                            <div className="left floated left aligned six wide column">
+                                <h2 id="my-units-header" classNameName="ui header">
+                                    My units
+                                </h2>
+                            </div>
+                            <div className="right floated right aligned six wide column">
+                                <div onClick={() => this.props.dispatch(push('/building/add'))} className="ui primary button" type="submit">
+                                    Add building
+                                </div>
+                                <div onClick={() => this.props.dispatch(push('/unit/add'))} className="ui green button" type="submit">
+                                    Add unit
+                                </div>
+                            </div>
+                        </div>
                         <form className={"ui form " + formClass} ref="createUnitForm" >
                             <table className="ui fixed table">
                                 <thead>
@@ -72,8 +84,8 @@ class ListUnitsView extends React.Component {
                                         <th>Unit</th>
                                         <th>Building</th>
                                         <th>Rent</th>
-                                        <th>Number bedrooms</th>
-                                        <th>Number bathrooms</th>
+                                        <th>Bedrooms</th>
+                                        <th>Bathrooms</th>
                                     </tr>
                                 </thead>
                                 <tbody>

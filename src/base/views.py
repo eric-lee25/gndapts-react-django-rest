@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.views.generic import View
 from base.models import Building, Unit, Review
 from base.serializers import BuildingSerializer,\
-        UnitSerializer, ReviewSerializer
+        UnitSerializer, ReviewSerializer, FullBuildingSerializer
 from rest_framework import viewsets, mixins
 
 
@@ -21,6 +21,11 @@ class BuildingViewset(
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
     serializer_class = BuildingSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return FullBuildingSerializer
+        return BuildingSerializer
 
     def get_queryset(self):
         try:

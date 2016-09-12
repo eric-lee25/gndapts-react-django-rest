@@ -9,7 +9,10 @@ import {
     BUILDING_CREATE_SUCCESS,
     BUILDING_LIST_REQUEST,
     BUILDING_LIST_FAILURE,
-    BUILDING_LIST_SUCCESS
+    BUILDING_LIST_SUCCESS,
+    BUILDING_GET_REQUEST,
+    BUILDING_GET_FAILURE,
+    BUILDING_GET_SUCCESS
 } from '../constants';
 
 
@@ -133,6 +136,61 @@ export function listBuildings(token, rent=null, numBeds=null, numBaths=null) {
             })
             .catch(error => {
                 dispatch(buildingListFailure(error));
+            });
+    };
+}
+
+export function buildingGetSuccess(buildingGet) {
+    return {
+        type: BUILDING_GET_SUCCESS,
+        payload: buildingGet
+    };
+}
+
+export function buildingGetFailure(error) {
+    return {
+        type: BUILDING_GET_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function buildingGetRequest() {
+    return {
+        type: BUILDING_GET_REQUEST
+    };
+}
+
+export function getBuilding(token, buildingID) {
+    return (dispatch) => {
+        dispatch(buildingGetRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/buildings/${buildingID}`, {
+            method: 'get',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(buildingGetSuccess(response));
+                } catch (e) {
+                    dispatch(buildingGetFailure({
+                        response: {
+                            status: 403,
+                            statusText: e
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(buildingGetFailure(error));
             });
     };
 }

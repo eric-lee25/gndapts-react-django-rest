@@ -5,12 +5,6 @@
         margin: 0 auto;
     }
 
-    // For unknown reasons, closeButton=false
-    // is not working. So we'll perform it via CSS
-    .leaflet-popup-close-button {
-        display: none;
-    }
-
     #filter-box {
         position: fixed;
         left: 0;
@@ -27,7 +21,7 @@
     }
 
     .ui.loading.form:before {
-        background: rgba(0,0,0,.8);
+        background: rgba(0,0,0,.3);
     }
 
     .info-window  {

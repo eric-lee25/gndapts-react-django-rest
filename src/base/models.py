@@ -33,6 +33,7 @@ class Unit(models.Model):
     rent = models.PositiveIntegerField()
     security_deposit = models.PositiveIntegerField()
     photos = JSONField(blank=True, null=True)
+    contact_information = models.CharField(max_length=128)
     creator = models.ForeignKey(User)
     date_created = models.DateTimeField(auto_now_add=True)
 

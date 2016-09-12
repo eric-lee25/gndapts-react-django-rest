@@ -124,8 +124,8 @@ class AddBuildingView extends React.Component {
                                     OnZoomend={this.updateZoom}
                                     center={center} zoom={this.state.zoom}>
                                     <TileLayer
-                                        url='http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png'
-                                        attribution='Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a'
+                                        url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
+                                        attribution='Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
                                     />
                                     <Marker 
                                         position={markerPosition}

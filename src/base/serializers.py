@@ -1,6 +1,16 @@
 from rest_framework import serializers
-from base.models import Building, Unit, Review
+from base.models import Building, Unit, Review, User
 from django.db.models import Min, Max
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        exclude = (
+                'activation_key', 'confirmed_email', 'date_joined',
+                'is_active', 'is_staff', 'is_superuser',
+                'last_login', 'password', 'email')
 
 
 class BuildingSerializer(serializers.ModelSerializer):
@@ -13,10 +23,29 @@ class BuildingSerializer(serializers.ModelSerializer):
         agg = qs.aggregate(
                 Max('rent'), Min('rent'), Min('num_beds'), Max('num_beds'))
         agg['lease_types'] = qs.values_list('type_lease').distinct()
+        agg['unit_count'] = qs.count()
         return agg
 
     class Meta:
         model = Building
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    creator = serializers.UUIDField(required=False, write_only=True)
+    reviewee = serializers.SerializerMethodField()
+
+    def validate_rating(self, value):
+        if (1 <= value <= 5) is False:
+            raise serializers.ValidationError("This needs to between 1 and 5.")
+        return value
+
+    def get_reviewee(self, review):
+        if review.anonymous is False:
+            return UserSerializer(review.creator).data
+        return None
+
+    class Meta:
+        model = Review
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -28,13 +57,9 @@ class UnitSerializer(serializers.ModelSerializer):
         model = Unit
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-    creator = serializers.UUIDField(required=False)
-
-    def validate_rating(self, value):
-        if (1 <= value <= 5) is False:
-            raise serializers.ValidationError("This needs to between 1 and 5.")
-        return value
+class FullBuildingSerializer(serializers.ModelSerializer):
+    unit_set = UnitSerializer(many=True)
+    review_set = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Review
+        model = Building

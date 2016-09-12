@@ -5,7 +5,10 @@ import {
     BUILDING_CREATE_SUCCESS,
     BUILDING_LIST_REQUEST,
     BUILDING_LIST_FAILURE,
-    BUILDING_LIST_SUCCESS
+    BUILDING_LIST_SUCCESS,
+    BUILDING_GET_REQUEST,
+    BUILDING_GET_FAILURE,
+    BUILDING_GET_SUCCESS
 } from '../constants';
 import jwtDecode from 'jwt-decode';
 
@@ -16,6 +19,9 @@ const initialState = {
     isGettingList: false,
     hasGottenList: false,
     buildingList: null,
+    isGettingBuilding: false,
+    hasGottenBuilding: false,
+    building: null,
     statusText: null
 };
 
@@ -66,6 +72,30 @@ export default createReducer(initialState, {
             isGettingList: false,
             hasGottenList: false,
             statusText: `Building list error: ${payload.statusText}`
+        });
+    },
+    [BUILDING_GET_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            isGettingBuilding: true,
+            hasGottenBuilding: false,
+            building: null,
+            statusText: null
+        });
+    },
+    [BUILDING_GET_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            isGettingBuilding: false,
+            hasGottenBuilding: true,
+            building: payload,
+            statusText: 'Building returned'
+        });
+    },
+    [BUILDING_GET_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            isGettingBuilding: false,
+            hasGottenBuilding: false,
+            building: null,
+            statusText: `Building error: ${payload.statusText}`
         });
     }
 });

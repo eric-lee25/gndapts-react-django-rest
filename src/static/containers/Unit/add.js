@@ -23,6 +23,7 @@ class AddUnitView extends React.Component {
             description: null,
             rent: null,
             securityDeposit: null,
+            contactInformation: null,
             leaseType: null
         };
     }
@@ -125,6 +126,15 @@ class AddUnitView extends React.Component {
                             },
                         ]
                     },
+                    contactInformation: {
+                        identifier  : 'contactInformation',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : 'Please enter contact information'
+                            },
+                        ]
+                    },
                     rent: {
                         identifier  : 'rent',
                         rules: [
@@ -169,7 +179,7 @@ class AddUnitView extends React.Component {
             this.props.actions.createUnit(
                 this.props.token,
                 this.state.number, this.state.numBeds, this.state.numBaths, this.state.leaseType,
-                this.state.title, this.state.amenities, this.state.description,
+                this.state.title, this.state.amenities, this.state.description, this.state.contactInformation,
                 this.state.rent, this.state.securityDeposit, this.state.buildingID,
                 '/map');
         }
@@ -274,6 +284,15 @@ class AddUnitView extends React.Component {
                                     rows="2"
                                     onChange={(e) => { this.handleInputChange(e, 'description')}}
                                 ></textarea> 
+                            </div>
+                            <div className="eight wide field">
+                                <label>Contact information</label>
+                                <div className="ui input">
+                                    <input type="text"
+                                        name="contactInformation"
+                                        onChange={(e) => { this.handleInputChange(e, 'contactInformation'); }}
+                                    />
+                                </div>
                             </div>
                             <div className="two wide field">
                                 <label>Rent</label>

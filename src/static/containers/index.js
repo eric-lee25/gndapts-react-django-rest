@@ -11,3 +11,4 @@ export PaddedContainer from './Padded/index';
 export AddUnitView from './Unit/add';
 export AddReviewView from './Review/add';
 export ListUnitsView from './Unit/list';
+export ShowBuildingView from './Building/show';

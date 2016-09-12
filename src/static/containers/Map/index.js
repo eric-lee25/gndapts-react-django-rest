@@ -13,6 +13,7 @@ import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
 import 'leaflet/dist/leaflet.css';
 import './range.js';
 import './range.css';
+import { push } from 'react-router-redux';
 
 
 class MapView extends React.Component {
@@ -124,7 +125,7 @@ class MapView extends React.Component {
                             })
                         }
                     > 
-                        <Popup closeButton="false" maxWidth="200" minWidth="200">
+                        <Popup closeButton={false} maxWidth="200" minWidth="200">
                             <div className="ui info-window grid">
                                 <div className="name sixteen wide column">
                                     <h4 className="ui header">
@@ -151,14 +152,14 @@ class MapView extends React.Component {
                                         </div>
                                     </div>
                                 </div>
-                                <button className="fluid mini ui primary button">
-                                      View units
+                                <button onClick={() => this.props.dispatch(push('/building/show/' + s.uuid))} className="fluid mini ui primary button">
+                                      View building
                                   </button>
                             </div>
                         </Popup>
                     </Marker>
                 )
-            });
+            }.bind(this));
         }
 
         return (
@@ -167,8 +168,8 @@ class MapView extends React.Component {
                     <DocumentTitle title='Map'>
                         <Map style={mapStyle} center={centerPosition} zoom={15}>
                             <TileLayer
-                                url='http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png'
-                                attribution='Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a'
+                                url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
+                                attribution='Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
                             />
                             <Marker position={stGeorgeUniversityPosition}
                                 icon={
@@ -216,7 +217,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch,
-        actions: bindActionCreators({ ...buildingActionCreators}, dispatch)
+        actions: bindActionCreators(buildingActionCreators, dispatch)
     };
 };
 

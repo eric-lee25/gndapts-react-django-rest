@@ -5,3 +5,15 @@
         margin: 0 auto;
     }
 }
+
+#show-building-container {
+    .leaflet-container {
+        height: 250px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .reviewee {
+        font-size: 0.8em;
+    }
+}
