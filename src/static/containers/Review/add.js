@@ -99,7 +99,7 @@ class AddReviewView extends React.Component {
                 this.props.token,
                 this.state.rating, this.state.comments, this.state.anonymous,
                 this.state.buildingID,
-                '/map');
+                '/building/show/' + this.state.buildingID);
         }
     }
 

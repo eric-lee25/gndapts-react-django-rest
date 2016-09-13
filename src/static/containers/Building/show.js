@@ -53,9 +53,9 @@ class ShowBuildingView extends React.Component {
                     return (
                         <tr key={i}>
                             <td>{s.title}</td>
-                            <td >{s.rent}</td>
-                            <td >{s.num_beds}</td>
-                            <td >{s.num_baths}</td>
+                            <td>${s.rent}</td>
+                            <td>{s.num_beds}</td>
+                            <td>{s.num_baths}</td>
                         </tr>
                     )
                 })
