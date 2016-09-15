@@ -1,11 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import { Link } from 'react-router';
 import classNames from 'classnames';
 import DocumentTitle from 'react-document-title';
 import './style.scss';
-import * as buildingActionCreators from '../../actions/building';
+import * as unitActionCreators from '../../actions/unit';
 import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
@@ -13,11 +12,12 @@ import 'drmonty-leaflet-awesome-markers';
 import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
 import 'leaflet/dist/leaflet.css';
 
-class ShowBuildingView extends React.Component {
+class ShowUnitView extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            showContactInformationFlag: false
         };
     }
 
@@ -25,43 +25,34 @@ class ShowBuildingView extends React.Component {
     }
 
     componentDidMount() {
-        this.props.actions.getBuilding(this.props.token, this.props.params.id);
+        this.props.actions.getUnit(this.props.token, this.props.params.id);
     }
 
     componentDidUpdate() {
         // Needs to run in componentDidUpdate() because the reviews are dynamically added
-        if (this.props.hasGottenBuilding) {
-            for (var i=0; i<this.props.building.review_set.length; ++i) {
+        if (this.props.hasGottenUnit) {
+            for (var i=0; i<this.props.unit.building_reviews.length; ++i) {
                 $(ReactDOM.findDOMNode(this.refs["review-" + i])).rating('disable');
             }
         }
     }
 
+    showContactInformation = (e) => {
+        this.setState({showContactInformationFlag:true});
+    }
+    
     render() {
         const formClass = classNames({
-            loading: this.props.isGettingBuilding
+            loading: this.props.isGettingUnit
         });
 
-        let buildingInformation = null;
+        let unitInformation = null;
 
-        if (this.props.hasGottenBuilding) {
-            let center = [parseFloat(this.props.building.latitude), parseFloat(this.props.building.longitude)];
-
-            let unitList = (
-                this.props.building.unit_set.map(function(s,i) {
-                    return (
-                        <tr key={i}>
-                            <td><Link to={`/unit/show/${s.uuid}`}>{s.title}</Link></td>
-                            <td>${s.rent}</td>
-                            <td>{s.num_beds}</td>
-                            <td>{s.num_baths}</td>
-                        </tr>
-                    )
-                })
-            )
+        if (this.props.hasGottenUnit) {
+            let center = [parseFloat(this.props.unit.building_data.latitude), parseFloat(this.props.unit.building_data.longitude)];
 
             let reviews = (
-                this.props.building.review_set.map(function(s,i) {
+                this.props.unit.building_reviews.map(function(s,i) {
                     return (
                         <div key={i} className="ui relaxed divided list">
                             <div className="item">
@@ -78,7 +69,25 @@ class ShowBuildingView extends React.Component {
                 })
             )
 
-            buildingInformation = (
+            let contactBlock = null;
+
+            if (!this.state.showContactInformationFlag) {
+                contactBlock = (
+                    <a onClick={this.showContactInformation} className="">
+                        Show contact information
+                    </a>
+                )
+            }
+
+            else {
+                contactBlock = (
+                    <span>
+                        {this.props.unit.contact_information}
+                    </span>
+                )
+            }
+
+            unitInformation = (
                 <div className="ui grid">
                     <div className="ui row">
                         <div className="five wide column">
@@ -95,7 +104,7 @@ class ShowBuildingView extends React.Component {
                                         L.AwesomeMarkers.icon({
                                             prefix: 'fa',
                                             shadowSize: [0,0],
-                                            icon: 'fa-building',
+                                            icon: 'fa-unit',
                                             markerColor: 'purple'
                                         })
                                     }
@@ -105,27 +114,36 @@ class ShowBuildingView extends React.Component {
                         </div>
                         <div className="seven wide column">
                             <h3 className="ui header">
-                                {this.props.building.title}
-                                <div className="sub header">
-                                    {this.props.building.unit_set.length} unit(s)
-                                </div>
+                                {this.props.unit.title}
                             </h3>
+                            <div className="ui list">
+                                <div className="item">
+                                    <i className="icon fa-bed"></i>
+                                    <div className="content">
+                                        {this.props.unit.num_beds} bed / {this.props.unit.num_baths} bath
+                                    </div>
+                                </div>
+                                <div className="item">
+                                    <i className="icon fa-usd"></i>
+                                    <div className="content">
+                                        {this.props.unit.rent} / month
+                                    </div>
+                                </div>
+                                <div className="item">
+                                    <i className="icon fa-phone"></i>
+                                    <div className="content">
+                                        {contactBlock}
+                                    </div>
+                                </div>
+                            </div>
                             <p>
-                                {this.props.building.description}
+                                {this.props.unit.description}
                             </p>
-                            <table className="ui fixed table">
-                                <thead>
-                                    <tr>
-                                        <th>Unit</th>
-                                        <th>Rent</th>
-                                        <th>Bed</th>
-                                        <th>Bath</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {unitList}
-                                </tbody>
-                            </table>
+                            <div className="ui green button "
+                                type="submit" 
+                            >
+                                Add to favorites
+                            </div>
                         </div>
                         <div className="four wide column">
                             {reviews}
@@ -139,14 +157,14 @@ class ShowBuildingView extends React.Component {
         }
 
         return (
-            <div id="show-building-container">
-                <DocumentTitle title='Building'>
+            <div id="show-unit-container">
+                <DocumentTitle title='Unit'>
                     <div className="ui container">
                         <h2 className="ui header">
-                            Building
+                            Unit
                         </h2>
-                        <form className={"ui form " + formClass} ref="buildingForm" >
-                            {buildingInformation}
+                        <form className={"ui form " + formClass} ref="unitForm" >
+                            {unitInformation}
                         </form>
                     </div>
                 </DocumentTitle>
@@ -157,18 +175,18 @@ class ShowBuildingView extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        isGettingBuilding: state.building.isGettingBuilding,
-        hasGottenBuilding: state.building.hasGottenBuilding,
-        building: state.building.building
+        isGettingUnit: state.unit.isGettingUnit,
+        hasGottenUnit: state.unit.hasGottenUnit,
+        unit: state.unit.unit
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch,
-        actions: bindActionCreators(buildingActionCreators, dispatch)
+        actions: bindActionCreators(unitActionCreators, dispatch)
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShowBuildingView);
-export { ShowBuildingView as ShowBuildingViewNotConnected };
+export default connect(mapStateToProps, mapDispatchToProps)(ShowUnitView);
+export { ShowUnitView as ShowUnitViewNotConnected };

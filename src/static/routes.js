@@ -5,7 +5,7 @@ import {
     HomeView, LoginView, ProtectedView, NotFoundView, SignupView,
     ConfirmEmailView, LoggedInView, MapView, AddBuildingView, 
     PaddedContainer, AddUnitView, AddReviewView, ListUnitsView, 
-    ShowBuildingView} from './containers';
+    ShowBuildingView, ShowUnitView} from './containers';
 import { requireAuthentication } from './utils/requireAuthentication';
 
 export default(
@@ -21,6 +21,7 @@ export default(
                 <Route path="building/show/:id" component={requireAuthentication(ShowBuildingView)}/>
                 <Route path="unit/add" component={requireAuthentication(AddUnitView)}/>
                 <Route path="unit/list" component={requireAuthentication(ListUnitsView)}/>
+                <Route path="unit/show/:id" component={requireAuthentication(ShowUnitView)}/>
                 <Route path="review/add" component={requireAuthentication(AddReviewView)}/>
             </Route>
         </Route>

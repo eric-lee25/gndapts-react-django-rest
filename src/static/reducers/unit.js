@@ -5,7 +5,10 @@ import {
     UNIT_CREATE_SUCCESS,
     UNIT_LIST_REQUEST,
     UNIT_LIST_FAILURE,
-    UNIT_LIST_SUCCESS
+    UNIT_LIST_SUCCESS,
+    UNIT_GET_REQUEST,
+    UNIT_GET_FAILURE,
+    UNIT_GET_SUCCESS
 } from '../constants';
 import jwtDecode from 'jwt-decode';
 
@@ -16,7 +19,10 @@ const initialState = {
     statusText: null,
     unitList: null,
     isGettingList: false,
-    hasGottenList: false
+    hasGottenList: false,
+    isGettingUnit: false,
+    hasGottenUnit: false,
+    unit: null
 };
 
 export default createReducer(initialState, {
@@ -65,6 +71,30 @@ export default createReducer(initialState, {
             isGettingList: false,
             hasGottenList: false,
             statusText: `Unit list error: ${payload.statusText}`
+        });
+    },
+    [UNIT_GET_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            isGettingUnit: true,
+            hasGottenUnit: false,
+            unit: null,
+            statusText: null
+        });
+    },
+    [UNIT_GET_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            isGettingUnit: false,
+            hasGottenUnit: true,
+            unit: payload,
+            statusText: 'Unit returned'
+        });
+    },
+    [UNIT_GET_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            isGettingUnit: false,
+            hasGottenUnit: false,
+            unit: null,
+            statusText: `Unit error: ${payload.statusText}`
         });
     }
 });

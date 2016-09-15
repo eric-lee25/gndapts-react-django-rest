@@ -52,6 +52,10 @@ class UnitSerializer(serializers.ModelSerializer):
     building_data = BuildingSerializer(read_only=True, source='building')
     photos = serializers.JSONField(required=False, allow_null=True)
     creator = serializers.UUIDField(required=False)
+    building_reviews = serializers.SerializerMethodField()
+
+    def get_building_reviews(self, unit):
+        return ReviewSerializer(unit.building.review_set,many=True).data
 
     class Meta:
         model = Unit

@@ -9,7 +9,10 @@ import {
     UNIT_CREATE_SUCCESS,
     UNIT_LIST_REQUEST,
     UNIT_LIST_FAILURE,
-    UNIT_LIST_SUCCESS
+    UNIT_LIST_SUCCESS,
+    UNIT_GET_REQUEST,
+    UNIT_GET_FAILURE,
+    UNIT_GET_SUCCESS
 } from '../constants';
 
 
@@ -128,6 +131,61 @@ export function listUnits(token) {
             })
             .catch(error => {
                 dispatch(unitListFailure(error));
+            });
+    };
+}
+
+export function unitGetSuccess(unitGet) {
+    return {
+        type: UNIT_GET_SUCCESS,
+        payload: unitGet
+    };
+}
+
+export function unitGetFailure(error) {
+    return {
+        type: UNIT_GET_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function unitGetRequest() {
+    return {
+        type: UNIT_GET_REQUEST
+    };
+}
+
+export function getUnit(token, unitID) {
+    return (dispatch) => {
+        dispatch(unitGetRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/units/${unitID}`, {
+            method: 'get',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(unitGetSuccess(response));
+                } catch (e) {
+                    dispatch(unitGetFailure({
+                        response: {
+                            status: 403,
+                            statusText: e
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(unitGetFailure(error));
             });
     };
 }
