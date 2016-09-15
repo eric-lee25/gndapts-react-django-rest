@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import classNames from 'classnames';
+import { Link } from 'react-router';
 import DocumentTitle from 'react-document-title';
 import './style.scss';
 import * as unitActionCreators from '../../actions/unit';
@@ -47,7 +48,7 @@ class ListUnitsView extends React.Component {
                 this.props.unitList.results.map(function(s, i){
                     return (
                         <tr key={i}>
-                            <td>{s.title}</td>
+                            <td><Link to={`/unit/show/${s.uuid}`}>{s.title}</Link></td>
                             <td>{s.building_data.title}</td>
                             <td>${s.rent}</td>
                             <td>{s.num_beds}</td>
