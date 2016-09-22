@@ -5,7 +5,7 @@ import { SERVER_URL } from '../utils/config';
 import { checkHttpStatus, parseJSON } from '../utils';
 import { 
     USER_GET_CURRENT_REQUEST, USER_GET_CURRENT_SUCCESS, USER_GET_CURRENT_FAILURE, USER_GET_CURRENT_RESET,
-    USER_FAVORITE_CREATE_REQUEST, USER_FAVORITE_CREATE_SUCCESS, USER_FAVORITE_CREATE_FAILURE,
+    USER_FAVORITE_CREATE_REQUEST, USER_FAVORITE_CREATE_SUCCESS, USER_FAVORITE_CREATE_FAILURE, USER_FAVORITE_CREATE_RESET,
     USER_FAVORITE_SHARE_REQUEST, USER_FAVORITE_SHARE_SUCCESS, USER_FAVORITE_SHARE_FAILURE, USER_FAVORITE_SHARE_RESET,
     USER_FAVORITE_COUNT_REQUEST, USER_FAVORITE_COUNT_SUCCESS, USER_FAVORITE_COUNT_FAILURE
 } from '../constants';
@@ -100,6 +100,18 @@ export function favoriteCreateRequest() {
     return {
         type: USER_FAVORITE_CREATE_REQUEST
     };
+}
+
+export function favoriteCreateReset() {
+    return {
+        type: USER_FAVORITE_CREATE_RESET
+    };
+}
+
+export function resetCreateFavorite() {
+    return (dispatch) => {
+        dispatch(favoriteCreateReset());
+    }
 }
 
 export function createFavorite(token, buildingID, unitID) {

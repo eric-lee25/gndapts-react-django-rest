@@ -20,6 +20,8 @@ class ShowBuildingView extends React.Component {
     }
 
     componentWillUnmount() { 
+        this.props.actions.resetGetBuilding();
+        this.props.actions.resetCreateFavorite();
     }
 
     componentDidMount() {
@@ -51,7 +53,6 @@ class ShowBuildingView extends React.Component {
         let actionMenu = null;
 
         if (this.props.hasGottenBuilding) {
-            console.log(this.props.building);
             favoriteClass = classNames({
                 disabled: this.props.hasCreatedFavorite || this.props.building.is_favorite
             });

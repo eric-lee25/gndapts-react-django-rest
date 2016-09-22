@@ -12,7 +12,8 @@ import {
     UNIT_LIST_SUCCESS,
     UNIT_GET_REQUEST,
     UNIT_GET_FAILURE,
-    UNIT_GET_SUCCESS
+    UNIT_GET_SUCCESS,
+    UNIT_GET_RESET
 } from '../constants';
 
 
@@ -158,6 +159,18 @@ export function unitGetRequest() {
     };
 }
 
+export function unitGetReset() {
+    return {
+        type: UNIT_GET_RESET
+    };
+}
+
+export function resetGetUnit() {
+    return (dispatch) => {
+        dispatch(unitGetReset());
+    }
+}
+
 export function getUnit(token, unitID) {
     return (dispatch) => {
         dispatch(unitGetRequest());
@@ -170,7 +183,6 @@ export function getUnit(token, unitID) {
         if (token != null) {
             headers.Authorization = `JWT ${token}`
         }
-        console.log(token);
 
         return fetch(`${SERVER_URL}/api/v1/base/units/${unitID}`, {
             method: 'get',

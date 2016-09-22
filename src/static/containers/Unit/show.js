@@ -23,6 +23,7 @@ class ShowUnitView extends React.Component {
     }
 
     componentWillUnmount() { 
+        this.props.actions.resetGetUnit();
     }
 
     componentDidMount() {

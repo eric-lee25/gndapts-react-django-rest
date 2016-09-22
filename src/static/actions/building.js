@@ -12,9 +12,9 @@ import {
     BUILDING_LIST_SUCCESS,
     BUILDING_GET_REQUEST,
     BUILDING_GET_FAILURE,
-    BUILDING_GET_SUCCESS
+    BUILDING_GET_SUCCESS,
+    BUILDING_GET_RESET
 } from '../constants';
-
 
 export function buildingCreateSuccess(buildingID) {
     return {
@@ -161,6 +161,18 @@ export function buildingGetRequest() {
     return {
         type: BUILDING_GET_REQUEST
     };
+}
+
+export function buildingGetReset() {
+    return {
+        type: BUILDING_GET_RESET
+    };
+}
+
+export function resetGetBuilding() {
+    return (dispatch) => {
+        dispatch(buildingGetReset());
+    }
 }
 
 export function getBuilding(token, buildingID) {

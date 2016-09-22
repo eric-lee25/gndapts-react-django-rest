@@ -8,7 +8,8 @@ import {
     UNIT_LIST_SUCCESS,
     UNIT_GET_REQUEST,
     UNIT_GET_FAILURE,
-    UNIT_GET_SUCCESS
+    UNIT_GET_SUCCESS,
+    UNIT_GET_RESET
 } from '../constants';
 import jwtDecode from 'jwt-decode';
 
@@ -95,6 +96,14 @@ export default createReducer(initialState, {
             hasGottenUnit: false,
             unit: null,
             statusText: `Unit error: ${payload.statusText}`
+        });
+    },
+    [UNIT_GET_RESET]: (state, payload) => {
+        return Object.assign({}, state, {
+            isGettingUnit: false,
+            hasGottenUnit: false,
+            unit: null,
+            statusText: null
         });
     }
 });

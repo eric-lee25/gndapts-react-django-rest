@@ -8,7 +8,8 @@ import {
     BUILDING_LIST_SUCCESS,
     BUILDING_GET_REQUEST,
     BUILDING_GET_FAILURE,
-    BUILDING_GET_SUCCESS
+    BUILDING_GET_SUCCESS,
+    BUILDING_GET_RESET
 } from '../constants';
 import jwtDecode from 'jwt-decode';
 
@@ -96,6 +97,14 @@ export default createReducer(initialState, {
             hasGottenBuilding: false,
             building: null,
             statusText: `Building error: ${payload.statusText}`
+        });
+    },
+    [BUILDING_GET_RESET]: (state, payload) => {
+        return Object.assign({}, state, {
+            isGettingBuilding: false,
+            hasGottenBuilding: false,
+            building: null,
+            statusText: null
         });
     }
 });
