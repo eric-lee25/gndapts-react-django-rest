@@ -48,3 +48,17 @@ class Review(models.Model):
     anonymous = models.BooleanField()
     creator = models.ForeignKey(User)
     date_created = models.DateTimeField(auto_now_add=True)
+
+
+class Favorite(models.Model):
+    uuid = models.UUIDField(
+           unique=True, default=uuid.uuid4, editable=False,
+           primary_key=True)
+
+    # A building OR unit can be favorited
+    unit = models.ForeignKey(Unit, blank=True, null=True)
+    building = models.ForeignKey(Building, blank=True, null=True)
+
+    active = models.BooleanField(default=True)
+    creator = models.ForeignKey(User)
+    date_created = models.DateTimeField(auto_now_add=True)

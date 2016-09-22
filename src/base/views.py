@@ -2,10 +2,18 @@ import os
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.generic import View
-from base.models import Building, Unit, Review
+from base.models import Building, Unit, Review, Favorite
+from accounts.models import User
 from base.serializers import BuildingSerializer,\
-        UnitSerializer, ReviewSerializer, FullBuildingSerializer
+        UnitSerializer, ReviewSerializer,\
+        FullBuildingSerializer, UserSerializer, FavoriteSerializer,\
+        ShareFavoriteSerializer
 from rest_framework import viewsets, mixins
+from rest_framework.decorators import list_route
+from rest_framework.response import Response
+from rest_framework import status
+import requests
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
 class IndexView(View):
@@ -21,6 +29,9 @@ class BuildingViewset(
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
     serializer_class = BuildingSerializer
+
+    # This is for retrieving a building - used for favorites
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -55,14 +66,19 @@ class UnitViewset(
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
 
+    # This is for retrieving a unit - used for favorites
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
-    # TODO: change this + error proof it
-    def get_queryset(self):
+    # Get my own
+    def list(self, request):
         queryset = Unit.objects.filter(creator=self.request.user).\
-                order_by('date_created')
-        return queryset
+            order_by('date_created')
+        serializer = UnitSerializer(queryset, many=True,
+                                    context={'request': request})
+        return Response({"results": serializer.data})
 
 
 class ReviewViewset(
@@ -74,3 +90,83 @@ class ReviewViewset(
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
+
+
+class FavoriteViewset(
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        viewsets.GenericViewSet):
+    queryset = Favorite.objects.all().order_by('date_created')
+    serializer_class = FavoriteSerializer
+
+    @list_route(methods=['post'])
+    def share(self, request):
+        sf = ShareFavoriteSerializer(data=request.data)
+        if sf.is_valid():
+            email_text = "Hey,<br/><br/>" + request.user.first_name +\
+                " has shared their favorite listings on " +\
+                "<a href='" + settings.DOMAIN + "'/>GNDAPTS</a> " +\
+                "with you. Check them out:" +\
+                "<br/><br/>"
+
+            destination = ""
+            for e in sf.validated_data['emails']:
+                destination += e + ","
+            destination = destination[:-1]
+
+            for f in request.user.favorite_set.filter(active=1):
+                url = title = ""
+                if f.unit is not None:
+                    url = settings.DOMAIN + "/unit/show/" + str(f.unit.pk)
+                    title = f.unit.title
+                else:
+                    url = settings.DOMAIN + "/building/show/" +\
+                            str(f.building.pk)
+                    title = f.building.title
+
+                email_text += "<a href='" + url + "'/>" + title + "</a><br/>"
+
+            email_text += "<br/>-GNDAPTS team"
+
+            url = "https://api.mailgun.net/v3/" +\
+                settings.MAILGUN_DOMAIN + "/messages"
+
+            files = {
+                'from': 'gndapts@mail.gndapts.com',
+                'to': destination,
+                'cc': request.user.email,
+                'subject': request.user.first_name + " has shared their " +
+                        "favorite listings from GNDAPTS with you",
+                'html': email_text
+                }
+
+            requests.post(url, auth=('api', settings.MAILGUN_API_KEY),
+                          data=files)
+
+            # Deactivate favorites
+            request.user.favorite_set.filter(active=1).update(active=0)
+
+            return Response({}, status=status.HTTP_200_OK)
+
+        return Response(sf.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
+
+class UserViewSet(
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def retrieve(self, request, pk=None):
+        if request.user and pk == 'current':
+            return Response(UserSerializer(request.user).data)
+        return super(UserViewSet, self).retrieve(request, pk)
+
+    @list_route(methods=['get'])
+    def favoritescount(self, request):
+        data = {"active_favorite_count":
+                request.user.favorite_set.filter(active=1).count()}
+        return Response(data, status=status.HTTP_200_OK)

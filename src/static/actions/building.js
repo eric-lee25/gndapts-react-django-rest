@@ -166,14 +166,20 @@ export function buildingGetRequest() {
 export function getBuilding(token, buildingID) {
     return (dispatch) => {
         dispatch(buildingGetRequest());
+
+        const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+
+        if (token != null) {
+            headers.Authorization = `JWT ${token}`
+        }
+
         return fetch(`${SERVER_URL}/api/v1/base/buildings/${buildingID}`, {
             method: 'get',
             credentials: 'include',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: `JWT ${token}`
-            },
+            headers
         })
             .then(checkHttpStatus)
             .then(parseJSON)

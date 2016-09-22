@@ -11,6 +11,7 @@ def jwt_payload_handler(user):
         'user_lastname': user.last_name,
         # 'user_isadmin': user.is_admin,
         'user_id': user.pk,
+        'active_favorite_count': user.favorite_set.filter(active=1).count(),
         'email_address': user.email,
         'exp': datetime.utcnow() + api_settings.JWT_EXPIRATION_DELTA
     }

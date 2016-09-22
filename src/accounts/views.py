@@ -12,6 +12,8 @@ from accounts.models import User
 from accounts.serializers import UserRegistrationSerializer
 from lib.utils import AtomicMixin
 from rest_framework_jwt.settings import api_settings
+from django.conf import settings
+import requests
 
 
 class UserRegisterView(AtomicMixin, CreateModelMixin, GenericAPIView):
@@ -20,7 +22,28 @@ class UserRegisterView(AtomicMixin, CreateModelMixin, GenericAPIView):
     permission_classes = ()
 
     def post(self, request):
-        return self.create(request)
+        user = self.create(request)
+
+        # Send email to user here
+        domain = settings.DOMAIN + "/confirm/email/" +\
+            str(user.data['activation_key'])
+
+        email_text = "Confirm your account on GNDAPTs: " +\
+            "<br/><br/>" +\
+            "<a href='" + domain + "'/>Confirm account</a>"
+
+        url = "https://api.mailgun.net/v3/" +\
+            settings.MAILGUN_DOMAIN + "/messages"
+
+        files = {
+            'from': 'gndapts@mail.gndapts.com',
+            'to': user.data['email'],
+            'subject': "Confirm your account on GNDAPTS",
+            'html': email_text
+            }
+
+        requests.post(url, auth=('api', settings.MAILGUN_API_KEY), data=files)
+        return Response({}, status=status.HTTP_200_OK)
 
 
 class UserLoginView(APIView):

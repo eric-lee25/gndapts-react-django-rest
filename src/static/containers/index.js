@@ -13,3 +13,4 @@ export AddReviewView from './Review/add';
 export ListUnitsView from './Unit/list';
 export ShowBuildingView from './Building/show';
 export ShowUnitView from './Unit/show';
+export FavoritesView from './User/favorites';

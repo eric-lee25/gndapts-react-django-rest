@@ -161,14 +161,21 @@ export function unitGetRequest() {
 export function getUnit(token, unitID) {
     return (dispatch) => {
         dispatch(unitGetRequest());
+
+        const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+
+        if (token != null) {
+            headers.Authorization = `JWT ${token}`
+        }
+        console.log(token);
+
         return fetch(`${SERVER_URL}/api/v1/base/units/${unitID}`, {
             method: 'get',
             credentials: 'include',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: `JWT ${token}`
-            },
+            headers
         })
             .then(checkHttpStatus)
             .then(parseJSON)

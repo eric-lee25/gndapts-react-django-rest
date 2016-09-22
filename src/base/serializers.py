@@ -1,9 +1,33 @@
 from rest_framework import serializers
-from base.models import Building, Unit, Review, User
+from base.models import Building, Unit, Review, User, Favorite
 from django.db.models import Min, Max
 
 
+class FavoriteSerializer(serializers.ModelSerializer):
+    creator = serializers.UUIDField(required=False, write_only=True)
+    title = serializers.SerializerMethodField()
+
+    def get_title(self, favorite):
+        if favorite.building is not None:
+            return favorite.building.title
+        else:
+            return favorite.unit.title
+
+    class Meta:
+        model = Favorite
+
+
+class ShareFavoriteSerializer(serializers.Serializer):
+    emails = serializers.ListField(
+            child=serializers.EmailField())
+
+
 class UserSerializer(serializers.ModelSerializer):
+    active_favorites = serializers.SerializerMethodField()
+
+    def get_active_favorites(self, user):
+        return FavoriteSerializer(
+                user.favorite_set.filter(active=True), many=True).data
 
     class Meta:
         model = User
@@ -17,6 +41,15 @@ class BuildingSerializer(serializers.ModelSerializer):
     photos = serializers.JSONField(required=False, allow_null=True)
     creator = serializers.UUIDField(required=False)
     unit_summary = serializers.SerializerMethodField()
+    is_favorite = serializers.SerializerMethodField()
+
+    def get_is_favorite(self, building):
+        if self.context['request'].user.is_authenticated:
+            count = Favorite.objects.filter(
+                    creator=self.context['request'].user,
+                    building=building, active=True).count()
+            return True if count > 0 else False
+        return {}
 
     def get_unit_summary(self, building):
         qs = building.unit_set
@@ -41,7 +74,10 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def get_reviewee(self, review):
         if review.anonymous is False:
-            return UserSerializer(review.creator).data
+            user = {}
+            user['first_name'] = review.creator.first_name
+            user['last_name'] = review.creator.last_name
+            return user
         return None
 
     class Meta:
@@ -53,9 +89,18 @@ class UnitSerializer(serializers.ModelSerializer):
     photos = serializers.JSONField(required=False, allow_null=True)
     creator = serializers.UUIDField(required=False)
     building_reviews = serializers.SerializerMethodField()
+    is_favorite = serializers.SerializerMethodField()
+
+    def get_is_favorite(self, unit):
+        if self.context['request'].user.is_authenticated:
+            count = Favorite.objects.filter(
+                    creator=self.context['request'].user,
+                    unit=unit, active=True).count()
+            return True if count > 0 else False
+        return {}
 
     def get_building_reviews(self, unit):
-        return ReviewSerializer(unit.building.review_set,many=True).data
+        return ReviewSerializer(unit.building.review_set, many=True).data
 
     class Meta:
         model = Unit
@@ -64,6 +109,15 @@ class UnitSerializer(serializers.ModelSerializer):
 class FullBuildingSerializer(serializers.ModelSerializer):
     unit_set = UnitSerializer(many=True)
     review_set = ReviewSerializer(many=True, read_only=True)
+    is_favorite = serializers.SerializerMethodField()
+
+    def get_is_favorite(self, building):
+        if self.context['request'].user.is_authenticated:
+            count = Favorite.objects.filter(
+                    creator=self.context['request'].user,
+                    building=building, active=True).count()
+            return True if count > 0 else False
+        return {}
 
     class Meta:
         model = Building

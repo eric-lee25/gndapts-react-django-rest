@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import DocumentTitle from 'react-document-title';
 import './style.scss';
 import * as buildingActionCreators from '../../actions/building';
+import * as userActionCreators from '../../actions/user';
 import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
@@ -16,9 +17,6 @@ import 'leaflet/dist/leaflet.css';
 class ShowBuildingView extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-        };
     }
 
     componentWillUnmount() { 
@@ -26,6 +24,7 @@ class ShowBuildingView extends React.Component {
 
     componentDidMount() {
         this.props.actions.getBuilding(this.props.token, this.props.params.id);
+        $(ReactDOM.findDOMNode(this.refs.settingsDropdown)).dropdown();
     }
 
     componentDidUpdate() {
@@ -37,14 +36,41 @@ class ShowBuildingView extends React.Component {
         }
     }
 
+    favorite = () => {
+        this.props.jiggleFavorites();
+        this.props.actions.createFavorite(this.props.token, this.props.params.id);
+    }
+
     render() {
         const formClass = classNames({
             loading: this.props.isGettingBuilding
         });
 
         let buildingInformation = null;
+        let favoriteClass = null;
+        let actionMenu = null;
+
+        if (this.props.isAuthenticated) {
+            actionMenu = (
+                <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
+                    <i className="wrench icon"></i>
+                    <div className="menu">
+                        <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
+                            Add review 
+                        </div>
+                        <div onClick={this.favorite} className={"item " + favoriteClass}>
+                            Add to favorites 
+                        </div>
+                    </div>
+                </div>
+            )
+        }
 
         if (this.props.hasGottenBuilding) {
+            favoriteClass = classNames({
+                disabled: this.props.hasCreatedFavorite || this.props.building.is_favorite
+            });
+
             let center = [parseFloat(this.props.building.latitude), parseFloat(this.props.building.longitude)];
 
             let unitList = (
@@ -129,9 +155,6 @@ class ShowBuildingView extends React.Component {
                         </div>
                         <div className="four wide column">
                             {reviews}
-                            <button onClick={() => this.props.dispatch(push('/review/add'))} className="ui primary button">
-                                Add review
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -142,9 +165,16 @@ class ShowBuildingView extends React.Component {
             <div id="show-building-container">
                 <DocumentTitle title='Building'>
                     <div className="ui container">
-                        <h2 className="ui header">
-                            Building
-                        </h2>
+                        <div className="ui right aligned grid">
+                            <div className="left floated left aligned six wide column">
+                                <h2 id="" classNameName="ui header">
+                                    Building
+                                </h2>
+                            </div>
+                            <div className="right floated right aligned six wide column">
+                                {actionMenu}
+                            </div>
+                        </div>
                         <form className={"ui form " + formClass} ref="buildingForm" >
                             {buildingInformation}
                         </form>
@@ -159,14 +189,19 @@ const mapStateToProps = (state) => {
     return {
         isGettingBuilding: state.building.isGettingBuilding,
         hasGottenBuilding: state.building.hasGottenBuilding,
-        building: state.building.building
+        building: state.building.building,
+        isCreatingFavorite: state.user.isCreatingFavorite,
+        hasCreatedFavorite: state.user.hasCreatedFavorite,
+        favoriteID: state.user.favoriteID,
+        isAuthenticated: state.auth.isAuthenticated,
+        token: state.auth.token // We usually get this from requireAuthentication wrapper but this does not go through that
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch,
-        actions: bindActionCreators(buildingActionCreators, dispatch)
+        actions: bindActionCreators({...buildingActionCreators, ... userActionCreators}, dispatch)
     };
 };
 

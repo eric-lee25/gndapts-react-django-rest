@@ -23,6 +23,7 @@ class ListUnitsView extends React.Component {
 
     componentDidMount() {
         this.props.actions.listUnits(this.props.token);
+        $(ReactDOM.findDOMNode(this.refs.settingsDropdown)).dropdown();
     }
 
     render() {
@@ -49,7 +50,7 @@ class ListUnitsView extends React.Component {
                     return (
                         <tr key={i}>
                             <td><Link to={`/unit/show/${s.uuid}`}>{s.title}</Link></td>
-                            <td>{s.building_data.title}</td>
+                            <td><Link to={`/building/show/${s.building_data.uuid}`}>{s.building_data.title}</Link></td>
                             <td>${s.rent}</td>
                             <td>{s.num_beds}</td>
                             <td>{s.num_baths}</td>
@@ -70,11 +71,16 @@ class ListUnitsView extends React.Component {
                                 </h2>
                             </div>
                             <div className="right floated right aligned six wide column">
-                                <div onClick={() => this.props.dispatch(push('/building/add'))} className="ui primary button" type="submit">
-                                    Add building
-                                </div>
-                                <div onClick={() => this.props.dispatch(push('/unit/add'))} className="ui green button" type="submit">
-                                    Add unit
+                                <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
+                                    <i className="wrench icon"></i>
+                                    <div className="menu">
+                                        <div onClick={() => this.props.dispatch(push('/building/add'))}  className="item">
+                                            Add building
+                                        </div>
+                                        <div className="item" onClick={() => this.props.dispatch(push('/unit/add'))}>
+                                            Add unit
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

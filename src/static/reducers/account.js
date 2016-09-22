@@ -1,6 +1,7 @@
 import { createReducer } from '../utils';
-import { ACCOUNT_CREATE_USER_REQUEST, ACCOUNT_CREATE_USER_FAILURE, ACCOUNT_CREATE_USER_SUCCESS,
-    ACCOUNT_CONFIRM_EMAIL_REQUEST, ACCOUNT_CONFIRM_EMAIL_FAILURE, ACCOUNT_CONFIRM_EMAIL_SUCCESS }
+import { 
+    ACCOUNT_CREATE_USER_REQUEST, ACCOUNT_CREATE_USER_FAILURE, ACCOUNT_CREATE_USER_SUCCESS,
+    ACCOUNT_CONFIRM_EMAIL_REQUEST, ACCOUNT_CONFIRM_EMAIL_FAILURE, ACCOUNT_CONFIRM_EMAIL_SUCCESS } 
 from '../constants';
 
 const initialState = {
@@ -8,6 +9,11 @@ const initialState = {
     isConfirmed: false,
     isCreating: false,
     isCreated: false,
+    isCreating: false,
+    isCreated: false,
+    isGettingUser: false,
+    hasGottenUser: false,
+    user: null,
     statusText: null
 };
 
@@ -52,5 +58,5 @@ export default createReducer(initialState, {
             isConfirmed: false,
             statusText: `${payload.statusText}`
         });
-    }
+    },
 });

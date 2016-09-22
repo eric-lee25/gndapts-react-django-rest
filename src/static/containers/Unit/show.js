@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import DocumentTitle from 'react-document-title';
 import './style.scss';
 import * as unitActionCreators from '../../actions/unit';
+import * as userActionCreators from '../../actions/user';
 import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
@@ -25,7 +26,9 @@ class ShowUnitView extends React.Component {
     }
 
     componentDidMount() {
+        console.log(this.props.token);
         this.props.actions.getUnit(this.props.token, this.props.params.id);
+        $(ReactDOM.findDOMNode(this.refs.settingsDropdown)).dropdown();
     }
 
     componentDidUpdate() {
@@ -41,14 +44,41 @@ class ShowUnitView extends React.Component {
         this.setState({showContactInformationFlag:true});
     }
     
+    favorite = () => {
+        this.props.jiggleFavorites();
+        this.props.actions.createFavorite(this.props.token, null, this.props.unit.uuid);
+    }
+
     render() {
         const formClass = classNames({
             loading: this.props.isGettingUnit
         });
 
+        let favoriteClass = null;
         let unitInformation = null;
+        let actionMenu = null;
+
+        if (this.props.isAuthenticated) {
+            actionMenu = (
+                <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
+                    <i className="wrench icon"></i>
+                    <div className="menu">
+                        <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
+                            Add review 
+                        </div>
+                        <div onClick={this.favorite} className={"item " + favoriteClass}>
+                            Add to favorites 
+                        </div>
+                    </div>
+                </div>
+            )
+        }
 
         if (this.props.hasGottenUnit) {
+            favoriteClass = classNames({
+                disabled: this.props.hasCreatedFavorite || this.props.unit.is_favorite
+            });
+            
             let center = [parseFloat(this.props.unit.building_data.latitude), parseFloat(this.props.unit.building_data.longitude)];
 
             let reviews = (
@@ -139,17 +169,9 @@ class ShowUnitView extends React.Component {
                             <p>
                                 {this.props.unit.description}
                             </p>
-                            <div className="ui green button "
-                                type="submit" 
-                            >
-                                Add to favorites
-                            </div>
                         </div>
                         <div className="four wide column">
                             {reviews}
-                            <button onClick={() => this.props.dispatch(push('/review/add'))} className="ui primary button">
-                                Add review
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -160,9 +182,16 @@ class ShowUnitView extends React.Component {
             <div id="show-unit-container">
                 <DocumentTitle title='Unit'>
                     <div className="ui container">
-                        <h2 className="ui header">
-                            Unit
-                        </h2>
+                        <div className="ui right aligned grid">
+                            <div className="left floated left aligned six wide column">
+                                <h2 id="" classNameName="ui header">
+                                    Unit
+                                </h2>
+                            </div>
+                            <div className="right floated right aligned six wide column">
+                                {actionMenu}
+                            </div>
+                        </div>
                         <form className={"ui form " + formClass} ref="unitForm" >
                             {unitInformation}
                         </form>
@@ -177,14 +206,19 @@ const mapStateToProps = (state) => {
     return {
         isGettingUnit: state.unit.isGettingUnit,
         hasGottenUnit: state.unit.hasGottenUnit,
-        unit: state.unit.unit
+        unit: state.unit.unit,
+        isCreatingFavorite: state.user.isCreatingFavorite,
+        hasCreatedFavorite: state.user.hasCreatedFavorite,
+        favoriteID: state.user.favoriteID,
+        isAuthenticated: state.auth.isAuthenticated,
+        token: state.auth.token // We usually get this from requireAuthentication wrapper but this does not go through that
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch,
-        actions: bindActionCreators(unitActionCreators, dispatch)
+        actions: bindActionCreators({... unitActionCreators, ... userActionCreators}, dispatch)
     };
 };
 

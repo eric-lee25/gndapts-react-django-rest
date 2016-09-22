@@ -6,6 +6,7 @@ import accountReducer from './account';
 import buildingReducer from './building';
 import unitReducer from './unit';
 import reviewReducer from './review';
+import userReducer from './user';
 
 export default combineReducers({
     auth: authReducer,
@@ -14,5 +15,6 @@ export default combineReducers({
     routing: routerReducer,
     unit: unitReducer,
     review: reviewReducer,
+    user: userReducer,
     account: accountReducer
 });

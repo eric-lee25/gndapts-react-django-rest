@@ -8,6 +8,8 @@ router.register(r'buildings', base_views.BuildingViewset,
                 base_name='buildings')
 router.register(r'units', base_views.UnitViewset)
 router.register(r'reviews', base_views.ReviewViewset)
+router.register(r'users', base_views.UserViewSet)
+router.register(r'favorites', base_views.FavoriteViewset)
 
 urlpatterns = [
         url(r'^', include(router.urls)),

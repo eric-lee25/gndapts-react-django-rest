@@ -4,9 +4,9 @@ import jwtDecode from 'jwt-decode';
 
 import { SERVER_URL } from '../utils/config';
 import { checkHttpStatus, parseJSON } from '../utils';
-import { AUTH_LOGIN_USER_REQUEST, AUTH_LOGIN_USER_FAILURE, AUTH_LOGIN_USER_SUCCESS,
+import { 
+    AUTH_LOGIN_USER_REQUEST, AUTH_LOGIN_USER_FAILURE, AUTH_LOGIN_USER_SUCCESS,
     AUTH_LOGOUT_USER } from '../constants';
-
 
 export function authLoginUserSuccess(token) {
     sessionStorage.setItem('token', token);
@@ -87,3 +87,4 @@ export function authLoginUser(email, password, redirect = '/home') {
             });
     };
 }
+

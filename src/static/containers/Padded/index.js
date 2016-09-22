@@ -13,9 +13,15 @@ class PaddedContainer extends React.Component {
     };
 
     render() {
+        const childrenWithProps = React.Children.map(this.props.children,
+            (child) => React.cloneElement(child, {
+                jiggleFavorites: this.props.jiggleFavorites
+            })
+        );
+
         return (
             <div id="padded-container">
-                {this.props.children}
+                {childrenWithProps}
             </div>
         )
     }

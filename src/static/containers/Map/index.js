@@ -6,6 +6,7 @@ import DocumentTitle from 'react-document-title';
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
 import './style.scss';
 import * as buildingActionCreators from '../../actions/building';
+import * as userActionCreators from '../../actions/user';
 import { bindActionCreators } from 'redux';
 import classNames from 'classnames';
 import 'drmonty-leaflet-awesome-markers';
@@ -29,7 +30,9 @@ class MapView extends React.Component {
             maximumRent: 1500,
             numberBedrooms: 0,
             numberBathrooms: 0,
-            flag: false
+            flag: false,
+            shit: false,
+            favoriteBuildings: {}
         };
     }
 
@@ -92,6 +95,18 @@ class MapView extends React.Component {
 
     componentDidUpdate() {
     }
+
+    favorite = (buildingID) => {
+        // Keep track of the buildings we favorite so that we can disable the button down below
+        const favoriteBuildings = this.state.favoriteBuildings;
+        favoriteBuildings[buildingID] = "true";
+        this.setState({
+            favoriteBuildings: favoriteBuildings,
+        });
+
+        this.props.jiggleFavorites();
+        this.props.actions.createFavorite(this.props.token, buildingID);
+    }
     
     render() {
         const centerPosition = [12.0000325,-61.7738056];
@@ -105,9 +120,14 @@ class MapView extends React.Component {
         });
 
         let buildingList = null;
+
         if (this.props.hasGottenBuildingList == true) {
             buildingList = 
             this.props.buildingList.results.map(function(s, i){
+                const favoriteClass = classNames({
+                    disabled: s.is_favorite || (s.uuid in this.state.favoriteBuildings)
+                });
+
                 const p = [parseFloat(s.latitude), parseFloat(s.longitude)]
                 const lt = 
                     s.unit_summary.lease_types.map(function(t,j) {
@@ -125,7 +145,7 @@ class MapView extends React.Component {
                             })
                         }
                     > 
-                        <Popup closeButton={false} maxWidth="200" minWidth="200">
+                        <Popup closeButton={false} maxWidth="250" minWidth="250">
                             <div className="ui info-window grid">
                                 <div className="name sixteen wide column">
                                     <h4 className="ui header">
@@ -152,9 +172,18 @@ class MapView extends React.Component {
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={() => this.props.dispatch(push('/building/show/' + s.uuid))} className="fluid mini ui primary button">
-                                      View building
-                                  </button>
+                                <div id="button-group" className="sixteen wide column center aligned">
+                                    <div className="ui small labeled icon buttons">
+                                        <button onClick={() => this.props.dispatch(push('/building/show/' + s.uuid))} className="small ui primary button">
+                                          <i className="building icon"></i>
+                                            Building
+                                        </button>
+                                        <div onClick={() => { this.favorite(s.uuid) }} className={"small ui green button " + favoriteClass}>
+                                          <i className="heart icon"></i>
+                                            Favorite
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </Popup>
                     </Marker>
@@ -217,7 +246,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch,
-        actions: bindActionCreators(buildingActionCreators, dispatch)
+        actions: bindActionCreators({... buildingActionCreators, ... userActionCreators}, dispatch)
     };
 };
 
