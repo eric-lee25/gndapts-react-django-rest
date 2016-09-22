@@ -26,9 +26,7 @@ class ShowUnitView extends React.Component {
     }
 
     componentDidMount() {
-        console.log(this.props.token);
         this.props.actions.getUnit(this.props.token, this.props.params.id);
-        $(ReactDOM.findDOMNode(this.refs.settingsDropdown)).dropdown();
     }
 
     componentDidUpdate() {
@@ -37,6 +35,7 @@ class ShowUnitView extends React.Component {
             for (var i=0; i<this.props.unit.building_reviews.length; ++i) {
                 $(ReactDOM.findDOMNode(this.refs["review-" + i])).rating('disable');
             }
+            $(ReactDOM.findDOMNode(this.refs.settingsDropdown)).dropdown();
         }
     }
 
@@ -58,26 +57,26 @@ class ShowUnitView extends React.Component {
         let unitInformation = null;
         let actionMenu = null;
 
-        if (this.props.isAuthenticated) {
-            actionMenu = (
-                <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
-                    <i className="wrench icon"></i>
-                    <div className="menu">
-                        <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
-                            Add review 
-                        </div>
-                        <div onClick={this.favorite} className={"item " + favoriteClass}>
-                            Add to favorites 
-                        </div>
-                    </div>
-                </div>
-            )
-        }
-
         if (this.props.hasGottenUnit) {
             favoriteClass = classNames({
                 disabled: this.props.hasCreatedFavorite || this.props.unit.is_favorite
             });
+
+            if (this.props.isAuthenticated) {
+                actionMenu = (
+                    <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
+                        <i className="wrench icon"></i>
+                        <div className="menu">
+                            <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
+                                Add review 
+                            </div>
+                            <div onClick={this.favorite} className={"item " + favoriteClass}>
+                                Add to favorites 
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
             
             let center = [parseFloat(this.props.unit.building_data.latitude), parseFloat(this.props.unit.building_data.longitude)];
 
