@@ -2,4 +2,38 @@
     .ui.button {
         width: 300px;
     }
+
+    .masthead.segment {
+        background: url("https://d1c1zft1fr6c2j.cloudfront.net/dist/180ff8c809c363ab2e07c304cb7cd939.jpg") no-repeat center top;
+        min-height: 546px;
+        height: 546px;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+
+    #masthead-content {
+        height: 100%;
+    }
+
+    .ui.vertical.stripe {
+        padding: 8em 0em;
+
+        h1 {
+            font-size: 4em;
+        }
+
+        .third.column {
+            width: 33%;
+
+            p {
+                padding-top: 1em;
+            }
+        }
+    }
+
+    #selling-points, #three-benefits {
+        margin-top: 2em;
+    }
 }
