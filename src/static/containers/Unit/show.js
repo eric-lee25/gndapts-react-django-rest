@@ -135,7 +135,7 @@ class ShowUnitView extends React.Component {
                                             prefix: 'fa',
                                             shadowSize: [0,0],
                                             icon: 'fa-unit',
-                                            markerColor: 'purple'
+                                            markerColor: 'red'
                                         })
                                     }
                                 > 

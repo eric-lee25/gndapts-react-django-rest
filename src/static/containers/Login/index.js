@@ -149,7 +149,8 @@ class LoginView extends React.Component {
                         <div className="ui message">
                             <Link to="signup">Sign up</Link>
                             <br/>
-                            Forgot your password • Contact us
+                            <Link to="forgotpassword">Forgot your password?</Link>
+                            &nbsp;• Contact us
                         </div>
                     </div>
                 </div>

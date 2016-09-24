@@ -17,6 +17,15 @@ class FavoriteSerializer(serializers.ModelSerializer):
         model = Favorite
 
 
+class PasswordRecoverySerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    password = serializers.CharField()
+    code = serializers.UUIDField()
+
+
 class ShareFavoriteSerializer(serializers.Serializer):
     emails = serializers.ListField(
             child=serializers.EmailField())

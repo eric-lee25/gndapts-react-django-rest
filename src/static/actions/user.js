@@ -7,7 +7,9 @@ import {
     USER_GET_CURRENT_REQUEST, USER_GET_CURRENT_SUCCESS, USER_GET_CURRENT_FAILURE, USER_GET_CURRENT_RESET,
     USER_FAVORITE_CREATE_REQUEST, USER_FAVORITE_CREATE_SUCCESS, USER_FAVORITE_CREATE_FAILURE, USER_FAVORITE_CREATE_RESET,
     USER_FAVORITE_SHARE_REQUEST, USER_FAVORITE_SHARE_SUCCESS, USER_FAVORITE_SHARE_FAILURE, USER_FAVORITE_SHARE_RESET,
-    USER_FAVORITE_COUNT_REQUEST, USER_FAVORITE_COUNT_SUCCESS, USER_FAVORITE_COUNT_FAILURE
+    USER_FAVORITE_COUNT_REQUEST, USER_FAVORITE_COUNT_SUCCESS, USER_FAVORITE_COUNT_FAILURE,
+    USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_REQUEST, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_SUCCESS, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_FAILURE, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_RESET,
+    USER_RESET_PASSWORD_REQUEST, USER_RESET_PASSWORD_SUCCESS, USER_RESET_PASSWORD_FAILURE, USER_RESET_PASSWORD_RESET,
 } from '../constants';
 
 export function currentUserGetSuccess(user) {
@@ -282,6 +284,160 @@ export function getFavoriteCount(token) {
                             response: {
                                 status: errorObj.response.status,
                                 statusText: error.emails[0]
+                            }
+                        }));
+                    })
+            });
+    };
+}
+
+export function sendPasswordRecoveryInstructionsSuccess() {
+    return {
+        type: USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_SUCCESS,
+    };
+}
+
+export function sendPasswordRecoveryInstructionsFailure(error) {
+    return {
+        type: USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function sendPasswordRecoveryInstructionsRequest() {
+    return {
+        type: USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_REQUEST
+    };
+}
+
+export function sendPasswordRecoveryInstructionsReset() {
+    return {
+        type: USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_RESET
+    };
+}
+
+export function resetPasswordRecoveryInstructions() {
+    return (dispatch) => {
+        dispatch(sendPasswordRecoveryInstructionsReset());
+    }
+}
+
+export function sendPasswordRecoveryInstructions(email) {
+    return (dispatch) => {
+        dispatch(sendPasswordRecoveryInstructionsRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/users/sendpasswordrecoveryinstructions`, {
+            method: 'post',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "email": email
+            })
+        })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(sendPasswordRecoveryInstructionsSuccess(response));
+                } catch (e) {
+                    dispatch(sendPasswordRecoveryInstructionsFailure({
+                        response: {
+                            status: 403,
+                            statusText: e
+                        }
+                    }));
+                }
+            })
+            .catch(function(errorObj) {
+                return parseJSON(errorObj.response).then(
+                    function (error) {
+                        dispatch(sendPasswordRecoveryInstructionsFailure({
+                            response: {
+                                status: errorObj.response.status,
+                                statusText: error.email[0]
+                            }
+                        }));
+                    })
+            });
+    };
+}
+
+export function resetPasswordSuccess() {
+    return {
+        type: USER_RESET_PASSWORD_SUCCESS,
+    };
+}
+
+export function resetPasswordFailure(error) {
+    return {
+        type: USER_RESET_PASSWORD_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function resetPasswordRequest() {
+    return {
+        type: USER_RESET_PASSWORD_REQUEST
+    };
+}
+
+// Could be better named - fix in future
+export function resetPasswordReset() {
+    return {
+        type: USER_RESET_PASSWORD_RESET
+    };
+}
+
+export function resetPasswordResetState() {
+    return (dispatch) => {
+        dispatch(resetPasswordReset());
+    }
+}
+
+export function resetPassword(password, code) {
+    return (dispatch) => {
+        dispatch(resetPasswordRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/users/resetpassword`, {
+            method: 'post',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "password": password,
+                "code": code
+            })
+        })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(resetPasswordSuccess(response));
+                } catch (e) {
+                    dispatch(resetPasswordFailure({
+                        response: {
+                            status: 403,
+                            statusText: e
+                        }
+                    }));
+                }
+            })
+            .catch(function(errorObj) {
+                return parseJSON(errorObj.response).then(
+                    function (error) {
+                        dispatch(resetPasswordFailure({
+                            response: {
+                                status: errorObj.response.status,
+                                statusText: error.code
                             }
                         }));
                     })

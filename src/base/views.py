@@ -7,13 +7,16 @@ from accounts.models import User
 from base.serializers import BuildingSerializer,\
         UnitSerializer, ReviewSerializer,\
         FullBuildingSerializer, UserSerializer, FavoriteSerializer,\
-        ShareFavoriteSerializer
+        ShareFavoriteSerializer, PasswordRecoverySerializer,\
+        PasswordResetSerializer
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from rest_framework import status
 import requests
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django.core.exceptions import ObjectDoesNotExist
+import uuid
 
 
 class IndexView(View):
@@ -170,3 +173,61 @@ class UserViewSet(
         data = {"active_favorite_count":
                 request.user.favorite_set.filter(active=1).count()}
         return Response(data, status=status.HTTP_200_OK)
+
+    @list_route(methods=['post'], permission_classes=[])
+    def sendpasswordrecoveryinstructions(self, request):
+        pri = PasswordRecoverySerializer(data=request.data)
+        if pri.is_valid():
+            try:
+                u = User.objects.get(email=pri.validated_data['email'])
+                code = uuid.uuid4()
+                u.recovery_key = code
+                u.save()
+
+                email_text = "Click here to reset your password:" +\
+                    "<br/><br/>" +\
+                    "<a href='" + settings.DOMAIN + "/resetpassword?code=" +\
+                    str(code) + "'/>" +\
+                    "Reset password</a>"
+
+                email_text += "<br/><br/>-GNDAPTS team"
+
+                url = "https://api.mailgun.net/v3/" +\
+                    settings.MAILGUN_DOMAIN + "/messages"
+
+                files = {
+                    'from': 'gndapts@mail.gndapts.com',
+                    'to': u.email,
+                    'subject': "Recover password on GNDAPTS",
+                    'html': email_text
+                }
+
+                requests.post(url, auth=('api', settings.MAILGUN_API_KEY),
+                              data=files)
+
+            # Can't reveal whether this worked or not for
+            # security reasons
+            except ObjectDoesNotExist:
+                pass
+
+            return Response({}, status=status.HTTP_200_OK)
+
+        return Response(pri.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['post'], permission_classes=[])
+    def resetpassword(self, request):
+        pr = PasswordResetSerializer(data=request.data)
+        if pr.is_valid():
+            try:
+                u = User.objects.get(recovery_key=pr.validated_data['code'])
+                u.set_password(pr.validated_data['password'])
+                u.recovery_key = None
+                u.save()
+
+            except ObjectDoesNotExist:
+                return Response({"code": "Invalid or expired reset link."},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({}, status=status.HTTP_200_OK)
+
+        return Response(pr.errors, status=status.HTTP_400_BAD_REQUEST)

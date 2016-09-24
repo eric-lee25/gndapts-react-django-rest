@@ -58,6 +58,7 @@ class User(AbstractBaseUser):
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
 
     activation_key = models.UUIDField(unique=True, default=uuid4)  # email
+    recovery_key = models.UUIDField(null=True)
 
     USERNAME_FIELD = 'email'
 

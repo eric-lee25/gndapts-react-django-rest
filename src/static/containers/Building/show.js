@@ -125,7 +125,7 @@ class ShowBuildingView extends React.Component {
                                             prefix: 'fa',
                                             shadowSize: [0,0],
                                             icon: 'fa-building',
-                                            markerColor: 'purple'
+                                            markerColor: 'red'
                                         })
                                     }
                                 > 

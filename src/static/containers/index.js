@@ -14,3 +14,5 @@ export ListUnitsView from './Unit/list';
 export ShowBuildingView from './Building/show';
 export ShowUnitView from './Unit/show';
 export FavoritesView from './User/favorites';
+export ForgotPasswordView from './ForgotPassword/index';
+export ResetPasswordView from './ResetPassword/index';

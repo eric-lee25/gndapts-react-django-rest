@@ -3,7 +3,9 @@ import {
     USER_GET_CURRENT_REQUEST, USER_GET_CURRENT_SUCCESS, USER_GET_CURRENT_FAILURE, USER_GET_CURRENT_RESET,
     USER_FAVORITE_CREATE_REQUEST, USER_FAVORITE_CREATE_SUCCESS, USER_FAVORITE_CREATE_FAILURE, USER_FAVORITE_CREATE_RESET,
     USER_FAVORITE_SHARE_REQUEST, USER_FAVORITE_SHARE_SUCCESS, USER_FAVORITE_SHARE_FAILURE, USER_FAVORITE_SHARE_RESET,
-    USER_FAVORITE_COUNT_REQUEST, USER_FAVORITE_COUNT_SUCCESS, USER_FAVORITE_COUNT_FAILURE
+    USER_FAVORITE_COUNT_REQUEST, USER_FAVORITE_COUNT_SUCCESS, USER_FAVORITE_COUNT_FAILURE,
+    USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_REQUEST, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_SUCCESS, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_FAILURE, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_RESET,
+    USER_RESET_PASSWORD_REQUEST, USER_RESET_PASSWORD_SUCCESS, USER_RESET_PASSWORD_FAILURE, USER_RESET_PASSWORD_RESET,
 } from '../constants';
 
 const initialState = {
@@ -17,6 +19,10 @@ const initialState = {
     hasSentFavorites: false,
     isGettingFavoritesCount: false,
     hasGottenFavoritesCount: false,
+    isSendingPasswordRecoveryInstructions: false,
+    hasSentPasswordRecoveryInstructions: false,
+    isResettingPassword: false,
+    hasResetPassword: false,
     statusText: null
 };
 
@@ -133,5 +139,61 @@ export default createReducer(initialState, {
             hasGottenFavoritesCount: false,
             statusText: `${payload.statusText}`
         });
-    }
+    },
+    [USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            isSendingPasswordRecoveryInstructions: true,
+            hasSentPasswordRecoveryInstructions: false,
+            statusText: null
+        });
+    },
+    [USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            isSendingPasswordRecoveryInstructions: false,
+            hasSentPasswordRecoveryInstructions: true,
+            statusText: null
+        });
+    },
+    [USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            isSendingPasswordRecoveryInstructions: false,
+            hasSentPasswordRecoveryInstructions: false,
+            statusText: `${payload.statusText}`
+        });
+    },
+    [USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_RESET]: (state, payload) => {
+        return Object.assign({}, state, {
+            isSendingPasswordRecoveryInstructions: false,
+            hasSentPasswordRecoveryInstructions: false,
+            statusText: null
+        });
+    },
+    [USER_RESET_PASSWORD_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            isResettingPassword: true,
+            hasResetPassword: false,
+            statusText: null
+        });
+    },
+    [USER_RESET_PASSWORD_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            isResettingPassword: false,
+            hasResetPassword: true,
+            statusText: null
+        });
+    },
+    [USER_RESET_PASSWORD_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            isResettingPassword: false,
+            hasResetPassword: false,
+            statusText: `${payload.statusText}`
+        });
+    },
+    [USER_RESET_PASSWORD_RESET]: (state, payload) => {
+        return Object.assign({}, state, {
+            isResettingPassword: false,
+            hasResetPassword: false,
+            statusText: null
+        });
+    },
 });
