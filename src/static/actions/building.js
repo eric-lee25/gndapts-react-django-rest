@@ -13,7 +13,11 @@ import {
     BUILDING_GET_REQUEST,
     BUILDING_GET_FAILURE,
     BUILDING_GET_SUCCESS,
-    BUILDING_GET_RESET
+    BUILDING_GET_RESET,
+    BUILDING_DELETE_REQUEST,
+    BUILDING_DELETE_FAILURE,
+    BUILDING_DELETE_SUCCESS,
+    BUILDING_DELETE_RESET
 } from '../constants';
 
 export function buildingCreateSuccess(buildingID) {
@@ -209,6 +213,71 @@ export function getBuilding(token, buildingID) {
             })
             .catch(error => {
                 dispatch(buildingGetFailure(error));
+            });
+    };
+}
+
+export function buildingDeleteSuccess() {
+    return {
+        type: BUILDING_DELETE_SUCCESS,
+    };
+}
+
+export function buildingDeleteFailure(error) {
+    return {
+        type: BUILDING_DELETE_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function buildingDeleteRequest() {
+    return {
+        type: BUILDING_DELETE_REQUEST
+    };
+}
+
+export function buildingDeleteReset() {
+    return {
+        type: BUILDING_DELETE_RESET
+    };
+}
+
+export function resetDeleteBuilding() {
+    return (dispatch) => {
+        dispatch(buildingDeleteReset());
+    }
+}
+
+export function deleteBuilding(token, buildingID, redirect) {
+    return (dispatch) => {
+        dispatch(buildingDeleteRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/buildings/${buildingID}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(response => {
+                try {
+                    dispatch(buildingDeleteSuccess(response));
+                    dispatch(push(redirect));
+                } catch (e) {
+                    dispatch(buildingDeleteFailure({
+                        response: {
+                            status: 403,
+                            statusText: e
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(buildingDeleteFailure(error));
             });
     };
 }

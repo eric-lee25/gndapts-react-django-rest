@@ -49,6 +49,10 @@ class ShowUnitView extends React.Component {
         this.props.actions.createFavorite(this.props.token, null, this.props.unit.uuid);
     }
 
+    delete = () => {
+        this.props.actions.deleteUnit(this.props.token, this.props.params.id,'/unit/list');
+    }
+
     render() {
         const formClass = classNames({
             loading: this.props.isGettingUnit
@@ -64,6 +68,16 @@ class ShowUnitView extends React.Component {
             });
 
             if (this.props.isAuthenticated) {
+                let deleteUnit = null;
+                
+                if (this.props.userID == this.props.unit.creator) {
+                    deleteUnit = (
+                        <div onClick={this.delete} className={"item " }>
+                            Delete
+                        </div>
+                    )
+                }
+
                 actionMenu = (
                     <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
                         <i className="wrench icon"></i>
@@ -74,6 +88,7 @@ class ShowUnitView extends React.Component {
                             <div onClick={this.favorite} className={"item " + favoriteClass}>
                                 Add to favorites 
                             </div>
+                            {deleteUnit}
                         </div>
                     </div>
                 )
@@ -211,6 +226,7 @@ const mapStateToProps = (state) => {
         hasCreatedFavorite: state.user.hasCreatedFavorite,
         favoriteID: state.user.favoriteID,
         isAuthenticated: state.auth.isAuthenticated,
+        userID: state.auth.userID,
         token: state.auth.token // We usually get this from requireAuthentication wrapper but this does not go through that
     };
 };

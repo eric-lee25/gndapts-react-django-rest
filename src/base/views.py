@@ -13,6 +13,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from rest_framework import status
+from base.permissions import IsOwnerForDeletePermission
 import requests
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.core.exceptions import ObjectDoesNotExist
@@ -29,12 +30,14 @@ class IndexView(View):
 class BuildingViewset(
         mixins.CreateModelMixin,
         mixins.ListModelMixin,
+        mixins.DestroyModelMixin,
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
     serializer_class = BuildingSerializer
 
     # This is for retrieving a building - used for favorites
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsOwnerForDeletePermission, )
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -64,13 +67,15 @@ class BuildingViewset(
 class UnitViewset(
         mixins.CreateModelMixin,
         mixins.ListModelMixin,
+        mixins.DestroyModelMixin,
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
 
     # This is for retrieving a unit - used for favorites
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,
+                          IsOwnerForDeletePermission, )
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)

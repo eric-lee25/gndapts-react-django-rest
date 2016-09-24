@@ -13,7 +13,11 @@ import {
     UNIT_GET_REQUEST,
     UNIT_GET_FAILURE,
     UNIT_GET_SUCCESS,
-    UNIT_GET_RESET
+    UNIT_GET_RESET,
+    UNIT_DELETE_REQUEST,
+    UNIT_DELETE_FAILURE,
+    UNIT_DELETE_SUCCESS,
+    UNIT_DELETE_RESET
 } from '../constants';
 
 
@@ -205,6 +209,71 @@ export function getUnit(token, unitID) {
             })
             .catch(error => {
                 dispatch(unitGetFailure(error));
+            });
+    };
+}
+
+export function unitDeleteSuccess() {
+    return {
+        type: UNIT_DELETE_SUCCESS,
+    };
+}
+
+export function unitDeleteFailure(error) {
+    return {
+        type: UNIT_DELETE_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function unitDeleteRequest() {
+    return {
+        type: UNIT_DELETE_REQUEST
+    };
+}
+
+export function unitDeleteReset() {
+    return {
+        type: UNIT_DELETE_RESET
+    };
+}
+
+export function resetDeleteUnit() {
+    return (dispatch) => {
+        dispatch(unitDeleteReset());
+    }
+}
+
+export function deleteUnit(token, unitID, redirect) {
+    return (dispatch) => {
+        dispatch(unitDeleteRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/units/${unitID}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(response => {
+                try {
+                    dispatch(unitDeleteSuccess(response));
+                    dispatch(push(redirect));
+                } catch (e) {
+                    dispatch(unitDeleteFailure({
+                        response: {
+                            status: 403,
+                            statusText: e
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(unitDeleteFailure(error));
             });
     };
 }

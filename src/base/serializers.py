@@ -96,7 +96,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 class UnitSerializer(serializers.ModelSerializer):
     building_data = BuildingSerializer(read_only=True, source='building')
     photos = serializers.JSONField(required=False, allow_null=True)
-    creator = serializers.UUIDField(required=False)
     building_reviews = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField()
 

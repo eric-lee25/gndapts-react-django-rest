@@ -9,7 +9,11 @@ import {
     BUILDING_GET_REQUEST,
     BUILDING_GET_FAILURE,
     BUILDING_GET_SUCCESS,
-    BUILDING_GET_RESET
+    BUILDING_GET_RESET,
+    BUILDING_DELETE_REQUEST,
+    BUILDING_DELETE_FAILURE,
+    BUILDING_DELETE_SUCCESS,
+    BUILDING_DELETE_RESET
 } from '../constants';
 import jwtDecode from 'jwt-decode';
 
@@ -22,6 +26,8 @@ const initialState = {
     buildingList: null,
     isGettingBuilding: false,
     hasGottenBuilding: false,
+    isDeletingBuilding: false,
+    hasDeletedBuilding: false,
     building: null,
     statusText: null
 };
@@ -104,6 +110,34 @@ export default createReducer(initialState, {
             isGettingBuilding: false,
             hasGottenBuilding: false,
             building: null,
+            statusText: null
+        });
+    },
+    [BUILDING_DELETE_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            isDeletingBuilding: true,
+            hasDeletedBuilding: false,
+            statusText: null
+        });
+    },
+    [BUILDING_DELETE_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            isDeletingBuilding: false,
+            hasDeletedBuilding: true,
+            statusText: 'Building returned'
+        });
+    },
+    [BUILDING_DELETE_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            isDeletingBuilding: false,
+            hasDeletedBuilding: false,
+            statusText: `Building deletion error: ${payload.statusText}`
+        });
+    },
+    [BUILDING_DELETE_RESET]: (state, payload) => {
+        return Object.assign({}, state, {
+            isDeletingBuilding: false,
+            hasDeletedBuilding: false,
             statusText: null
         });
     }
