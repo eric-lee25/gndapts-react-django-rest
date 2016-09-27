@@ -92,7 +92,7 @@ def savePublicPhotoToS3(
     url = client.generate_presigned_url(
             ClientMethod='get_object',
             Params={
-                'Bucket': 'gndapts-dev',
+                'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
                 'Key': path
                 },
             )
