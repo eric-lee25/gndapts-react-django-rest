@@ -47,7 +47,29 @@ export function unitCreateRequest() {
 }
 
 export function createUnit(token, number, numBeds, numBaths, leaseType, title, amenities, 
-    description, contactInformation, rent, securityDeposit, buildingID, redirect) {
+    description, contactInformation, rent, securityDeposit, buildingID, photos, redirect) {
+    
+    // We'll build a form data object because we're packing files with it too
+    var data = new FormData()
+    data.append('type_lease', leaseType);
+    data.append('number', number);
+    data.append('num_beds', numBeds);
+    data.append('contact_information', contactInformation);
+    data.append('num_baths', numBaths);
+    data.append('title', title);
+    data.append('amenities', amenities);
+    data.append('description', description);
+    data.append('rent', rent);
+    data.append('security_deposit', securityDeposit);
+    data.append('building', buildingID);
+
+    // TODO - put these in a subarray because it
+    // cpuld conflict with above keys if file
+    // is named the same
+    photos.map(function(s,i) {
+        data.append(s.name, s);
+    });
+
     return (dispatch) => {
         dispatch(unitCreateRequest());
         return fetch(`${SERVER_URL}/api/v1/base/units`, {
@@ -55,14 +77,9 @@ export function createUnit(token, number, numBeds, numBaths, leaseType, title, a
             credentials: 'include',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
-            body: JSON.stringify({
-                "type_lease": leaseType, number, "num_beds":numBeds, "contact_information": contactInformation,
-                "num_baths":numBaths, title, amenities, description, rent, "security_deposit":securityDeposit,
-                "building":buildingID
-            })
+            body: data
         })
             .then(checkHttpStatus)
             .then(parseJSON)

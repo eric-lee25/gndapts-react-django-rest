@@ -134,6 +134,26 @@ class MapView extends React.Component {
                         return <span key={j}>{t}{j==s.unit_summary.lease_types.length-1 ? "" : ", "}</span>
                     }); 
 
+                let photos, thumbContainer = null;
+
+                if (s.photos != null) {
+                    const maxThumbs = 6;
+                    photos = (
+                        s.photos.map(function(t,j) {
+                            if (j < maxThumbs-1) {
+                                return <img className="ui image" key={j} src={t.thumb} />
+                            }
+                        })
+                    )
+                    thumbContainer = (
+                        <div id="thumb-container" className="sixteen wide column">
+                            <div className="ui tiny images">
+                                {photos}
+                            </div>
+                        </div>
+                    )
+                }
+
                 return (
                     <Marker key={i} position={p}
                         icon={
@@ -145,7 +165,7 @@ class MapView extends React.Component {
                             })
                         }
                     > 
-                        <Popup closeButton={false} maxWidth="250" minWidth="250">
+                        <Popup closeButton={false} maxWidth="256" minWidth="256">
                             <div className="ui info-window grid">
                                 <div className="name sixteen wide column">
                                     <h4 className="ui header">
@@ -172,6 +192,7 @@ class MapView extends React.Component {
                                         </div>
                                     </div>
                                 </div>
+                                {thumbContainer}
                                 <div id="button-group" className="sixteen wide column center aligned">
                                     <div className="ui small labeled icon buttons">
                                         <button onClick={() => this.props.dispatch(push('/building/show/' + s.uuid))} className="small ui primary button">

@@ -1,4 +1,5 @@
 import dj_database_url
+import os
 
 from gndapts.settings.base import *  # NOQA (ignore all errors on this line)
 
@@ -13,6 +14,10 @@ PAGE_CACHE_SECONDS = 60
 
 # MAILGUN_API_KEY = os.environ['MAILGUN_API_KEY']
 # MAILGUN_DOMAIN = os.environ['MAILGUN_DOMAIN']
+
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 
 # TODO: n a real production server this should have a proper url
 ALLOWED_HOSTS = ['*']

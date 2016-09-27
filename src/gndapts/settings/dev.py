@@ -10,6 +10,10 @@ MAILGUN_DOMAIN = 'sandbox6601c4f014a44e0e87c37cc9baef28f1.mailgun.org'
 
 DOMAIN = "http://localhost:8000"
 
+AWS_SECRET_ACCESS_KEY = 'mMm3bttC8ko7UeArc8EfpT6LMVFyeK3ByF53VNsh'
+AWS_STORAGE_BUCKET_NAME = 'gndapts-dev'
+AWS_ACCESS_KEY_ID = 'AKIAJPDEQ5NPKXXFPRGA'
+
 DATABASES = {}
 DATABASES['default'] = {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',

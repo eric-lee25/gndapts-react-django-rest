@@ -8,6 +8,7 @@ import * as unitActionCreators from '../../actions/unit';
 import * as buildingActionCreators from '../../actions/building';
 import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
+import Dropzone from 'react-dropzone';
 
 class AddUnitView extends React.Component {
     constructor(props) {
@@ -24,7 +25,8 @@ class AddUnitView extends React.Component {
             rent: null,
             securityDeposit: null,
             contactInformation: null,
-            leaseType: null
+            leaseType: null,
+            photos: []
         };
     }
 
@@ -180,9 +182,13 @@ class AddUnitView extends React.Component {
                 this.props.token,
                 this.state.number, this.state.numBeds, this.state.numBaths, this.state.leaseType,
                 this.state.title, this.state.amenities, this.state.description, this.state.contactInformation,
-                this.state.rent, this.state.securityDeposit, this.state.buildingID,
+                this.state.rent, this.state.securityDeposit, this.state.buildingID, this.state.photos,
                 '/map');
         }
+    }
+
+    onDrop = (files) => {
+        this.setState({ photos: files });
     }
 
     render() {
@@ -193,6 +199,18 @@ class AddUnitView extends React.Component {
         const formClass = classNames({
             loading: this.props.isGettingList
         });
+
+        const photoPreviewClass = classNames({
+            hidden: this.state.photos.length == 0
+        });
+
+        let preview = (
+            this.state.photos.map(function(s,i) {
+                return (
+                    <img key={i} className="ui tiny image" src={s.preview} />
+                )
+            })
+        )
 
         let buildingList = null;
 
@@ -312,6 +330,19 @@ class AddUnitView extends React.Component {
                                         name="securityDeposit"
                                         onChange={(e) => { this.handleInputChange(e, 'securityDeposit'); }}
                                     />
+                                </div>
+                            </div>
+
+                            <div className="sixteen wide field">
+                                <label>Upload photos</label>
+                                <Dropzone maxSize={10000000} accept={"image/jpeg,image/png,image/gif"} className="dropzone-style" onDrop={this.onDrop}>
+                                    <div>Drag your photos into this box or click here.</div>
+                                </Dropzone>
+                            </div>
+                            <div className={"sixteen wide field " + photoPreviewClass}>
+                                <label>Photo preview</label>
+                                <div className="ui tiny images">
+                                    {preview}
                                 </div>
                             </div>
 

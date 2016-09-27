@@ -45,22 +45,29 @@ export function buildingCreateRequest() {
     };
 }
 
-export function createBuilding(token, title, description, latitude, longitude, redirect) {
+export function createBuilding(token, title, description, latitude, longitude, photos, redirect) {
     return (dispatch) => {
         dispatch(buildingCreateRequest());
+        
+        // We'll build a form data object because we're packing files with it too
+        var data = new FormData()
+        data.append('title', title);
+        data.append('description', description);
+        data.append('latitude', parseFloat(latitude).toFixed(6));
+        data.append('longitude', parseFloat(longitude).toFixed(6));
+
+        photos.map(function(s,i) {
+            data.append(s.name, s);
+        });
+
         return fetch(`${SERVER_URL}/api/v1/base/buildings`, {
             method: 'post',
             credentials: 'include',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
             },
-            body: JSON.stringify({
-                title, description, 
-                "latitude": parseFloat(latitude).toFixed(6),
-                "longitude": parseFloat(longitude).toFixed(6),
-            })
+            body: data
         })
             .then(checkHttpStatus)
             .then(parseJSON)

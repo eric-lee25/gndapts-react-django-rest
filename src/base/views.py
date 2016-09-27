@@ -18,6 +18,8 @@ import requests
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.core.exceptions import ObjectDoesNotExist
 import uuid
+from lib.utils import generate_full_plus_thumb, savePublicPhotoToS3
+import time
 
 
 class IndexView(View):
@@ -60,8 +62,38 @@ class BuildingViewset(
         except ValueError:
             return Building.objects.all()
 
-    def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
+    def create(self, request):
+        bs = BuildingSerializer(data=request.data,
+                                context={'request': request})
+        if bs.is_valid():
+            building = bs.save(creator=self.request.user)
+
+            # Convert files to jpeg and save to s3
+            urls = []
+            for name in request.FILES:
+                f = generate_full_plus_thumb(request.FILES[name])
+
+                # Unique filename
+                full_filename = name + "_" + str(time.time()) + "." + "jpeg"
+                thumb_filename = name + "_" + str(time.time()) +\
+                    "_THUMB." + "jpeg"
+
+                full_url = savePublicPhotoToS3(
+                            str(building.pk), "building",
+                            full_filename, "image/jpeg", f['full'])
+                thumb_url = savePublicPhotoToS3(
+                            str(building.pk), "building",
+                            thumb_filename, "image/jpeg", f['thumbnail'])
+                urls.append({"full": full_url, "full_width": f["full_width"],
+                             "full_height": f["full_height"],
+                             "thumb": thumb_url})
+
+            building.photos = None if len(urls) is 0 else urls
+            building.save()
+
+            return Response(bs.data, status=status.HTTP_200_OK)
+
+        return Response(bs.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UnitViewset(
@@ -77,9 +109,6 @@ class UnitViewset(
     permission_classes = (IsAuthenticatedOrReadOnly,
                           IsOwnerForDeletePermission, )
 
-    def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
-
     # Get my own
     def list(self, request):
         queryset = Unit.objects.filter(creator=self.request.user).\
@@ -87,6 +116,39 @@ class UnitViewset(
         serializer = UnitSerializer(queryset, many=True,
                                     context={'request': request})
         return Response({"results": serializer.data})
+
+    def create(self, request):
+        us = UnitSerializer(data=request.data,
+                            context={'request': request})
+        if us.is_valid():
+            unit = us.save(creator=self.request.user)
+
+            # Convert files to jpeg and save to s3
+            urls = []
+            for name in request.FILES:
+                f = generate_full_plus_thumb(request.FILES[name])
+
+                # Unique filename
+                full_filename = name + "_" + str(time.time()) + "." + "jpeg"
+                thumb_filename = name + "_" + str(time.time()) +\
+                    "_THUMB." + "jpeg"
+
+                full_url = savePublicPhotoToS3(
+                            str(unit.pk), "unit",
+                            full_filename, "image/jpeg", f['full'])
+                thumb_url = savePublicPhotoToS3(
+                            str(unit.pk), "unit",
+                            thumb_filename, "image/jpeg", f['thumbnail'])
+                urls.append({"full": full_url, "full_width": f["full_width"],
+                             "full_height": f["full_height"],
+                             "thumb": thumb_url})
+
+            unit.photos = None if len(urls) is 0 else urls
+            unit.save()
+
+            return Response(us.data, status=status.HTTP_200_OK)
+
+        return Response(us.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ReviewViewset(

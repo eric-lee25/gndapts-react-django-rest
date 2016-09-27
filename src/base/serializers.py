@@ -1,6 +1,23 @@
 from rest_framework import serializers
 from base.models import Building, Unit, Review, User, Favorite
 from django.db.models import Min, Max
+from django.core.exceptions import ValidationError
+from PIL import Image
+
+
+def validate_photos(files):
+    for name in files:
+        if (len(files[name]) > 10000000):
+            raise ValidationError(
+                    'This image is bigger than 10mb. Please make it smaller.')
+
+            try:
+                im = Image.open(files[name])
+                if im.format != "JPEG" and im.format != "PNG" and\
+                        im.format != "GIF":
+                            raise ValidationError('Invalid file type.')
+            except:
+                raise ValidationError('This is not an image.')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -47,7 +64,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class BuildingSerializer(serializers.ModelSerializer):
-    photos = serializers.JSONField(required=False, allow_null=True)
+    photos = serializers.JSONField(
+            read_only=True, required=False, allow_null=True)
     creator = serializers.UUIDField(required=False)
     unit_summary = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField()
@@ -67,6 +85,11 @@ class BuildingSerializer(serializers.ModelSerializer):
         agg['lease_types'] = qs.values_list('type_lease').distinct()
         agg['unit_count'] = qs.count()
         return agg
+
+    # Validate uploaded images
+    def validate(self, data):
+        validate_photos(self.context['request'].FILES)
+        return data
 
     class Meta:
         model = Building
@@ -95,9 +118,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class UnitSerializer(serializers.ModelSerializer):
     building_data = BuildingSerializer(read_only=True, source='building')
-    photos = serializers.JSONField(required=False, allow_null=True)
     building_reviews = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField()
+    creator = serializers.SerializerMethodField(required=False)
 
     def get_is_favorite(self, unit):
         if self.context['request'].user.is_authenticated:
@@ -109,6 +132,14 @@ class UnitSerializer(serializers.ModelSerializer):
 
     def get_building_reviews(self, unit):
         return ReviewSerializer(unit.building.review_set, many=True).data
+
+    def get_creator(self, unit):
+        return self.context['request'].user.pk
+
+    # Validate uploaded images
+    def validate(self, data):
+        validate_photos(self.context['request'].FILES)
+        return data
 
     class Meta:
         model = Unit

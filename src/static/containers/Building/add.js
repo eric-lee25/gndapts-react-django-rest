@@ -12,6 +12,7 @@ import ReactDOM from 'react-dom';
 import 'drmonty-leaflet-awesome-markers';
 import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
 import 'leaflet/dist/leaflet.css';
+import Dropzone from 'react-dropzone';
 
 
 class AddBuildingView extends React.Component {
@@ -26,6 +27,7 @@ class AddBuildingView extends React.Component {
             zoom: 15,
             title: null,
             description: null,
+            photos: []
         };
     }
 
@@ -79,9 +81,13 @@ class AddBuildingView extends React.Component {
             this.props.actions.createBuilding(
                 this.props.token,
                 this.state.title, this.state.description,
-                this.state.marker.lat, this.state.marker.lng,
+                this.state.marker.lat, this.state.marker.lng, this.state.photos,
                 '/map');
         }
+    }
+
+    onDrop = (files) => {
+        this.setState({ photos: files });
     }
 
     render() {
@@ -89,8 +95,20 @@ class AddBuildingView extends React.Component {
             loading: this.props.isCreating
         });
 
+        const photoPreviewClass = classNames({
+            hidden: this.state.photos.length == 0
+        });
+
         const center = [this.state.marker.lat, this.state.marker.lng];
         const markerPosition = [this.state.marker.lat, this.state.marker.lng]
+
+        let preview = (
+            this.state.photos.map(function(s,i) {
+                return (
+                    <img key={i} className="ui tiny image" src={s.preview} />
+                )
+            })
+        )
 
         return (
             <div id="add-building-container">
@@ -144,8 +162,18 @@ class AddBuildingView extends React.Component {
                                     </Marker>
                                 </Map>
                             </div>
-
-
+                            <div className="sixteen wide field">
+                                <label>Upload photos</label>
+                                <Dropzone maxSize={10000000} accept={"image/jpeg,image/png,image/gif"} className="dropzone-style" onDrop={this.onDrop}>
+                                    <div>Drag your photos into this box or click here.</div>
+                                </Dropzone>
+                            </div>
+                            <div className={"sixteen wide field " + photoPreviewClass}>
+                                <label>Photo preview</label>
+                                <div className="ui tiny images">
+                                    {preview}
+                                </div>
+                            </div>
                             <div className={"ui green button " + buttonClass }
                                 type="submit" onClick={this.createBuilding}
                             >

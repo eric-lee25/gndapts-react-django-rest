@@ -11,7 +11,9 @@ import ReactDOM from 'react-dom';
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'drmonty-leaflet-awesome-markers';
 import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
-import 'leaflet/dist/leaflet.css';
+import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
+import 'react-photoswipe/lib/photoswipe.css';
+import {PhotoSwipeGallery} from 'react-photoswipe';
 
 class ShowUnitView extends React.Component {
     constructor(props) {
@@ -28,6 +30,12 @@ class ShowUnitView extends React.Component {
 
     componentDidMount() {
         this.props.actions.getUnit(this.props.token, this.props.params.id);
+        
+        // Photoswipe brings in buttons without type=button. This causes
+        // clicking on any of their buttons to submit the form it's in.
+        $(ReactDOM.findDOMNode(this.refs.unitForm)).submit(function(e) {
+            return false;
+        }.bind(this));
     }
 
     componentDidUpdate() {
@@ -51,6 +59,12 @@ class ShowUnitView extends React.Component {
 
     delete = () => {
         this.props.actions.deleteUnit(this.props.token, this.props.params.id,'/unit/list');
+    }
+
+    getThumbnailContent = (item) => {
+        return (
+            <img src={item.thumbnail} width={120} height={90}/>
+        );
     }
 
     render() {
@@ -96,6 +110,20 @@ class ShowUnitView extends React.Component {
             
             let center = [parseFloat(this.props.unit.building_data.latitude), parseFloat(this.props.unit.building_data.longitude)];
 
+            let photos = [];
+            if (this.props.unit.photos != null) {
+                this.props.unit.photos.map(function(s,i) {
+                    photos.push(
+                        {
+                            src: s.full,
+                            thumbnail: s.thumb,
+                            w: s.full_width,
+                            h: s.full_height
+                        }
+                    )
+                });
+            }
+
             let reviews = (
                 this.props.unit.building_reviews.map(function(s,i) {
                     return (
@@ -132,13 +160,17 @@ class ShowUnitView extends React.Component {
                 )
             }
 
+            let opts = {
+                history: false
+            }
+
             unitInformation = (
                 <div className="ui grid">
                     <div className="ui row">
                         <div className="five wide column">
-                            pictures will go here
-                            <br/>
-                            <br/>
+                            <div className="ui images">
+                                <PhotoSwipeGallery items={photos} options={opts} thumbnailContent={this.getThumbnailContent}/>
+                            </div>
                             <Map zoomControl={false} center={center} zoom={14} ref="map">
                                 <TileLayer
                                     url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
