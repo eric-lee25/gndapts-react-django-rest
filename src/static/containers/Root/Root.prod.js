@@ -11,12 +11,17 @@ export default class Root extends React.Component {
         history: React.PropTypes.object.isRequired
     };
 
+    updateGA = () => {
+        ga('set', 'page', window.location.pathname);
+        ga('send', 'pageview');
+    }
+
     render() {
         return (
             <div>
                 <Provider store={this.props.store}>
                     <div>
-                        <Router history={this.props.history}>
+                        <Router onUpdate={this.updateGA} history={this.props.history}>
                             {routes}
                         </Router>
                     </div>
