@@ -31,7 +31,7 @@ REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'django_rest_logger.handlers.rest_exceptio
 
 WSGI_APPLICATION = 'gndapts.wsgi.application'
 
-DOMAIN = "http://gndapts.herokuapp.com"
+DOMAIN = "https://gndapts.com"
 
 # Note turned off sentry. We're going to use the default debugging
 
