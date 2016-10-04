@@ -3,9 +3,8 @@ import os
 
 from gndapts.settings.base import *  # NOQA (ignore all errors on this line)
 
-# TODO - CHANGE THIS
-MAILGUN_API_KEY = 'key-442e50acc9cba4977bbcdd955bd00db4'
-MAILGUN_DOMAIN = 'sandbox6601c4f014a44e0e87c37cc9baef28f1.mailgun.org'
+MAILGUN_API_KEY = os.environ['MAILGUN_API_KEY']
+MAILGUN_DOMAIN = os.environ['MAILGUN_DOMAIN']
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -14,6 +13,9 @@ PAGE_CACHE_SECONDS = 60
 
 # MAILGUN_API_KEY = os.environ['MAILGUN_API_KEY']
 # MAILGUN_DOMAIN = os.environ['MAILGUN_DOMAIN']
+
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
