@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from json import JSONEncoder
+from django.contrib.auth.models import PermissionsMixin
 from gndapts.utils import NewJSONEncoder
 
 
@@ -42,7 +43,7 @@ class MyUserManager(BaseUserManager):
                                  **extra_fields)
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     uuid = models.UUIDField(primary_key=True, unique=True, default=uuid4,
                             editable=False)
     first_name = models.CharField(_('First Name'), max_length=50)
@@ -58,7 +59,7 @@ class User(AbstractBaseUser):
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
 
     activation_key = models.UUIDField(unique=True, default=uuid4)  # email
-    recovery_key = models.UUIDField(null=True)
+    recovery_key = models.UUIDField(null=True, blank=True)
 
     USERNAME_FIELD = 'email'
 

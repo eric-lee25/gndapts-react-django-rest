@@ -30,6 +30,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                     'Please use a different email address provider.')
 
+        if value.split('@') is not "sgu.edu":
+            raise serializers.ValidationError(
+                    'Please sign up with a SGU address')
+
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError(
                 'Email already in use, please use a different email address.')
