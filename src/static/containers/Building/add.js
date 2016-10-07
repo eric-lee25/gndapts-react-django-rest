@@ -143,7 +143,7 @@ class AddBuildingView extends React.Component {
                                     center={center} zoom={this.state.zoom}>
                                     <TileLayer
                                         url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
-                                        attribution='Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+                                        attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://mapbox.com">Mapbox</a>'
                                     />
                                     <Marker 
                                         position={markerPosition}
@@ -153,7 +153,7 @@ class AddBuildingView extends React.Component {
                                             L.AwesomeMarkers.icon({
                                                 prefix: 'fa',
                                                 shadowSize: [0,0],
-                                                icon: 'fa-building',
+                                                icon: 'fa-home',
                                                 markerColor: 'red'
                                             })
                                         }
@@ -163,7 +163,7 @@ class AddBuildingView extends React.Component {
                                 </Map>
                             </div>
                             <div className="sixteen wide field">
-                                <label>Upload photos</label>
+                                <label>Upload building photos</label>
                                 <Dropzone maxSize={10000000} accept={"image/jpeg,image/png,image/gif"} className="dropzone-style" onDrop={this.onDrop}>
                                     <div>Drag your photos into this box or click here.</div>
                                 </Dropzone>

@@ -69,10 +69,6 @@ class AddUnitView extends React.Component {
                                 type   : 'empty',
                                 prompt : 'Please enter a value'
                             },
-                            {
-                                type   : 'number',
-                                prompt : 'Please enter a number'
-                            },
                         ]
                     },
                     numBeds: {
@@ -153,10 +149,6 @@ class AddUnitView extends React.Component {
                     securityDeposit: {
                         identifier  : 'securityDeposit',
                         rules: [
-                            {
-                                type   : 'empty',
-                                prompt : 'Please enter a value'
-                            },
                             {
                                 type   : 'number',
                                 prompt : 'Please enter a number'
@@ -334,7 +326,7 @@ class AddUnitView extends React.Component {
                             </div>
 
                             <div className="sixteen wide field">
-                                <label>Upload photos</label>
+                                <label>Upload unit photos</label>
                                 <Dropzone maxSize={10000000} accept={"image/jpeg,image/png,image/gif"} className="dropzone-style" onDrop={this.onDrop}>
                                     <div>Drag your photos into this box or click here.</div>
                                 </Dropzone>

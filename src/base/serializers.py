@@ -121,6 +121,7 @@ class UnitSerializer(serializers.ModelSerializer):
     building_reviews = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField(required=False)
+    security_deposit = serializers.IntegerField(required=False)
 
     def get_is_favorite(self, unit):
         if self.context['request'].user.is_authenticated:

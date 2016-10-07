@@ -145,7 +145,7 @@ class AddReviewView extends React.Component {
                             <div className="six wide field">
                                 <label>Rating</label>
                                 <input type="hidden" name="rating" ref="ratingHiddenInput"/>
-                                <div className="ui star rating" data-max-rating="5" ref="ratingStars"></div>
+                                <div className="ui huge star rating" data-max-rating="5" ref="ratingStars"></div>
                             </div>
                             <div className="eight wide field">
                                 <label>Comments</label>

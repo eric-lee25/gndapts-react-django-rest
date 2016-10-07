@@ -60,7 +60,7 @@ export function createUnit(token, number, numBeds, numBaths, leaseType, title, a
     data.append('amenities', amenities);
     data.append('description', description);
     data.append('rent', rent);
-    data.append('security_deposit', securityDeposit);
+    securityDeposit != null ? data.append('security_deposit', securityDeposit) : null;
     data.append('building', buildingID);
 
     // TODO - put these in a subarray because it

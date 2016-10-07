@@ -160,7 +160,7 @@ class MapView extends React.Component {
                             L.AwesomeMarkers.icon({
                                 prefix: 'fa',
                                 shadowSize: [0,0],
-                                icon: 'fa-building',
+                                icon: 'fa-home',
                                 markerColor: 'red'
                             })
                         }
@@ -219,7 +219,7 @@ class MapView extends React.Component {
                         <Map style={mapStyle} center={centerPosition} zoom={15}>
                             <TileLayer
                                 url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
-                                attribution='Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+                                attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://mapbox.com">Mapbox</a>'
                             />
                             <Marker position={stGeorgeUniversityPosition}
                                 icon={

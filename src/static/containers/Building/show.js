@@ -143,7 +143,7 @@ class ShowBuildingView extends React.Component {
                                 <i className="middle aligned fa-comment icon"></i>
                                 <div className="content">
                                     <a className="header">
-                                        <div data-max-rating="5" className="ui star rating" ref={"review-" + i} data-rating={s.rating}></div>
+                                        <div data-max-rating="5" className="ui huge star rating" ref={"review-" + i} data-rating={s.rating}></div>
                                     </a>
                                     <div className="description">{s.comments}<br/><i className="reviewee">{s.anonymous == true ? "anonymous" : s.reviewee.first_name + " " + s.reviewee.last_name[0]}.</i></div>
                                 </div>
@@ -163,14 +163,14 @@ class ShowBuildingView extends React.Component {
                             <Map zoomControl={false} center={center} zoom={14} ref="map">
                                 <TileLayer
                                     url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
-                                    attribution='Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+                                    attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://mapbox.com">Mapbox</a>'
                                 />
                                 <Marker position={center}
                                     icon={
                                         L.AwesomeMarkers.icon({
                                             prefix: 'fa',
                                             shadowSize: [0,0],
-                                            icon: 'fa-building',
+                                            icon: 'fa-home',
                                             markerColor: 'red'
                                         })
                                     }
