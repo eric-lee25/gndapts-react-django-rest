@@ -4,13 +4,27 @@
     }
 
     .masthead.segment {
-        background: url("https://d1c1zft1fr6c2j.cloudfront.net/dist/180ff8c809c363ab2e07c304cb7cd939.jpg") no-repeat center top;
+        background: url("./images/splash.jpg") no-repeat center top;
         min-height: 546px;
         height: 546px;
         -webkit-background-size: cover;
         -moz-background-size: cover;
         -o-background-size: cover;
         background-size: cover;
+
+        h1 {
+            margin-top: 2em;
+            font-size: 3em;
+        }
+
+        #masthead-text {
+            width: 70%;
+            margin-top: -5em; // HACK - fix this
+        }
+
+        #cta {
+            margin-top: -12em; // HACK - fix this
+        }
     }
 
     #masthead-content {

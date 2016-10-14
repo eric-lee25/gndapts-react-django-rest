@@ -25,9 +25,18 @@ class HomeView extends React.Component {
             <DocumentTitle title='Home'></DocumentTitle>
                 <div className="ui vertical masthead center aligned segment">
                     <div id="masthead-content" className="ui middle aligned center aligned grid">
-                        <div className="eight column wide">
-                            <div onClick={() => this.props.dispatch(push('/map'))} className={"ui massive green button"}>
-                                <i className="fa fa-map-marker" aria-hidden="true"></i> Map
+                        <h1 className="ui header">
+                            Student Accomodation In The Spice Island
+                        </h1>
+                        <h3 id="masthead-text">
+                            Tired of pouring through Facebook posts and stressful last minute searching? With GNDAPTS, you have access to the island's comprehensive resource for all available apartments and home. Whether you want beachside-living, affordable options, or close proximity to campus, find it all on GNDAPTS. Help out your colleagues, classmates, and friends by reviewing your living experience!<br/>
+                            The key to renting in Grenada are now in your hands...
+                        </h3>
+                        <div id="cta" className="row">
+                            <div className="eight column wide">
+                                <div onClick={() => this.props.dispatch(push('/map'))} className={"ui massive green button"}>
+                                    <i className="fa fa-map-marker" aria-hidden="true"></i> Map
+                                </div>
                             </div>
                         </div>
                     </div>
