@@ -17,7 +17,7 @@ const node = (
     <Root store={store} history={history}/>
 );
 
-const token = sessionStorage.getItem('token');
+const token = localStorage.getItem('token');
 if (token !== null) {
     store.dispatch(authLoginUserSuccess(token));
 }

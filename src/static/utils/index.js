@@ -21,7 +21,7 @@ export function checkHttpStatus(response) {
     // This could be better. We should be pushing out a 
     // AUTH_LOGOUT_USER action
     if (response != null && response.status == 403 && response.statusText == "Forbidden") {
-        sessionStorage.removeItem('token');
+        localStorage.removeItem('token');
         window.location.href = "/";
     }
 

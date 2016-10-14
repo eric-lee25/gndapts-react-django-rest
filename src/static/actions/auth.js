@@ -9,7 +9,7 @@ import {
     AUTH_LOGOUT_USER } from '../constants';
 
 export function authLoginUserSuccess(token) {
-    sessionStorage.setItem('token', token);
+    localStorage.setItem('token', token);
     return {
         type: AUTH_LOGIN_USER_SUCCESS,
         payload: {
@@ -19,7 +19,7 @@ export function authLoginUserSuccess(token) {
 }
 
 export function authLoginUserFailure(error) {
-    sessionStorage.removeItem('token');
+    localStorage.removeItem('token');
     return {
         type: AUTH_LOGIN_USER_FAILURE,
         payload: {
@@ -36,7 +36,7 @@ export function authLoginUserRequest() {
 }
 
 export function authLogout() {
-    sessionStorage.removeItem('token');
+    localStorage.removeItem('token');
     return {
         type: AUTH_LOGOUT_USER
     };
