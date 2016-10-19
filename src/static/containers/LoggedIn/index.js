@@ -85,7 +85,7 @@ class LoggedInView extends React.Component {
                         <a href="#" onClick={() => this.props.dispatch(push('/signup'))} className="ui primary button">Sign up</a>
                     </div>
                     <div className="item">
-                        <a href="#" onClick={() => this.props.dispatch(push('/login'))}  className="ui button">Log-in</a>
+                        <a href="#" onClick={() => this.props.dispatch(push('/'))}  className="ui button">Log-in</a>
                     </div>
                 </div>
             )
