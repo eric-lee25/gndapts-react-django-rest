@@ -113,7 +113,7 @@ class MapView extends React.Component {
         const stGeorgeUniversityPosition = [12.000933,-61.773806];
         
         // parent div is 4em padding - header height
-        const mapStyle = {height: window.innerHeight-56}
+        const mapStyle = {height: window.innerHeight-42}
 
         const formClass = classNames({
             loading: this.props.isGettingBuildingList

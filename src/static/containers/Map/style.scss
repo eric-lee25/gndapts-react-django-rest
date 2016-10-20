@@ -23,6 +23,10 @@
     .ui.loading.form:before {
         background: rgba(0,0,0,.3);
     }
+    
+    .leaflet-top.leaflet-left {
+        margin-top: 10px;
+    }
 
     #thumb-container {
         padding-top: 0px;
