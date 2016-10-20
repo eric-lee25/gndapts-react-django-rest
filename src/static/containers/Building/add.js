@@ -87,7 +87,9 @@ class AddBuildingView extends React.Component {
     }
 
     onDrop = (files) => {
-        this.setState({ photos: files });
+        let currentPhotos = this.state.photos;
+        currentPhotos = currentPhotos.concat(files);
+        this.setState({ photos: currentPhotos });
     }
 
     render() {

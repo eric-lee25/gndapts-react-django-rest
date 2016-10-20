@@ -102,8 +102,8 @@ class LoggedInView extends React.Component {
                 <div className="ui fixed menu">
                     <div className="ui container">
                         <a href="#" onClick={() => this.props.dispatch(push('/home'))} className="header item">
-                            <img className="logo" src="http://semantic-ui.com/examples/assets/images/logo.png"/>
-                            GNDAPTS
+                            <img className="logo" src={require("./logo.jpg")}/>
+                            gndapts
                         </a>
                         {mapItem}
                         {upperRight}
