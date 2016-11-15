@@ -48,15 +48,15 @@ class HomeView extends React.Component {
                         </div>
                         <div id="three-benefits" className="row">
                             <div className="third column">
-                                <img className="ui centered medium circular image" src="http://semantic-ui.com/images/wireframe/square-image.png"/>
+                                <img className="ui centered medium circular image" src={require("./images/search.png")}/>
                                 <h3 className="ui header centered">SEARCH FOR YOUR PERFECT HOME</h3>
                             </div>
                             <div className="third column">
-                                <img className="ui centered medium circular image" src="http://semantic-ui.com/images/wireframe/square-image.png"/>
+                                <img className="ui centered medium circular image" src={require("./images/contact.png")}/>
                                 <h3 className="ui header centered">CONTACT OWNERS DIRECTLY</h3>
                             </div>
                             <div className="third column">
-                                <img className="ui centered medium circular image" src="http://semantic-ui.com/images/wireframe/square-image.png"/>
+                                <img className="ui centered medium circular image" src={require("./images/review.png")}/>
                                 <h3 className="ui header centered">REVIEW YOUR STAY</h3>
                             </div>
                         </div>

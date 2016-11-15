@@ -10,6 +10,7 @@ router.register(r'units', base_views.UnitViewset)
 router.register(r'reviews', base_views.ReviewViewset)
 router.register(r'users', base_views.UserViewSet)
 router.register(r'favorites', base_views.FavoriteViewset)
+router.register(r'neighborhoods', base_views.NeighborhoodViewset)
 
 urlpatterns = [
         url(r'^', include(router.urls)),

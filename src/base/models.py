@@ -1,8 +1,15 @@
 import uuid
-
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from accounts.models import User
+
+
+class Neighborhood(models.Model):
+    uuid = models.UUIDField(
+            unique=True, default=uuid.uuid4, editable=False,
+            primary_key=True)
+    name = models.CharField(max_length=128)
+    date_created = models.DateTimeField(auto_now_add=True)
 
 
 class Building(models.Model):
@@ -14,6 +21,8 @@ class Building(models.Model):
     latitude = models.DecimalField(max_digits=10, decimal_places=6)
     longitude = models.DecimalField(max_digits=10, decimal_places=6)
     photos = JSONField(blank=True, null=True)
+    amenities = JSONField(blank=True, null=True)
+    neighborhood = models.ForeignKey(Neighborhood)
     creator = models.ForeignKey(User)
     date_created = models.DateTimeField(auto_now_add=True)
 

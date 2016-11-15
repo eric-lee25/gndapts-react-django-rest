@@ -425,6 +425,8 @@ class MapView extends React.Component {
                             <p>Rent <span className="info-text"><b>&lt;${this.state.maximumRent}</b></span></p>
                             <div className="ui range" ref="rentSlider"></div>
                         </div>
+                    </div>
+                    <div className="ui horizontal segments">
                         <div className="ui half-width segment">
                             <p>Bedrooms <span className="info-text"><b>&gt;{this.state.numberBedrooms}</b></span></p>
                             <div className="ui red range" ref="bedroomSlider"></div>
@@ -435,6 +437,8 @@ class MapView extends React.Component {
                             <p>Bathrooms <span className="info-text"><b>&gt;{this.state.numberBathrooms}</b></span></p>
                             <div className="ui green range" ref="bathroomSlider"></div>
                         </div>
+                    </div>
+                    <div className="ui horizontal segments">
                         <div className="ui half-width segment">
                             <p>Bus route</p>
                             <select ref="busRouteDropdown" className="ui compact dropdown">

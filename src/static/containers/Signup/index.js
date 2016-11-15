@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import classNames from 'classnames';
 import { push } from 'react-router-redux';
 import DocumentTitle from 'react-document-title';
+import BodyClassName from 'react-body-classname';
 
 class SignupView extends React.Component {
 
@@ -113,7 +114,7 @@ class SignupView extends React.Component {
 
             body = (
                 <div className="column">
-                    <h2 className="ui header">
+                    <h2 className="ui inverted header">
                         Signup
                     </h2>
                     <form className="ui large form" ref="signupForm" >
@@ -173,7 +174,7 @@ class SignupView extends React.Component {
         else {
             body = (
                 <div className="column">
-                    <h2 className="ui header">
+                    <h2 className="ui inverted header">
                         Confirmation email sent
                     </h2>
                     <div>
@@ -184,11 +185,13 @@ class SignupView extends React.Component {
         }
 
         return (
-            <DocumentTitle title='Sign up'>
-                <div className="ui middle aligned center aligned grid">
-                    { body }
-                </div>
-            </DocumentTitle>
+            <BodyClassName className='body-background'>
+                <DocumentTitle title='Sign up'>
+                    <div className="ui middle aligned center aligned grid">
+                        { body }
+                    </div>
+                </DocumentTitle>
+            </BodyClassName>
         );
     }
 };

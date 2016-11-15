@@ -7,6 +7,7 @@ import DocumentTitle from 'react-document-title';
 import './style.scss';
 import redMarkerIcon from '../../images/marker-icons/marker-icon-red.png';
 import * as buildingActionCreators from '../../actions/building';
+import * as neighborhoodActionCreators from '../../actions/neighborhood';
 import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
 import 'drmonty-leaflet-awesome-markers';
@@ -20,6 +21,7 @@ class AddBuildingView extends React.Component {
         super(props);
 
         this.state = {
+            neighborhoodID: null,
             marker: {
                 lat: 12.0000325,
                 lng: -61.7738056
@@ -27,14 +29,40 @@ class AddBuildingView extends React.Component {
             zoom: 15,
             title: null,
             description: null,
-            photos: []
+            photos: [],
+            selectedAmenities: [],
+            customAmenities: []
         };
     }
 
+    componentWillUnmount() { 
+        $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown('destroy');
+    }
+
     componentDidMount() {
+        $(ReactDOM.findDOMNode(this.refs.nameBubble)).popup();
+        $(ReactDOM.findDOMNode(this.refs.descriptionBubble)).popup();
+
+        $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown({
+            'onChange': function(val){
+                this.setState({neighborhoodID: val});
+            }.bind(this)
+        });
+
+        this.props.actions.listNeighborhoods(this.props.token);
+
         $(ReactDOM.findDOMNode(this.refs.createBuildingForm))
             .form({
                 fields: {
+                    neighborhoodID: {
+                        identifier  : 'neighborhoodID',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : 'Please select a neighborhood'
+                            },
+                        ]
+                    },
                     title: {
                         identifier  : 'title',
                         rules: [
@@ -80,8 +108,10 @@ class AddBuildingView extends React.Component {
         if ($(ReactDOM.findDOMNode(this.refs.createBuildingForm)).form('is valid')) {
             this.props.actions.createBuilding(
                 this.props.token,
+                this.state.neighborhoodID,
                 this.state.title, this.state.description,
                 this.state.marker.lat, this.state.marker.lng, this.state.photos,
+                JSON.stringify(this.state.selectedAmenities.concat(this.state.customAmenities)),
                 '/map');
         }
     }
@@ -92,6 +122,40 @@ class AddBuildingView extends React.Component {
         this.setState({ photos: currentPhotos });
     }
 
+    handleCheckboxChange = (e, item) => {
+        let currentAmenities = this.state.selectedAmenities;
+
+        if (e.target.checked) {
+            currentAmenities.push(item);
+            this.setState({selectedAmenities: currentAmenities});
+        }
+
+        else {
+            let i = currentAmenities.indexOf(item);
+
+            if (i > -1) {
+                currentAmenities.splice(i, 1);
+                this.setState({selectedAmenities: currentAmenities});
+            }
+        }
+    }
+
+    // Break text by comma
+    // Push it to array
+    handleCustomAmenities = (e) => {
+        let currentCustomAmenities = [];
+        let splitAmenities = e.target.value.split(',');
+
+        splitAmenities.forEach(function(e) {
+            let trimmed = e.trim();
+            if (trimmed.length > 0) {
+                currentCustomAmenities.push(trimmed);
+            }
+        });
+
+        this.setState({customAmenities: currentCustomAmenities});
+    }
+
     render() {
         const buttonClass = classNames({
             loading: this.props.isCreating
@@ -99,6 +163,10 @@ class AddBuildingView extends React.Component {
 
         const photoPreviewClass = classNames({
             hidden: this.state.photos.length == 0
+        });
+
+        const formClass = classNames({
+            loading: this.props.isGettingNeighborhoodList
         });
 
         const center = [this.state.marker.lat, this.state.marker.lng];
@@ -112,6 +180,17 @@ class AddBuildingView extends React.Component {
             })
         )
 
+        let neighborhoodList = null;
+
+        if (this.props.hasGottenNeighborhoodList == true) {
+            neighborhoodList = 
+            this.props.neighborhoodList.results.map(function(s, i){
+                return (
+                    <div key={i} className="item" data-value={s.uuid}>{s.name}</div>
+                )
+            });
+        }
+
         return (
             <div id="add-building-container">
                 <DocumentTitle title='Add building'>
@@ -119,25 +198,97 @@ class AddBuildingView extends React.Component {
                         <h2 className="ui header">
                             Add building
                         </h2>
-                        <form className="ui form" ref="createBuildingForm" >
-                            <div className="six wide field">
-                                <label>Title</label>
-                                <div className="ui input">
-                                    <input type="text"
-                                        name="title"
-                                        onChange={(e) => { this.handleInputChange(e, 'title'); }}
-                                    />
+                        <form className={"ui form " + formClass} ref="createBuildingForm" >
+                            <div className="eight wide field">
+                                <label>Neighborhood</label>
+                                <div className="ui selection dropdown" ref="neighborhoodDropdown">
+                                    <input type="hidden" name="neighborhoodID"/>
+                                    <i className="dropdown icon"></i>
+                                    <div className="default text">Select a neighborhood</div>
+                                    <div className="menu">
+                                        {neighborhoodList}
+                                    </div>
                                 </div>
                             </div>
-                            <div className="eight wide field">
-                                <label>Description</label>
-                                <textarea 
-                                    name="description"
-                                    rows="2"
-                                    onChange={(e) => { this.handleInputChange(e, 'description')}}
-                                ></textarea> 
+                            <div className="ui fields">
+                                <div className="six wide field">
+                                    <label>Building name / address</label>
+                                    <div className="ui input">
+                                        <input type="text"
+                                            name="title"
+                                            onChange={(e) => { this.handleInputChange(e, 'title'); }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <i ref="nameBubble" className="standard-bubble circular info icon " data-content="Name of the building or house." data-variation="inverted" data-position="right center"></i>
+                                </div>
                             </div>
-                            
+                            <div className="ui fields">
+                                <div className="eight wide field">
+                                    <label>Description</label>
+                                    <textarea 
+                                        name="description"
+                                        rows="2"
+                                        onChange={(e) => { this.handleInputChange(e, 'description')}}
+                                    ></textarea> 
+                                </div>
+                                <div className="field">
+                                    <i ref="descriptionBubble" className="textarea-bubble circular info icon " data-content="Example: The Christopher House is situated on BBC beach. Offering 3 bedrooms, spectacular views, and walking distance to the bus." data-variation="inverted" data-position="right center"></i>
+                                </div>
+                            </div>
+                            <h5 id="amenities-header">Amenities</h5>
+                            <div className="ui fields">
+                                <div className="two wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-pool" onChange={(e) => {this.handleCheckboxChange(e, 'Pool')}} />
+                                        <label>Pool</label>
+                                    </div>
+                                </div>
+                                <div className="two wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-elevator" onChange={(e) => {this.handleCheckboxChange(e, 'Elevator')}} />
+                                        <label>Elevator</label>
+                                    </div>
+                                </div>
+                                <div className="two wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-fitnesscenter" onChange={(e) => {this.handleCheckboxChange(e, 'Fitness center')}} />
+                                        <label>Fitness center</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="ui fields">
+                                <div className="two wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-securityguard" onChange={(e) => {this.handleCheckboxChange(e, 'Security guard')}} />
+                                        <label>Security guard</label>
+                                    </div>
+                                </div>
+                                <div className="two wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-parking" onChange={(e) => {this.handleCheckboxChange(e, 'Parking')}} />
+                                        <label>Parking</label>
+                                    </div>
+                                </div>
+                                <div className="three wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-laundry" onChange={(e) => {this.handleCheckboxChange(e, 'Laundry: in building')}} />
+                                        <label>Laundry: in building</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="ui fields">
+                                <div className="six wide field">
+                                    <div className="ui input">
+                                        <input type="text"
+                                            placeholder="Other amenities (separate by commas)"
+                                            name="customAmenities"
+                                            onChange={(e) => { this.handleCustomAmenities(e, 'customAmenities'); }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                             <div className="sixteen wide field">
                                 <label>Location (drag the pin)</label>
                                 <Map 
@@ -197,14 +348,17 @@ const mapStateToProps = (state) => {
     return {
         isCreated: state.building.isCreated,
         isCreating: state.building.isCreating,
-        statusText: state.building.statusText
+        statusText: state.building.statusText,
+        isGettingNeighborhoodList: state.neighborhood.isGettingList,
+        hasGottenNeighborhoodList: state.neighborhood.hasGottenList,
+        neighborhoodList: state.neighborhood.neighborhoodList
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch,
-        actions: bindActionCreators(buildingActionCreators, dispatch)
+        actions: bindActionCreators({... buildingActionCreators, ... neighborhoodActionCreators}, dispatch)
     };
 };
 

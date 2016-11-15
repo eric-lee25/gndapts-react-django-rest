@@ -45,16 +45,18 @@ export function buildingCreateRequest() {
     };
 }
 
-export function createBuilding(token, title, description, latitude, longitude, photos, redirect) {
+export function createBuilding(token, neighborhood, title, description, latitude, longitude, photos, amenities, redirect) {
     return (dispatch) => {
         dispatch(buildingCreateRequest());
         
         // We'll build a form data object because we're packing files with it too
         var data = new FormData()
         data.append('title', title);
+        data.append('neighborhood', neighborhood);
         data.append('description', description);
         data.append('latitude', parseFloat(latitude).toFixed(6));
         data.append('longitude', parseFloat(longitude).toFixed(6));
+        data.append('amenities', amenities);
 
         photos.map(function(s,i) {
             data.append(s.name, s);

@@ -8,6 +8,7 @@ import './styles/semantic/dist/components/dropdown';
 import './styles/semantic/dist/components/form';
 import './styles/semantic/dist/components/rating';
 import './styles/semantic/dist/components/checkbox';
+import './styles/semantic/dist/components/popup';
 
 class App extends React.Component {
 

@@ -1,8 +1,10 @@
 from rest_framework import serializers
-from base.models import Building, Unit, Review, User, Favorite
+from base.models import Building, Unit, Review, User, Favorite,\
+        Neighborhood
 from django.db.models import Min, Max
 from django.core.exceptions import ValidationError
 from PIL import Image
+import json
 
 
 def validate_photos(files):
@@ -66,6 +68,8 @@ class UserSerializer(serializers.ModelSerializer):
 class BuildingSerializer(serializers.ModelSerializer):
     photos = serializers.JSONField(
             read_only=True, required=False, allow_null=True)
+    amenities = serializers.JSONField(
+            required=False, allow_null=True)
     creator = serializers.UUIDField(required=False)
     unit_summary = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField()
@@ -90,6 +94,10 @@ class BuildingSerializer(serializers.ModelSerializer):
     def validate(self, data):
         validate_photos(self.context['request'].FILES)
         return data
+
+    # Convert json array string to obj
+    def validate_amenities(self, data):
+        return json.loads(data)
 
     class Meta:
         model = Building
@@ -161,3 +169,8 @@ class FullBuildingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Building
+
+
+class NeighborhoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Neighborhood

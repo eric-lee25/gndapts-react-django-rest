@@ -2,13 +2,14 @@ import os
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.generic import View
-from base.models import Building, Unit, Review, Favorite
+from base.models import Building, Unit, Review, Favorite,\
+        Neighborhood
 from accounts.models import User
 from base.serializers import BuildingSerializer,\
         UnitSerializer, ReviewSerializer,\
         FullBuildingSerializer, UserSerializer, FavoriteSerializer,\
         ShareFavoriteSerializer, PasswordRecoverySerializer,\
-        PasswordResetSerializer
+        PasswordResetSerializer, NeighborhoodSerializer
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
@@ -160,6 +161,13 @@ class ReviewViewset(
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
+
+
+class NeighborhoodViewset(
+        mixins.ListModelMixin,
+        viewsets.GenericViewSet):
+    queryset = Neighborhood.objects.all().order_by('name')
+    serializer_class = NeighborhoodSerializer
 
 
 class FavoriteViewset(
