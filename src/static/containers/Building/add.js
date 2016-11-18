@@ -123,7 +123,7 @@ class AddBuildingView extends React.Component {
                 this.state.title, this.state.description,
                 this.state.marker.lat, this.state.marker.lng, this.state.photos,
                 JSON.stringify(this.state.selectedAmenities.concat(this.state.customAmenities)),
-                '/map');
+                '/unit/add');
         }
     }
 
