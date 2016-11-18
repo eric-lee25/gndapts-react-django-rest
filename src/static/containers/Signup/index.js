@@ -7,9 +7,9 @@ import classNames from 'classnames';
 import { push } from 'react-router-redux';
 import DocumentTitle from 'react-document-title';
 import BodyClassName from 'react-body-classname';
+import './style.scss';
 
 class SignupView extends React.Component {
-
     constructor(props) {
         super(props);
     
@@ -187,7 +187,7 @@ class SignupView extends React.Component {
         return (
             <BodyClassName className='body-background'>
                 <DocumentTitle title='Sign up'>
-                    <div className="ui middle aligned center aligned grid">
+                    <div id="signup-container" className="ui middle aligned center aligned grid">
                         { body }
                     </div>
                 </DocumentTitle>

@@ -31,7 +31,8 @@ class AddBuildingView extends React.Component {
             description: null,
             photos: [],
             selectedAmenities: [],
-            customAmenities: []
+            customAmenities: [],
+            mapMoved: null
         };
     }
 
@@ -63,6 +64,15 @@ class AddBuildingView extends React.Component {
                             },
                         ]
                     },
+                    mapMoved: {
+                        identifier  : 'mapMoved',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : 'Please move the pin on the map'
+                            },
+                        ]
+                    },
                     title: {
                         identifier  : 'title',
                         rules: [
@@ -89,7 +99,8 @@ class AddBuildingView extends React.Component {
     updatePosition = () => {
       const { lat, lng } = this.refs.marker.getLeafletElement().getLatLng()
       this.setState({
-        marker: {lat, lng},
+          marker: {lat, lng},
+          mapMoved: true
       })
     }
 
@@ -199,121 +210,127 @@ class AddBuildingView extends React.Component {
                             Add building
                         </h2>
                         <form className={"ui form " + formClass} ref="createBuildingForm" >
-                            <div className="eight wide field">
-                                <label>Neighborhood</label>
-                                <div className="ui selection dropdown" ref="neighborhoodDropdown">
-                                    <input type="hidden" name="neighborhoodID"/>
-                                    <i className="dropdown icon"></i>
-                                    <div className="default text">Select a neighborhood</div>
-                                    <div className="menu">
-                                        {neighborhoodList}
+                            <div className="ui grid">
+                                <div className="nine wide column">
+                                    <div className="eight wide field">
+                                        <label>Neighborhood</label>
+                                        <div className="ui selection dropdown" ref="neighborhoodDropdown">
+                                            <input type="hidden" name="neighborhoodID"/>
+                                            <i className="dropdown icon"></i>
+                                            <div className="default text">Select a neighborhood</div>
+                                            <div className="menu">
+                                                {neighborhoodList}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="ui fields">
+                                        <div className="eight wide field">
+                                            <label>Building name / address</label>
+                                            <div className="ui input">
+                                                <input type="text"
+                                                    name="title"
+                                                    onChange={(e) => { this.handleInputChange(e, 'title'); }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="field">
+                                            <i ref="nameBubble" className="standard-bubble circular info icon " data-content="Name of the building or house." data-variation="inverted" data-position="right center"></i>
+                                        </div>
+                                    </div>
+                                    <div className="ui fields">
+                                        <div className="fourteen wide field">
+                                            <label>Description</label>
+                                            <textarea 
+                                                name="description"
+                                                rows="2"
+                                                onChange={(e) => { this.handleInputChange(e, 'description')}}
+                                            ></textarea> 
+                                        </div>
+                                        <div className="field">
+                                            <i ref="descriptionBubble" className="textarea-bubble circular info icon " data-content="Example: The Christopher House is situated on BBC beach. Offering 3 bedrooms, spectacular views, and walking distance to the bus." data-variation="inverted" data-position="right center"></i>
+                                        </div>
+                                    </div>
+                                    <h5 id="amenities-header">Amenities</h5>
+                                    <div className="ui fields">
+                                        <div className="four wide field"> <div className="ui checkbox">
+                                                <input type="checkbox" name="amenity-pool" onChange={(e) => {this.handleCheckboxChange(e, 'Pool')}} />
+                                                <label>Pool</label>
+                                            </div>
+                                        </div>
+                                        <div className="four wide field">
+                                            <div className="ui checkbox">
+                                                <input type="checkbox" name="amenity-elevator" onChange={(e) => {this.handleCheckboxChange(e, 'Elevator')}} />
+                                                <label>Elevator</label>
+                                            </div>
+                                        </div>
+                                        <div className="four wide field">
+                                            <div className="ui checkbox">
+                                                <input type="checkbox" name="amenity-fitnesscenter" onChange={(e) => {this.handleCheckboxChange(e, 'Fitness center')}} />
+                                                <label>Fitness center</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="ui fields">
+                                        <div className="four wide field">
+                                            <div className="ui checkbox">
+                                                <input type="checkbox" name="amenity-securityguard" onChange={(e) => {this.handleCheckboxChange(e, 'Security guard')}} />
+                                                <label>Security guard</label>
+                                            </div>
+                                        </div>
+                                        <div className="four wide field">
+                                            <div className="ui checkbox">
+                                                <input type="checkbox" name="amenity-parking" onChange={(e) => {this.handleCheckboxChange(e, 'Parking')}} />
+                                                <label>Parking</label>
+                                            </div>
+                                        </div>
+                                        <div className="five wide field">
+                                            <div className="ui checkbox">
+                                                <input type="checkbox" name="amenity-laundry" onChange={(e) => {this.handleCheckboxChange(e, 'Laundry: in building')}} />
+                                                <label>Laundry: in building</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="ui fields">
+                                        <div className="ten wide field">
+                                            <div className="ui input">
+                                                <input type="text"
+                                                    placeholder="Other amenities (separate by commas)"
+                                                    name="customAmenities"
+                                                    onChange={(e) => { this.handleCustomAmenities(e, 'customAmenities'); }}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="ui fields">
-                                <div className="six wide field">
-                                    <label>Building name / address</label>
-                                    <div className="ui input">
-                                        <input type="text"
-                                            name="title"
-                                            onChange={(e) => { this.handleInputChange(e, 'title'); }}
-                                        />
+                                <div className="seven wide column">
+                                    <div className="sixteen wide field">
+                                        <label>Location (drag the pin)</label>
+                                        <Map 
+                                            OnZoomend={this.updateZoom}
+                                            center={center} zoom={this.state.zoom}>
+                                            <TileLayer
+                                                url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
+                                                attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://mapbox.com">Mapbox</a>'
+                                            />
+                                            <Marker 
+                                                position={markerPosition}
+                                                onDragend={this.updatePosition}
+                                                draggable="true"
+                                                icon={
+                                                    L.AwesomeMarkers.icon({
+                                                        prefix: 'fa',
+                                                        shadowSize: [0,0],
+                                                        icon: 'fa-home',
+                                                        markerColor: 'red'
+                                                    })
+                                                }
+                                                ref="marker"
+                                                >
+                                            </Marker>
+                                        </Map>
+                                        <input value={this.state.mapMoved} type="hidden" name="mapMoved"/>
                                     </div>
                                 </div>
-                                <div className="field">
-                                    <i ref="nameBubble" className="standard-bubble circular info icon " data-content="Name of the building or house." data-variation="inverted" data-position="right center"></i>
-                                </div>
-                            </div>
-                            <div className="ui fields">
-                                <div className="eight wide field">
-                                    <label>Description</label>
-                                    <textarea 
-                                        name="description"
-                                        rows="2"
-                                        onChange={(e) => { this.handleInputChange(e, 'description')}}
-                                    ></textarea> 
-                                </div>
-                                <div className="field">
-                                    <i ref="descriptionBubble" className="textarea-bubble circular info icon " data-content="Example: The Christopher House is situated on BBC beach. Offering 3 bedrooms, spectacular views, and walking distance to the bus." data-variation="inverted" data-position="right center"></i>
-                                </div>
-                            </div>
-                            <h5 id="amenities-header">Amenities</h5>
-                            <div className="ui fields">
-                                <div className="two wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-pool" onChange={(e) => {this.handleCheckboxChange(e, 'Pool')}} />
-                                        <label>Pool</label>
-                                    </div>
-                                </div>
-                                <div className="two wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-elevator" onChange={(e) => {this.handleCheckboxChange(e, 'Elevator')}} />
-                                        <label>Elevator</label>
-                                    </div>
-                                </div>
-                                <div className="two wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-fitnesscenter" onChange={(e) => {this.handleCheckboxChange(e, 'Fitness center')}} />
-                                        <label>Fitness center</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="ui fields">
-                                <div className="two wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-securityguard" onChange={(e) => {this.handleCheckboxChange(e, 'Security guard')}} />
-                                        <label>Security guard</label>
-                                    </div>
-                                </div>
-                                <div className="two wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-parking" onChange={(e) => {this.handleCheckboxChange(e, 'Parking')}} />
-                                        <label>Parking</label>
-                                    </div>
-                                </div>
-                                <div className="three wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-laundry" onChange={(e) => {this.handleCheckboxChange(e, 'Laundry: in building')}} />
-                                        <label>Laundry: in building</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="ui fields">
-                                <div className="six wide field">
-                                    <div className="ui input">
-                                        <input type="text"
-                                            placeholder="Other amenities (separate by commas)"
-                                            name="customAmenities"
-                                            onChange={(e) => { this.handleCustomAmenities(e, 'customAmenities'); }}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="sixteen wide field">
-                                <label>Location (drag the pin)</label>
-                                <Map 
-                                    OnZoomend={this.updateZoom}
-                                    center={center} zoom={this.state.zoom}>
-                                    <TileLayer
-                                        url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
-                                        attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://mapbox.com">Mapbox</a>'
-                                    />
-                                    <Marker 
-                                        position={markerPosition}
-                                        onDragend={this.updatePosition}
-                                        draggable="true"
-                                        icon={
-                                            L.AwesomeMarkers.icon({
-                                                prefix: 'fa',
-                                                shadowSize: [0,0],
-                                                icon: 'fa-home',
-                                                markerColor: 'red'
-                                            })
-                                        }
-                                        ref="marker"
-                                        >
-                                    </Marker>
-                                </Map>
                             </div>
                             <div className="sixteen wide field">
                                 <label>Upload building photos</label>

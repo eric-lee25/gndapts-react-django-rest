@@ -109,7 +109,7 @@ class LoginView extends React.Component {
         return (
             <BodyClassName className='body-background'>
                 <DocumentTitle title='Login'>
-                    <div className="ui middle aligned center aligned grid">
+                    <div id="login-container" className="ui middle aligned center aligned grid">
                         <div className="column">
                             <h2 className="ui inverted header">
                                 Login
