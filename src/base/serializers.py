@@ -129,6 +129,8 @@ class UnitSerializer(serializers.ModelSerializer):
     building_reviews = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField(required=False)
+    amenities = serializers.JSONField(
+            required=False, allow_null=True)
     security_deposit = serializers.IntegerField(required=False)
 
     def get_is_favorite(self, unit):
@@ -149,6 +151,10 @@ class UnitSerializer(serializers.ModelSerializer):
     def validate(self, data):
         validate_photos(self.context['request'].FILES)
         return data
+
+    # Convert json array string to obj
+    def validate_amenities(self, data):
+        return json.loads(data)
 
     class Meta:
         model = Unit

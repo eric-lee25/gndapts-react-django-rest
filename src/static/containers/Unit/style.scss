@@ -20,6 +20,10 @@
 }
 
 #add-unit-container { 
+    .standard-bubble {
+        margin-top: 28px;
+    }
+
     .leaflet-container {
         height: 200px;
         width: 100%;
@@ -37,5 +41,19 @@
 
     .hidden {
         display: none;
+    }
+
+    .field-header {
+        margin-top: 0em;
+        margin-bottom: 0.5em;
+    }
+
+    #contact-info-header {
+        display: inline;
+    }
+
+    #contact-info-bubble {
+        margin-left: 1em;
+        margin-bottom: 5px;
     }
 }

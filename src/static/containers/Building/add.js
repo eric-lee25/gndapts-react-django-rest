@@ -32,7 +32,7 @@ class AddBuildingView extends React.Component {
             photos: [],
             selectedAmenities: [],
             customAmenities: [],
-            mapMoved: null
+            mapMoved: ''
         };
     }
 

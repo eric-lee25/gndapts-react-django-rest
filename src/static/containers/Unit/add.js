@@ -6,6 +6,7 @@ import DocumentTitle from 'react-document-title';
 import './style.scss';
 import * as unitActionCreators from '../../actions/unit';
 import * as buildingActionCreators from '../../actions/building';
+import * as neighborhoodActionCreators from '../../actions/neighborhood';
 import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
 import Dropzone from 'react-dropzone';
@@ -16,30 +17,61 @@ class AddUnitView extends React.Component {
 
         this.state = {
             buildingID: null,
+            neighborhoodID: null,
             number: null,
             numBeds: null,
             numBaths: null,
             title: null,
-            amenities: null,
+            selectedAmenities: [],
+            customAmenities: [],
             description: null,
             rent: null,
             securityDeposit: null,
-            contactInformation: null,
+            contactInfoName: null,
+            contactInfoPhoneNumber: null,
+            contactInfoFacebook: null,
+            contactInfoEmail: null,
+            contactInfoWhatsapp: null,
             leaseType: null,
+            contactInfoRelationshipProperty : ["Broker/Agent", "Owner", "Property Manager", "Student/Tenant"],
+            selectedContactInfoRelationshipProperty : null,
             photos: []
         };
     }
 
     componentWillUnmount() { 
         $(ReactDOM.findDOMNode(this.refs.buildingDropdown)).dropdown('destroy');
+        $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown('destroy');
+        $(ReactDOM.findDOMNode(this.refs.contactInfoRelationshipPropertyDropdown)).dropdown('destroy');
     }
 
     componentDidMount() {
+        $(ReactDOM.findDOMNode(this.refs.titleBubble)).popup();
+        $(ReactDOM.findDOMNode(this.refs.unitNumberBubble)).popup();
+        $(ReactDOM.findDOMNode(this.refs.leaseTypeBubble)).popup();
+        $(ReactDOM.findDOMNode(this.refs.contactInfoBubble)).popup();
+
         $(ReactDOM.findDOMNode(this.refs.buildingDropdown)).dropdown({
-            'onChange': function(val){
+            'onChange': function(val, v){
                 this.setState({buildingID: val});
             }.bind(this)
         });
+
+        $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown({
+            'onChange': function(val){
+                this.setState({neighborhoodID: val});
+
+            }.bind(this)
+        });
+
+        $(ReactDOM.findDOMNode(this.refs.contactInfoRelationshipPropertyDropdown)).dropdown({
+            'onChange': function(val){
+                this.setState({selectedContactInfoRelationshipProperty: val});
+
+            }.bind(this)
+        });
+
+        this.props.actions.listNeighborhoods(this.props.token);
 
         $(ReactDOM.findDOMNode(this.refs.createUnitForm))
             .form({
@@ -106,30 +138,12 @@ class AddUnitView extends React.Component {
                             },
                         ]
                     },
-                    amenities: {
-                        identifier  : 'amenities',
-                        rules: [
-                            {
-                                type   : 'empty',
-                                prompt : 'Please enter a value'
-                            },
-                        ]
-                    },
                     description: {
                         identifier  : 'description',
                         rules: [
                             {
                                 type   : 'empty',
                                 prompt : 'Please enter a description'
-                            },
-                        ]
-                    },
-                    contactInformation: {
-                        identifier  : 'contactInformation',
-                        rules: [
-                            {
-                                type   : 'empty',
-                                prompt : 'Please enter contact information'
                             },
                         ]
                     },
@@ -173,8 +187,13 @@ class AddUnitView extends React.Component {
             this.props.actions.createUnit(
                 this.props.token,
                 this.state.number, this.state.numBeds, this.state.numBaths, this.state.leaseType,
-                this.state.title, this.state.amenities, this.state.description, this.state.contactInformation,
+                this.state.title,
+                JSON.stringify(this.state.selectedAmenities.concat(this.state.customAmenities)),
+                this.state.description, this.state.contactInformation,
                 this.state.rent, this.state.securityDeposit, this.state.buildingID, this.state.photos,
+                this.state.contactInfoName, this.state.contactInfoPhoneNumber, this.state.contactInfoFacebook,
+                this.state.contactInfoEmail, this.state.contactInfoWhatsapp,
+                this.state.selectedContactInfoRelationshipProperty,
                 '/map');
         }
     }
@@ -185,13 +204,47 @@ class AddUnitView extends React.Component {
         this.setState({ photos: currentPhotos });
     }
 
+    handleCheckboxChange = (e, item) => {
+        let currentAmenities = this.state.selectedAmenities;
+
+        if (e.target.checked) {
+            currentAmenities.push(item);
+            this.setState({selectedAmenities: currentAmenities});
+        }
+
+        else {
+            let i = currentAmenities.indexOf(item);
+
+            if (i > -1) {
+                currentAmenities.splice(i, 1);
+                this.setState({selectedAmenities: currentAmenities});
+            }
+        }
+    }
+
+    // Break text by comma
+    // Push it to array
+    handleCustomAmenities = (e) => {
+        let currentCustomAmenities = [];
+        let splitAmenities = e.target.value.split(',');
+
+        splitAmenities.forEach(function(e) {
+            let trimmed = e.trim();
+            if (trimmed.length > 0) {
+                currentCustomAmenities.push(trimmed);
+            }
+        });
+
+        this.setState({customAmenities: currentCustomAmenities});
+    }
+
     render() {
         const buttonClass = classNames({
             loading: this.props.isCreating
         });
         
         const formClass = classNames({
-            loading: this.props.isGettingList
+            loading: this.props.isGettingList || this.props.isGettingNeighborhoodList
         });
 
         const photoPreviewClass = classNames({
@@ -210,12 +263,41 @@ class AddUnitView extends React.Component {
 
         if (this.props.hasGottenList == true) {
             buildingList = 
-            this.props.buildingList.results.map(function(s, i){
+            this.props.buildingList.results.map(function(s, i) {
+                if (this.state.neighborhoodID) {
+                    if (s.neighborhood == this.state.neighborhoodID) {
+                        return (
+                            <div key={i} className="item" data-value={s.uuid}>{s.title}</div>
+                        )
+                    }
+                }
+
+                else {
+                    return (
+                        <div key={i} className="item" data-value={s.uuid}>{s.title}</div>
+                    )
+                }
+            }, this);
+        }
+
+        let neighborhoodList = null;
+
+        if (this.props.hasGottenNeighborhoodList == true) {
+            neighborhoodList = 
+            this.props.neighborhoodList.results.map(function(s, i){
                 return (
-                    <div key={i} className="item" data-value={s.uuid}>{s.title}</div>
+                    <div key={i} className="item" data-value={s.uuid}>{s.name}</div>
                 )
             });
         }
+
+        let contactInfoRelationshipPropertyList = (
+            this.state.contactInfoRelationshipProperty.map(function(s, i) {
+                return (
+                    <div key={i} className="item" data-value={s}>{s}</div>
+                )
+            })
+        )
 
         return (
             <div id="add-unit-container">
@@ -225,7 +307,18 @@ class AddUnitView extends React.Component {
                             Add unit
                         </h2>
                         <form className={"ui form " + formClass} ref="createUnitForm" >
-                            <div className="eight wide field">
+                            <div className="five wide field">
+                                <label>Neighborhood</label>
+                                <div className="ui selection dropdown" ref="neighborhoodDropdown">
+                                    <input type="hidden" name="neighborhoodID"/>
+                                    <i className="dropdown icon"></i>
+                                    <div className="default text">Select a neighborhood</div>
+                                    <div className="menu">
+                                        {neighborhoodList}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="five wide field">
                                 <label>Building</label>
                                 <div className="ui selection dropdown" ref="buildingDropdown">
                                     <input type="hidden" name="buildingID"/>
@@ -236,22 +329,32 @@ class AddUnitView extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className="six wide field">
-                                <label>Title</label>
-                                <div className="ui input">
-                                    <input type="text"
-                                        name="title"
-                                        onChange={(e) => { this.handleInputChange(e, 'title'); }}
-                                    />
+                            <div className="ui fields">
+                                <div className="five wide field">
+                                    <label>Title</label>
+                                    <div className="ui input">
+                                        <input type="text"
+                                            name="title"
+                                            onChange={(e) => { this.handleInputChange(e, 'title'); }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <i ref="titleBubble" className="standard-bubble circular info icon " data-content="If this is a house, please type 'house'. If 2 bedroom, please type '2 bedroom'." data-variation="inverted" data-position="right center"></i>
                                 </div>
                             </div>
-                            <div className="two wide field">
-                                <label>Unit number</label>
-                                <div className="ui input">
-                                    <input type="text"
-                                        name="number"
-                                        onChange={(e) => { this.handleInputChange(e, 'number'); }}
-                                    />
+                            <div className="ui fields">
+                                <div className="two wide field">
+                                    <label>Unit number</label>
+                                    <div className="ui input">
+                                        <input type="text"
+                                            name="number"
+                                            onChange={(e) => { this.handleInputChange(e, 'number'); }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <i ref="unitNumberBubble" className="standard-bubble circular info icon " data-content="Example: 2A, Ground floor, or house." data-variation="inverted" data-position="right center"></i>
                                 </div>
                             </div>
                             <div className="two wide field">
@@ -272,22 +375,82 @@ class AddUnitView extends React.Component {
                                     />
                                 </div>
                             </div>
-                            <div className="four wide field">
-                                <label>Type of lease</label>
-                                <div className="ui input">
-                                    <input type="text"
-                                        name="leaseType"
-                                        onChange={(e) => { this.handleInputChange(e, 'leaseType'); }}
-                                    />
+                            <div className="ui fields">
+                                <div className="four wide field">
+                                    <label>Type of lease</label>
+                                    <div className="ui input">
+                                        <input type="text"
+                                            name="leaseType"
+                                            onChange={(e) => { this.handleInputChange(e, 'leaseType'); }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <i ref="leaseTypeBubble" className="standard-bubble circular info icon " data-content="Long term (1 yr+), short term (less than 12 months or by term), or both." data-variation="inverted" data-position="right center"></i>
                                 </div>
                             </div>
-                            <div className="eight wide field">
-                                <label>Amenities</label>
-                                <textarea 
-                                    name="amenities"
-                                    rows="2"
-                                    onChange={(e) => { this.handleInputChange(e, 'amenities')}}
-                                ></textarea> 
+                            <h5 className="field-header" id="">Amenities</h5>
+                            <div className="ui fields">
+                                <div className="three wide field"> <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-ac" onChange={(e) => {this.handleCheckboxChange(e, 'A/C')}} />
+                                        <label>A/C</label>
+                                    </div>
+                                </div>
+                                <div className="three wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-microwave" onChange={(e) => {this.handleCheckboxChange(e, 'Microwave')}} />
+                                        <label>Microwave</label>
+                                    </div>
+                                </div>
+                                <div className="three wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-dishwasher" onChange={(e) => {this.handleCheckboxChange(e, 'Dishwasher')}} />
+                                        <label>Dishwasher</label>
+                                    </div>
+                                </div>
+                                <div className="three wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-electricityincluded" onChange={(e) => {this.handleCheckboxChange(e, 'Electricity included')}} />
+                                        <label>Electricity included</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="ui fields">
+                                <div className="three wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-furnished" onChange={(e) => {this.handleCheckboxChange(e, 'Furnished')}} />
+                                        <label>Furnished</label>
+                                    </div>
+                                </div>
+                                <div className="three wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-laundry" onChange={(e) => {this.handleCheckboxChange(e, 'Laundry: in unit')}} />
+                                        <label>Laundry: in unit</label>
+                                    </div>
+                                </div>
+                                <div className="three wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-petfriendly" onChange={(e) => {this.handleCheckboxChange(e, 'Pet friendly')}} />
+                                        <label>Pet friendly</label>
+                                    </div>
+                                </div>
+                                <div className="three wide field">
+                                    <div className="ui checkbox">
+                                        <input type="checkbox" name="amenity-electricitynotincluded" onChange={(e) => {this.handleCheckboxChange(e, 'Electricity notincluded')}} />
+                                        <label>Electricity not included</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="ui fields">
+                                <div className="six wide field">
+                                    <div className="ui input">
+                                        <input type="text"
+                                            placeholder="Other amenities (separate by commas)"
+                                            name="customAmenities"
+                                            onChange={(e) => { this.handleCustomAmenities(e, 'customAmenities'); }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             <div className="eight wide field">
                                 <label>Description</label>
@@ -296,15 +459,6 @@ class AddUnitView extends React.Component {
                                     rows="2"
                                     onChange={(e) => { this.handleInputChange(e, 'description')}}
                                 ></textarea> 
-                            </div>
-                            <div className="eight wide field">
-                                <label>Contact information</label>
-                                <div className="ui input">
-                                    <input type="text"
-                                        name="contactInformation"
-                                        onChange={(e) => { this.handleInputChange(e, 'contactInformation'); }}
-                                    />
-                                </div>
                             </div>
                             <div className="two wide field">
                                 <label>Rent</label>
@@ -324,6 +478,70 @@ class AddUnitView extends React.Component {
                                         name="securityDeposit"
                                         onChange={(e) => { this.handleInputChange(e, 'securityDeposit'); }}
                                     />
+                                </div>
+                            </div>
+
+                            <h5 id="contact-info-header" className="field-header">Contact information for the apartment, building, home, etc</h5>
+                            <i ref="contactInfoBubble" id="contact-info-bubble" className="circular info icon " data-content="This is the contact information that will be displayed with the apartment, building, home, etc." data-variation="inverted" data-position="right center"></i>
+                            <div className="ui fields">
+                                <div className="three wide field"> 
+                                    <div className="ui input">
+                                        <input type="text"
+                                            placeholder="Name"
+                                            name="ci-name"
+                                            onChange={(e) => { this.handleInputChange(e, 'contactInfoName'); }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="three wide field"> 
+                                    <div className="ui input">
+                                        <input type="text"
+                                            placeholder="Phone number"
+                                            name="ci-phone"
+                                            onChange={(e) => { this.handleInputChange(e, 'contactInfoPhoneNumber'); }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="three wide field"> 
+                                    <div className="ui input">
+                                        <input type="text"
+                                            placeholder="Facebook name or page"
+                                            name="ci-facebook"
+                                            onChange={(e) => { this.handleInputChange(e, 'contactInfoFacebook'); }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="ui fields">
+                                <div className="three wide field"> 
+                                    <div className="ui input">
+                                        <input type="text"
+                                            placeholder="Email"
+                                            name="ci-email"
+                                            onChange={(e) => { this.handleInputChange(e, 'contactInfoEmail'); }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="three wide field"> 
+                                    <div className="ui input">
+                                        <input type="text"
+                                            placeholder="WhatsApp phone"
+                                            name="ci-whatsapp"
+                                            onChange={(e) => { this.handleInputChange(e, 'contactInfoWhatsapp'); }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="four wide field">
+                                <label>Contact information's relationship to property</label>
+                                <div className="ui selection dropdown" ref="contactInfoRelationshipPropertyDropdown">
+                                    <input type="hidden" name="relationship"/>
+                                    <i className="dropdown icon"></i>
+                                    <div className="default text">Select a relationship</div>
+                                    <div className="menu">
+                                        {contactInfoRelationshipPropertyList}
+                                    </div>
                                 </div>
                             </div>
 
@@ -364,14 +582,17 @@ const mapStateToProps = (state) => {
         statusText: state.unit.statusText,
         isGettingList: state.building.isGettingList,
         hasGottenList: state.building.hasGottenList,
-        buildingList: state.building.buildingList
+        buildingList: state.building.buildingList,
+        isGettingNeighborhoodList: state.neighborhood.isGettingList,
+        hasGottenNeighborhoodList: state.neighborhood.hasGottenList,
+        neighborhoodList: state.neighborhood.neighborhoodList
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         dispatch,
-        actions: bindActionCreators({ ...unitActionCreators, ...buildingActionCreators}, dispatch)
+        actions: bindActionCreators({ ...unitActionCreators, ...buildingActionCreators, ...neighborhoodActionCreators}, dispatch)
     };
 };
 

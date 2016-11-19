@@ -47,14 +47,15 @@ export function unitCreateRequest() {
 }
 
 export function createUnit(token, number, numBeds, numBaths, leaseType, title, amenities, 
-    description, contactInformation, rent, securityDeposit, buildingID, photos, redirect) {
+    description, contactInformation, rent, securityDeposit, buildingID, photos, 
+    contactInfoName, contactInfoPhoneNumber, contactInfoFacebook, contactInfoEmail, contactInfoWhatsapp, contactInfoRelationshipProperty,
+    redirect) {
     
     // We'll build a form data object because we're packing files with it too
     var data = new FormData()
     data.append('type_lease', leaseType);
     data.append('number', number);
     data.append('num_beds', numBeds);
-    data.append('contact_information', contactInformation);
     data.append('num_baths', numBaths);
     data.append('title', title);
     data.append('amenities', amenities);
@@ -62,6 +63,12 @@ export function createUnit(token, number, numBeds, numBaths, leaseType, title, a
     data.append('rent', rent);
     securityDeposit != null ? data.append('security_deposit', securityDeposit) : null;
     data.append('building', buildingID);
+    data.append('contact_name', contactInfoName);
+    data.append('contact_phone', contactInfoPhoneNumber);
+    data.append('contact_facebook', contactInfoFacebook);
+    data.append('contact_email', contactInfoEmail);
+    data.append('contact_whatsapp', contactInfoWhatsapp);
+    data.append('contact_relation_property', contactInfoRelationshipProperty);
 
     // TODO - put these in a subarray because it
     // cpuld conflict with above keys if file
