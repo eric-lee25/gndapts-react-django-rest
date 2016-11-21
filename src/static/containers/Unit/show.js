@@ -202,16 +202,27 @@ class ShowUnitView extends React.Component {
                     )
                 }
 
-                contactBlock = (
-                    <div>
-                        {contactInfoRelationProperty}
-                        {contactInfoName}
-                        {contactInfoPhone}
-                        {contactInfoWhatsapp}
-                        {contactInfoEmail}
-                        {contactInfoFacebook}
-                    </div>
-                )
+                if (!contactInfoRelationProperty && !contactInfoName && !contactInfoPhone && !contactInfoWhatsapp
+                    && !contactInfoEmail && !contactInfoFacebook) {
+                        contactBlock = (
+                            <div>
+                                None
+                            </div>
+                        )
+                    }
+
+                else {
+                    contactBlock = (
+                        <div>
+                            {contactInfoRelationProperty}
+                            {contactInfoName}
+                            {contactInfoPhone}
+                            {contactInfoWhatsapp}
+                            {contactInfoEmail}
+                            {contactInfoFacebook}
+                        </div>
+                    )
+                }
             }
 
             let opts = {
@@ -220,11 +231,11 @@ class ShowUnitView extends React.Component {
 
             let amenities = null;
 
-            if (this.props.unit.building_data.amenities) {
+            if (this.props.unit.amenities) {
                 let left, right = null;
 
                 left = (
-                    this.props.unit.building_data.amenities.map(function(s,i) {
+                    this.props.unit.amenities.map(function(s,i) {
                         if (i%2 == 0) {
                             return (
                               <div key={i} className="item">{s}</div>
@@ -234,7 +245,7 @@ class ShowUnitView extends React.Component {
                 )
 
                 right = (
-                    this.props.unit.building_data.amenities.map(function(s,i) {
+                    this.props.unit.amenities.map(function(s,i) {
                         if (i%2 == 1) {
                             return (
                               <div key={i} className="item">{s}</div>
@@ -302,9 +313,15 @@ class ShowUnitView extends React.Component {
                                     </div>
                                 </div>
                                 <div className="item">
+                                    <i className="icon fa-gavel"></i>
+                                    <div className="content">
+                                        {this.props.unit.type_lease}
+                                    </div>
+                                </div>
+                                <div className="item">
                                     <i className="icon fa-map-signs"></i>
                                     <div className="content">
-                                        {this.props.unit.building_data.neighborhood.name}
+                                        {this.props.unit.building_data.neighborhood_name}
                                     </div>
                                 </div>
                                 <div className="item">
@@ -322,7 +339,7 @@ class ShowUnitView extends React.Component {
                                 {this.props.unit.description}
                             </p>
                             <h3 className="ui header">
-                                Building amenities
+                                Unit amenities
                             </h3>
                             {amenities}
                         </div>

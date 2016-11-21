@@ -27,7 +27,7 @@ class MapView extends React.Component {
         super(props);
 
         this.state = {
-            maximumRent: 1500,
+            maximumRent: 6000,
             numberBedrooms: 0,
             numberBathrooms: 0,
             flag: false,
@@ -229,8 +229,8 @@ class MapView extends React.Component {
 
         $(ReactDOM.findDOMNode(this.refs.rentSlider)).range({
             min: 0,
-            max: 15,
-            start: 15,
+            max: 60,
+            start: 60,
             onChange: function(val) { 
                 this.setState({maximumRent: val*100});
             }.bind(this)

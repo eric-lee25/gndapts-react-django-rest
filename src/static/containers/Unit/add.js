@@ -27,14 +27,14 @@ class AddUnitView extends React.Component {
             description: null,
             rent: null,
             securityDeposit: null,
-            contactInfoName: null,
-            contactInfoPhoneNumber: null,
-            contactInfoFacebook: null,
-            contactInfoEmail: null,
-            contactInfoWhatsapp: null,
-            leaseType: null,
+            contactInfoName: '',
+            contactInfoPhoneNumber: '',
+            contactInfoFacebook: '',
+            contactInfoEmail: '',
+            contactInfoWhatsapp: '',
+            leaseType: '',
             contactInfoRelationshipProperty : ["Broker/Agent", "Owner", "Property Manager", "Student/Tenant"],
-            selectedContactInfoRelationshipProperty : null,
+            selectedContactInfoRelationshipProperty : '',
             photos: []
         };
     }

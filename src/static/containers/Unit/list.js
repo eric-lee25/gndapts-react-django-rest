@@ -8,6 +8,7 @@ import './style.scss';
 import * as unitActionCreators from '../../actions/unit';
 import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
+import './tablesort.js';
 
 class ListUnitsView extends React.Component {
     constructor(props) {
@@ -24,6 +25,14 @@ class ListUnitsView extends React.Component {
     componentDidMount() {
         this.props.actions.listUnits(this.props.token);
         $(ReactDOM.findDOMNode(this.refs.settingsDropdown)).dropdown();
+    }
+
+    componentDidUpdate() {
+        if (this.props.hasGottenList) {
+            $(ReactDOM.findDOMNode(this.refs.unitTable)).tablesort();
+            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'asc');
+            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'asc'); // weird glitch
+        }
     }
 
     render() {
@@ -50,7 +59,9 @@ class ListUnitsView extends React.Component {
                     return (
                         <tr key={i}>
                             <td><Link to={`/unit/show/${s.uuid}`}>{s.title}</Link></td>
+                            <td>{s.number}</td>
                             <td><Link to={`/building/show/${s.building_data.uuid}`}>{s.building_data.title}</Link></td>
+                            <td>{s.building_data.neighborhood_name}</td>
                             <td>${s.rent}</td>
                             <td>{s.num_beds}</td>
                             <td>{s.num_baths}</td>
@@ -85,11 +96,13 @@ class ListUnitsView extends React.Component {
                             </div>
                         </div>
                         <form className={"ui form " + formClass} ref="createUnitForm" >
-                            <table className="ui fixed table">
+                            <table ref="unitTable" className="ui sortable fixed table">
                                 <thead>
                                     <tr>
+                                        <th>Title</th>
                                         <th>Unit</th>
-                                        <th>Building</th>
+                                        <th className="building">Building</th>
+                                        <th>Neighborhood</th>
                                         <th>Rent</th>
                                         <th>Bedrooms</th>
                                         <th>Bathrooms</th>
@@ -101,6 +114,8 @@ class ListUnitsView extends React.Component {
                                 <tfoot>
                                     <tr>
                                         <th>{unitCount} unit(s)</th>
+                                        <th></th>
+                                        <th></th>
                                         <th></th>
                                         <th></th>
                                         <th></th>

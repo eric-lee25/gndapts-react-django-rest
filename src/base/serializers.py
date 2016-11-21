@@ -76,8 +76,8 @@ class BuildingSerializer(serializers.ModelSerializer):
             required=False, allow_null=True)
     creator = serializers.UUIDField(required=False)
     unit_summary = serializers.SerializerMethodField()
-    neighborhood = NeighborhoodSerializer()
     is_favorite = serializers.SerializerMethodField()
+    neighborhood_name = serializers.SerializerMethodField(read_only=True)
 
     def get_is_favorite(self, building):
         if self.context['request'].user.is_authenticated:
@@ -94,6 +94,9 @@ class BuildingSerializer(serializers.ModelSerializer):
         agg['lease_types'] = qs.values_list('type_lease').distinct()
         agg['unit_count'] = qs.count()
         return agg
+
+    def get_neighborhood_name(self, building):
+        return building.neighborhood.name
 
     # Validate uploaded images
     def validate(self, data):
