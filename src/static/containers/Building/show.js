@@ -15,6 +15,7 @@ import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
 import 'leaflet/dist/leaflet.css';
 import 'react-photoswipe/lib/photoswipe.css';
 import {PhotoSwipeGallery} from 'react-photoswipe';
+import Review from '../../components/Review';
 
 class ShowBuildingView extends React.Component {
     constructor(props) {
@@ -39,9 +40,6 @@ class ShowBuildingView extends React.Component {
     componentDidUpdate() {
         // Needs to run in componentDidUpdate() because the reviews are dynamically added
         if (this.props.hasGottenBuilding) {
-            for (var i=0; i<this.props.building.review_set.length; ++i) {
-                $(ReactDOM.findDOMNode(this.refs["review-" + i])).rating('disable');
-            }
             $(ReactDOM.findDOMNode(this.refs.settingsDropdown)).dropdown();
         }
     }
@@ -56,9 +54,17 @@ class ShowBuildingView extends React.Component {
     }
 
     getThumbnailContent = (item) => {
-        return (
-            <img src={item.thumbnail} width={120} height={90}/>
-        );
+        if (item.primary) {
+            return (
+                <img src={item.src} id="primary-img" />
+            );
+        }
+
+        else {
+            return (
+                <img src={item.thumbnail} width={90} height={67.5}/>
+            );
+        }
     }
 
     render() {
@@ -87,16 +93,18 @@ class ShowBuildingView extends React.Component {
                 }
 
                 actionMenu = (
-                    <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
-                        <i className="wrench icon"></i>
-                        <div className="menu">
-                            <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
-                                Add review 
+                    <div>
+                        <div onClick={this.favorite} className={"ui icon top right pointing green button " + favoriteClass} ref="favoriteButton">
+                            <i className="heart icon"></i>
+                        </div>
+                        <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
+                            <i className="wrench icon"></i>
+                            <div className="menu">
+                                <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
+                                    Add review 
+                                </div>
+                                {deleteBuilding}
                             </div>
-                            <div onClick={this.favorite} className={"item " + favoriteClass}>
-                                Add to favorites 
-                            </div>
-                            {deleteBuilding}
                         </div>
                     </div>
                 )
@@ -112,7 +120,8 @@ class ShowBuildingView extends React.Component {
                             src: s.full,
                             thumbnail: s.thumb,
                             w: s.full_width,
-                            h: s.full_height
+                            h: s.full_height,
+                            primary: i==0 ? true : false
                         }
                     )
                 });
@@ -126,7 +135,7 @@ class ShowBuildingView extends React.Component {
                 this.props.building.unit_set.map(function(s,i) {
                     return (
                         <tr key={i}>
-                            <td><Link to={`/unit/show/${s.uuid}`}>{s.title}</Link></td>
+                            <td><b><Link to={`/unit/show/${s.uuid}`}>{s.title}</Link></b></td>
                             <td>${s.rent}</td>
                             <td>{s.num_beds}</td>
                             <td>{s.num_baths}</td>
@@ -138,20 +147,51 @@ class ShowBuildingView extends React.Component {
             let reviews = (
                 this.props.building.review_set.map(function(s,i) {
                     return (
-                        <div key={i} className="ui relaxed divided list">
-                            <div className="item">
-                                <i className="middle aligned fa-comment icon"></i>
-                                <div className="content">
-                                    <a className="header">
-                                        <div data-max-rating="5" className="ui huge star rating" ref={"review-" + i} data-rating={s.rating}></div>
-                                    </a>
-                                    <div className="description">{s.comments}<br/><i className="reviewee">{s.anonymous == true ? "anonymous" : s.reviewee.first_name + " " + s.reviewee.last_name[0]}.</i></div>
-                                </div>
-                            </div>
-                        </div>
+                        <Review index={i} key={i} data={s}/>
                     )
                 })
             )
+
+            let amenities = null;
+
+            if (this.props.building.amenities) {
+                let left, right = null;
+
+                left = (
+                    this.props.building.amenities.map(function(s,i) {
+                        if (i%2 == 0) {
+                            return (
+                              <div key={i} className="item">{s}</div>
+                            )
+                        }
+                    })
+                )
+
+                right = (
+                    this.props.building.amenities.map(function(s,i) {
+                        if (i%2 == 1) {
+                            return (
+                              <div key={i} className="item">{s}</div>
+                            )
+                        }
+                    })
+                )
+
+                amenities = (
+                    <div className="ui grid">
+                        <div className="eight wide column">
+                            <div className="ui bulleted list">
+                                {left}
+                            </div>
+                        </div>
+                        <div className="eight wide column">
+                            <div className="ui bulleted list">
+                                {right}
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
 
             buildingInformation = (
                 <div className="ui grid">
@@ -179,22 +219,33 @@ class ShowBuildingView extends React.Component {
                             </Map>
                         </div>
                         <div className="seven wide column">
-                            <h3 className="ui header">
+                            <h1 id="title-header" className="ui header">
                                 {this.props.building.title}
+                            </h1>
+                            <h3 className="ui header" id="neighborhood-header">
+                                {this.props.building.neighborhood.name}
                                 <div className="sub header">
                                     {this.props.building.unit_set.length} unit(s)
                                 </div>
                             </h3>
+                            <div className="ui divider"></div>
+                            <h3 id="building-desc-header" className="ui header">
+                                Building description
+                            </h3>
                             <p>
                                 {this.props.building.description}
                             </p>
-                            <table className="ui fixed table">
+                            <h3 className="ui header">
+                                Building amenities
+                            </h3>
+                            {amenities}
+                            <table id="units-table" className="ui fixed table">
                                 <thead>
                                     <tr>
                                         <th>Unit</th>
-                                        <th>Rent</th>
-                                        <th>Bed</th>
-                                        <th>Bath</th>
+                                        <th>Price</th>
+                                        <th>Beds</th>
+                                        <th>Baths</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -203,6 +254,11 @@ class ShowBuildingView extends React.Component {
                             </table>
                         </div>
                         <div className="four wide column">
+                            <div className="ui right aligned grid">
+                                <div className="sixteen wide column">
+                                    {actionMenu}
+                                </div>
+                            </div>
                             {reviews}
                         </div>
                     </div>
@@ -214,16 +270,6 @@ class ShowBuildingView extends React.Component {
             <div id="show-building-container">
                 <DocumentTitle title='Building'>
                     <div className="ui container">
-                        <div className="ui right aligned grid">
-                            <div className="left floated left aligned six wide column">
-                                <h2 id="" classNameName="ui header">
-                                    Building
-                                </h2>
-                            </div>
-                            <div className="right floated right aligned six wide column">
-                                {actionMenu}
-                            </div>
-                        </div>
                         <form className={"ui form " + formClass} ref="buildingForm" >
                             {buildingInformation}
                         </form>

@@ -480,7 +480,6 @@ class AddUnitView extends React.Component {
                                     />
                                 </div>
                             </div>
-
                             <h5 id="contact-info-header" className="field-header">Contact information for the apartment, building, home, etc</h5>
                             <i ref="contactInfoBubble" id="contact-info-bubble" className="circular info icon " data-content="This is the contact information that will be displayed with the apartment, building, home, etc." data-variation="inverted" data-position="right center"></i>
                             <div className="ui fields">

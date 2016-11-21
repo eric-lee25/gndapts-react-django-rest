@@ -65,6 +65,10 @@ class UserSerializer(serializers.ModelSerializer):
                 'last_login', 'password', 'email')
 
 
+class NeighborhoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Neighborhood
+
 class BuildingSerializer(serializers.ModelSerializer):
     photos = serializers.JSONField(
             read_only=True, required=False, allow_null=True)
@@ -164,6 +168,7 @@ class FullBuildingSerializer(serializers.ModelSerializer):
     unit_set = UnitSerializer(many=True)
     review_set = ReviewSerializer(many=True, read_only=True)
     is_favorite = serializers.SerializerMethodField()
+    neighborhood = NeighborhoodSerializer()
 
     def get_is_favorite(self, building):
         if self.context['request'].user.is_authenticated:
@@ -175,8 +180,3 @@ class FullBuildingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Building
-
-
-class NeighborhoodSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Neighborhood
