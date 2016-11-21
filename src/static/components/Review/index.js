@@ -31,12 +31,12 @@ class Review extends React.Component {
 
         if (this.state.expanded == false) {
             let string = this.props.data.comments.slice(0,100);
-            showMoreLink = (
-                <a onClick={() => this.setState({expanded: !this.state.expanded})}>Show more</a>
-            )
 
             if (this.props.data.comments.length > 100) {
                 string += "...";
+                showMoreLink = (
+                    <a onClick={() => this.setState({expanded: !this.state.expanded})}>Show more</a>
+                )
             }
 
             comments = (
