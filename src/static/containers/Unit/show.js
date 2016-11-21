@@ -14,6 +14,7 @@ import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
 import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
 import 'react-photoswipe/lib/photoswipe.css';
 import {PhotoSwipeGallery} from 'react-photoswipe';
+import Review from '../../components/Review';
 
 class ShowUnitView extends React.Component {
     constructor(props) {
@@ -41,9 +42,6 @@ class ShowUnitView extends React.Component {
     componentDidUpdate() {
         // Needs to run in componentDidUpdate() because the reviews are dynamically added
         if (this.props.hasGottenUnit) {
-            for (var i=0; i<this.props.unit.building_reviews.length; ++i) {
-                $(ReactDOM.findDOMNode(this.refs["review-" + i])).rating('disable');
-            }
             $(ReactDOM.findDOMNode(this.refs.settingsDropdown)).dropdown();
         }
     }
@@ -62,9 +60,17 @@ class ShowUnitView extends React.Component {
     }
 
     getThumbnailContent = (item) => {
-        return (
-            <img src={item.thumbnail} width={120} height={90}/>
-        );
+        if (item.primary) {
+            return (
+                <img src={item.src} id="primary-img" />
+            );
+        }
+
+        else {
+            return (
+                <img src={item.thumbnail} width={90} height={67.5}/>
+            );
+        }
     }
 
     render() {
@@ -93,16 +99,18 @@ class ShowUnitView extends React.Component {
                 }
 
                 actionMenu = (
-                    <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
-                        <i className="wrench icon"></i>
-                        <div className="menu">
-                            <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
-                                Add review 
+                    <div>
+                        <div onClick={this.favorite} className={"ui icon top right pointing green button " + favoriteClass} ref="favoriteButton">
+                            <i className="heart icon"></i>
+                        </div>
+                        <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
+                            <i className="wrench icon"></i>
+                            <div className="menu">
+                                <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
+                                    Add review 
+                                </div>
+                                {deleteUnit}
                             </div>
-                            <div onClick={this.favorite} className={"item " + favoriteClass}>
-                                Add to favorites 
-                            </div>
-                            {deleteUnit}
                         </div>
                     </div>
                 )
@@ -118,7 +126,8 @@ class ShowUnitView extends React.Component {
                             src: s.full,
                             thumbnail: s.thumb,
                             w: s.full_width,
-                            h: s.full_height
+                            h: s.full_height,
+                            primary: i==0 ? true : false
                         }
                     )
                 });
@@ -127,17 +136,7 @@ class ShowUnitView extends React.Component {
             let reviews = (
                 this.props.unit.building_reviews.map(function(s,i) {
                     return (
-                        <div key={i} className="ui relaxed divided list">
-                            <div className="item">
-                                <i className="middle aligned fa-comment icon"></i>
-                                <div className="content">
-                                    <a className="header">
-                                        <div data-max-rating="5" className="ui huge star rating" ref={"review-" + i} data-rating={s.rating}></div>
-                                    </a>
-                                    <div className="description">{s.comments}<br/><i className="reviewee">{s.anonymous == true ? "anonymous" : s.reviewee.first_name + " " + s.reviewee.last_name[0]}.</i></div>
-                                </div>
-                            </div>
-                        </div>
+                        <Review index={i} key={i} data={s}/>
                     )
                 })
             )
@@ -153,15 +152,111 @@ class ShowUnitView extends React.Component {
             }
 
             else {
+                let contactInfoRelationProperty, contactInfoName, contactInfoPhone, contactInfoWhatsapp, contactInfoEmail, contactInfoFacebook = null;
+
+                if (this.props.unit.contact_relation_property) {
+                    contactInfoRelationProperty = (
+                        <div>
+                            Relationship to unit: {this.props.unit.contact_relation_property}
+                        </div>
+                    )
+                }
+
+                if (this.props.unit.contact_name) {
+                    contactInfoName = (
+                        <div>
+                            Name: {this.props.unit.contact_name}
+                        </div>
+                    )
+                }
+
+                if (this.props.unit.contact_phone) {
+                    contactInfoPhone = (
+                        <div>
+                            Phone: {this.props.unit.contact_phone}
+                        </div>
+                    )
+                }
+
+                if (this.props.unit.contact_whatsapp) {
+                    contactInfoWhatsapp = (
+                        <div>
+                            WhatsApp: {this.props.unit.contact_whatsapp}
+                        </div>
+                    )
+                }
+
+                if (this.props.unit.contact_email) {
+                    contactInfoEmail = (
+                        <div>
+                            Email: <a href={"mailto:" + this.props.unit.contact_email}>{this.props.unit.contact_email}</a>
+                        </div>
+                    )
+                }
+
+                if (this.props.unit.contact_facebook) {
+                    contactInfoFacebook = (
+                        <div>
+                            Facebook: {this.props.unit.contact_facebook}
+                        </div>
+                    )
+                }
+
                 contactBlock = (
-                    <span>
-                        {this.props.unit.contact_information}
-                    </span>
+                    <div>
+                        {contactInfoRelationProperty}
+                        {contactInfoName}
+                        {contactInfoPhone}
+                        {contactInfoWhatsapp}
+                        {contactInfoEmail}
+                        {contactInfoFacebook}
+                    </div>
                 )
             }
 
             let opts = {
                 history: false
+            }
+
+            let amenities = null;
+
+            if (this.props.unit.building_data.amenities) {
+                let left, right = null;
+
+                left = (
+                    this.props.unit.building_data.amenities.map(function(s,i) {
+                        if (i%2 == 0) {
+                            return (
+                              <div key={i} className="item">{s}</div>
+                            )
+                        }
+                    })
+                )
+
+                right = (
+                    this.props.unit.building_data.amenities.map(function(s,i) {
+                        if (i%2 == 1) {
+                            return (
+                              <div key={i} className="item">{s}</div>
+                            )
+                        }
+                    })
+                )
+
+                amenities = (
+                    <div className="ui grid">
+                        <div className="eight wide column">
+                            <div className="ui bulleted list">
+                                {left}
+                            </div>
+                        </div>
+                        <div className="eight wide column">
+                            <div className="ui bulleted list">
+                                {right}
+                            </div>
+                        </div>
+                    </div>
+                )
             }
 
             unitInformation = (
@@ -174,14 +269,14 @@ class ShowUnitView extends React.Component {
                             <Map zoomControl={false} center={center} zoom={14} ref="map">
                                 <TileLayer
                                     url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
-                                    attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+                                    attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://mapbox.com">Mapbox</a>'
                                 />
                                 <Marker position={center}
                                     icon={
                                         L.AwesomeMarkers.icon({
                                             prefix: 'fa',
                                             shadowSize: [0,0],
-                                            icon: 'fa-unit',
+                                            icon: 'fa-home',
                                             markerColor: 'red'
                                         })
                                     }
@@ -190,8 +285,14 @@ class ShowUnitView extends React.Component {
                             </Map>
                         </div>
                         <div className="seven wide column">
-                            <h3 className="ui header">
+                            <h1 id="building-header" className="ui header">
+                                {this.props.unit.building_data.title}
+                            </h1>
+                            <h3 className="ui header" id="title-header">
                                 {this.props.unit.title}
+                            </h3>
+                            <h3 className="ui header" id="rent-header">
+                                <b>${this.props.unit.rent}</b> / month
                             </h3>
                             <div className="ui list">
                                 <div className="item">
@@ -201,9 +302,9 @@ class ShowUnitView extends React.Component {
                                     </div>
                                 </div>
                                 <div className="item">
-                                    <i className="icon fa-usd"></i>
+                                    <i className="icon fa-map-signs"></i>
                                     <div className="content">
-                                        {this.props.unit.rent} / month
+                                        {this.props.unit.building_data.neighborhood.name}
                                     </div>
                                 </div>
                                 <div className="item">
@@ -213,11 +314,24 @@ class ShowUnitView extends React.Component {
                                     </div>
                                 </div>
                             </div>
+                            <div className="ui divider"></div>
+                            <h3 id="unit-desc-header" className="ui header">
+                                Unit description
+                            </h3>
                             <p>
                                 {this.props.unit.description}
                             </p>
+                            <h3 className="ui header">
+                                Building amenities
+                            </h3>
+                            {amenities}
                         </div>
                         <div className="four wide column">
+                            <div className="ui right aligned grid">
+                                <div className="sixteen wide column">
+                                    {actionMenu}
+                                </div>
+                            </div>
                             {reviews}
                         </div>
                     </div>
@@ -229,16 +343,6 @@ class ShowUnitView extends React.Component {
             <div id="show-unit-container">
                 <DocumentTitle title='Unit'>
                     <div className="ui container">
-                        <div className="ui right aligned grid">
-                            <div className="left floated left aligned six wide column">
-                                <h2 id="" classNameName="ui header">
-                                    Unit
-                                </h2>
-                            </div>
-                            <div className="right floated right aligned six wide column">
-                                {actionMenu}
-                            </div>
-                        </div>
                         <form className={"ui form " + formClass} ref="unitForm" >
                             {unitInformation}
                         </form>

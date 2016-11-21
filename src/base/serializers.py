@@ -76,6 +76,7 @@ class BuildingSerializer(serializers.ModelSerializer):
             required=False, allow_null=True)
     creator = serializers.UUIDField(required=False)
     unit_summary = serializers.SerializerMethodField()
+    neighborhood = NeighborhoodSerializer()
     is_favorite = serializers.SerializerMethodField()
 
     def get_is_favorite(self, building):
