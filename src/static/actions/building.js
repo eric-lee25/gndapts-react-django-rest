@@ -17,7 +17,11 @@ import {
     BUILDING_DELETE_REQUEST,
     BUILDING_DELETE_FAILURE,
     BUILDING_DELETE_SUCCESS,
-    BUILDING_DELETE_RESET
+    BUILDING_DELETE_RESET,
+    BUILDING_EDIT_REQUEST,
+    BUILDING_EDIT_FAILURE,
+    BUILDING_EDIT_SUCCESS,
+    BUILDING_EDIT_RESET
 } from '../constants';
 
 export function buildingCreateSuccess(buildingID) {
@@ -88,6 +92,80 @@ export function createBuilding(token, neighborhood, title, description, latitude
             })
             .catch(error => {
                 dispatch(buildingCreateFailure(error));
+            });
+    };
+}
+
+export function buildingEditSuccess(buildingID) {
+    return {
+        type: BUILDING_EDIT_SUCCESS,
+        payload: {
+            buildingID: buildingID 
+        }
+    };
+}
+
+export function buildingEditFailure(error) {
+    return {
+        type: BUILDING_EDIT_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function buildingEditRequest() {
+    return {
+        type: BUILDING_EDIT_REQUEST
+    };
+}
+
+export function editBuilding(token, buildingID, neighborhood, title, description, latitude, longitude, photos, existingPhotos, amenities, redirect) {
+    return (dispatch) => {
+        dispatch(buildingEditRequest());
+        
+        // We'll build a form data object because we're packing files with it too
+        var data = new FormData()
+        data.append('title', title);
+        data.append('neighborhood', neighborhood);
+        data.append('description', description);
+        data.append('latitude', parseFloat(latitude).toFixed(6));
+        data.append('longitude', parseFloat(longitude).toFixed(6));
+        data.append('amenities', amenities);
+        data.append('existing_photos', existingPhotos);
+        console.log(existingPhotos);
+
+        photos.map(function(s,i) {
+            data.append(s.name, s);
+        });
+
+        return fetch(`${SERVER_URL}/api/v1/base/buildings/${buildingID}`, {
+            method: 'put',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: data
+        })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(buildingEditSuccess(response));
+                    dispatch(push(redirect));
+                } catch (e) {
+                    dispatch(buildingEditFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Error editing building.'
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(buildingEditFailure(error));
             });
     };
 }

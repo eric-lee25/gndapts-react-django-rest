@@ -32,6 +32,10 @@ class ListUnitsView extends React.Component {
             $(ReactDOM.findDOMNode(this.refs.unitTable)).tablesort();
             $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'asc');
             $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'asc'); // weird glitch
+
+            for (let i=0; i<this.props.unitList.results.length; ++i) {
+                //$(ReactDOM.findDOMNode(this.refs['unitActionsDropdown' + i])).dropdown();
+            }
         }
     }
 
@@ -48,7 +52,7 @@ class ListUnitsView extends React.Component {
             if (unitCount == 0) {
                 unitList = ( 
                     <tr key="0">
-                        <td colspan="5">No units</td>
+                        <td colspan="7">No units</td>
                     </tr>
                 )
             }

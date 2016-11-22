@@ -16,11 +16,12 @@ import 'leaflet/dist/leaflet.css';
 import Dropzone from 'react-dropzone';
 
 
-class AddBuildingView extends React.Component {
+class EditBuildingView extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            buildingID: null,
             neighborhoodID: null,
             marker: {
                 lat: 12.0000325,
@@ -31,8 +32,8 @@ class AddBuildingView extends React.Component {
             description: null,
             photos: [],
             selectedAmenities: [],
-            customAmenities: [],
-            mapMoved: ''
+            existingPhotos: [],
+            populatedForm: false
         };
     }
 
@@ -44,6 +45,8 @@ class AddBuildingView extends React.Component {
         $(ReactDOM.findDOMNode(this.refs.nameBubble)).popup();
         $(ReactDOM.findDOMNode(this.refs.descriptionBubble)).popup();
 
+        this.props.actions.getBuilding(this.props.token, this.props.params.id);
+
         $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown({
             'onChange': function(val){
                 this.setState({neighborhoodID: val});
@@ -52,7 +55,7 @@ class AddBuildingView extends React.Component {
 
         this.props.actions.listNeighborhoods(this.props.token);
 
-        $(ReactDOM.findDOMNode(this.refs.createBuildingForm))
+        $(ReactDOM.findDOMNode(this.refs.editBuildingForm))
             .form({
                 fields: {
                     neighborhoodID: {
@@ -61,15 +64,6 @@ class AddBuildingView extends React.Component {
                             {
                                 type   : 'empty',
                                 prompt : 'Please select a neighborhood'
-                            },
-                        ]
-                    },
-                    mapMoved: {
-                        identifier  : 'mapMoved',
-                        rules: [
-                            {
-                                type   : 'empty',
-                                prompt : 'Please move the pin on the map'
                             },
                         ]
                     },
@@ -96,11 +90,48 @@ class AddBuildingView extends React.Component {
             });
     }
 
+    componentDidUpdate() {
+        if (this.props.hasGottenBuilding == true && this.props.hasGottenNeighborhoodList == true && this.state.populatedForm == false) {
+            $(ReactDOM.findDOMNode(this.refs.buildingTitle)).val(this.props.building.title);
+            $(ReactDOM.findDOMNode(this.refs.buildingDescription)).val(this.props.building.description);
+            $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown('set selected', this.props.building.neighborhood.uuid);
+
+            let selectedAmenities = [];
+            let customAmenities = [];
+            let customAmenitiesStr = '';
+
+            this.props.building.amenities.forEach(function(s,i) {
+                if (this.refs[s] != null) {
+                    $(ReactDOM.findDOMNode(this.refs[s])).checkbox('check');
+                    selectedAmenities.push(s);
+                }
+
+                else {
+                    customAmenities.push(s);
+
+                    let str = '';
+                    if (customAmenitiesStr.length > 0) {
+                        str = ', ';
+                    }
+                
+                    customAmenitiesStr += str + s;
+                }
+            }, this);
+
+            $(ReactDOM.findDOMNode(this.refs.customAmenities)).val(customAmenitiesStr);
+
+            this.setState({'title': this.props.building.title, 'description': this.props.building.description, 
+                'neighborhoodID': this.props.building.neighborhood.uuid, 'selectedAmenities': selectedAmenities,
+                'customAmenities': customAmenities, 'existingPhotos': this.props.building.photos,
+                'marker': {'lat': parseFloat(this.props.building.latitude), 'lng': parseFloat(this.props.building.longitude)},
+                'buildingID': this.props.building.uuid, 'populatedForm': true});
+        }
+    }
+
     updatePosition = () => {
       const { lat, lng } = this.refs.marker.getLeafletElement().getLatLng()
       this.setState({
           marker: {lat, lng},
-          mapMoved: true
       })
     }
 
@@ -114,16 +145,18 @@ class AddBuildingView extends React.Component {
         this.setState({zoom: e.target._zoom});
     }
 
-    createBuilding = (e) => {
-        $(ReactDOM.findDOMNode(this.refs.createBuildingForm)).form('validate form');
-        if ($(ReactDOM.findDOMNode(this.refs.createBuildingForm)).form('is valid')) {
-            this.props.actions.createBuilding(
+    editBuilding = (e) => {
+        $(ReactDOM.findDOMNode(this.refs.editBuildingForm)).form('validate form');
+        if ($(ReactDOM.findDOMNode(this.refs.editBuildingForm)).form('is valid')) {
+            this.props.actions.editBuilding(
                 this.props.token,
+                this.state.buildingID,
                 this.state.neighborhoodID,
                 this.state.title, this.state.description,
                 this.state.marker.lat, this.state.marker.lng, this.state.photos,
+                JSON.stringify(this.state.existingPhotos),
                 JSON.stringify(this.state.selectedAmenities.concat(this.state.customAmenities)),
-                '/unit/add');
+                '/building/show/' + this.state.buildingID);
         }
     }
 
@@ -133,23 +166,20 @@ class AddBuildingView extends React.Component {
         this.setState({ photos: currentPhotos });
     }
 
-    // NOTE: these handlers are done differently in the edit view. As a TODO, 
-    // this view should do it the same way as the other one does
     handleCheckboxChange = (e, item) => {
         let currentAmenities = this.state.selectedAmenities;
+        let i = currentAmenities.indexOf(item);
 
-        if (e.target.checked) {
-            currentAmenities.push(item);
+        // Found so checked->unchecked
+        if (i > -1) {
+            currentAmenities.splice(i, 1);
             this.setState({selectedAmenities: currentAmenities});
         }
 
+        // Not found so unchecked->checked
         else {
-            let i = currentAmenities.indexOf(item);
-
-            if (i > -1) {
-                currentAmenities.splice(i, 1);
-                this.setState({selectedAmenities: currentAmenities});
-            }
+            currentAmenities.push(item);
+            this.setState({selectedAmenities: currentAmenities});
         }
     }
 
@@ -169,17 +199,27 @@ class AddBuildingView extends React.Component {
         this.setState({customAmenities: currentCustomAmenities});
     }
 
+    removeExistingPicture = (i) => {
+        let existingPhotos = this.state.existingPhotos;
+        existingPhotos.splice(i, 1);
+        this.setState({existingPhotos: existingPhotos});
+    }
+
     render() {
         const buttonClass = classNames({
-            loading: this.props.isCreating
+            loading: this.props.isEditing
         });
 
         const photoPreviewClass = classNames({
             hidden: this.state.photos.length == 0
         });
 
+        const existingPhotosClass = classNames({
+            hidden: this.state.existingPhotos.length == 0
+        });
+
         const formClass = classNames({
-            loading: this.props.isGettingNeighborhoodList
+            loading: this.props.isGettingNeighborhoodList || this.props.isGettingBuilding
         });
 
         const center = [this.state.marker.lat, this.state.marker.lng];
@@ -191,6 +231,19 @@ class AddBuildingView extends React.Component {
                     <img key={i} className="ui tiny image" src={s.preview} />
                 )
             })
+        )
+
+        let existingPhotos = (
+            this.state.existingPhotos.map(function(s,i) {
+                return (
+                    <div key={i} className="existing-image-div">
+                        <img className="ui middle aligned tiny image" src={s.thumb} />
+                        <span>
+                            <i onClick={() => this.removeExistingPicture(i)} className="big link remove icon"></i>
+                        </span>
+                    </div>
+                )
+            }, this)
         )
 
         let neighborhoodList = null;
@@ -205,18 +258,18 @@ class AddBuildingView extends React.Component {
         }
 
         return (
-            <div id="add-building-container">
-                <DocumentTitle title='Add building'>
+            <div id="edit-building-container">
+                <DocumentTitle title='Edit building'>
                     <div className="ui container">
                         <h2 className="ui header">
-                            Add building
+                            Edit building
                         </h2>
-                        <form className={"ui form " + formClass} ref="createBuildingForm" >
+                        <form className={"ui form " + formClass} ref="editBuildingForm" >
                             <div className="ui grid">
                                 <div className="nine wide column">
                                     <div className="eight wide field">
                                         <label>Neighborhood</label>
-                                        <div className="ui selection dropdown" ref="neighborhoodDropdown">
+                                        <div id="xxx" className="ui selection dropdown" ref="neighborhoodDropdown">
                                             <input type="hidden" name="neighborhoodID"/>
                                             <i className="dropdown icon"></i>
                                             <div className="default text">Select a neighborhood</div>
@@ -229,7 +282,7 @@ class AddBuildingView extends React.Component {
                                         <div className="eight wide field">
                                             <label>Building name / address</label>
                                             <div className="ui input">
-                                                <input type="text"
+                                                <input ref="buildingTitle" type="text"
                                                     name="title"
                                                     onChange={(e) => { this.handleInputChange(e, 'title'); }}
                                                 />
@@ -243,6 +296,7 @@ class AddBuildingView extends React.Component {
                                         <div className="fourteen wide field">
                                             <label>Description</label>
                                             <textarea 
+                                                ref="buildingDescription"
                                                 name="description"
                                                 rows="2"
                                                 onChange={(e) => { this.handleInputChange(e, 'description')}}
@@ -254,40 +308,41 @@ class AddBuildingView extends React.Component {
                                     </div>
                                     <h5 id="amenities-header">Amenities</h5>
                                     <div className="ui fields">
-                                        <div className="four wide field"> <div className="ui checkbox">
-                                                <input type="checkbox" name="amenity-pool" onChange={(e) => {this.handleCheckboxChange(e, 'Pool')}} />
+                                        <div className="four wide field">
+                                            <div ref="Pool" className="ui checkbox" onClick={(e) => {this.handleCheckboxChange(e, 'Pool')}}>
+                                                <input type="checkbox" name="amenity-pool" />
                                                 <label>Pool</label>
                                             </div>
                                         </div>
                                         <div className="four wide field">
-                                            <div className="ui checkbox">
-                                                <input type="checkbox" name="amenity-elevator" onChange={(e) => {this.handleCheckboxChange(e, 'Elevator')}} />
+                                            <div ref="Elevator" className="ui checkbox" onClick={(e) => {this.handleCheckboxChange(e, 'Elevator')}}>
+                                                <input type="checkbox" name="amenity-elevator"/>
                                                 <label>Elevator</label>
                                             </div>
                                         </div>
                                         <div className="four wide field">
-                                            <div className="ui checkbox">
-                                                <input type="checkbox" name="amenity-fitnesscenter" onChange={(e) => {this.handleCheckboxChange(e, 'Fitness center')}} />
+                                            <div ref="Fitness center" className="ui checkbox" onClick={(e) => {this.handleCheckboxChange(e, 'Fitness center')}}>
+                                                <input type="checkbox" name="amenity-fitnesscenter"/>
                                                 <label>Fitness center</label>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="ui fields">
                                         <div className="four wide field">
-                                            <div className="ui checkbox">
-                                                <input type="checkbox" name="amenity-securityguard" onChange={(e) => {this.handleCheckboxChange(e, 'Security guard')}} />
+                                            <div ref="Security guard" className="ui checkbox" onClick={(e) => {this.handleCheckboxChange(e, 'Security guard')}}>
+                                                <input type="checkbox" name="amenity-securityguard"/>
                                                 <label>Security guard</label>
                                             </div>
                                         </div>
                                         <div className="four wide field">
-                                            <div className="ui checkbox">
-                                                <input type="checkbox" name="amenity-parking" onChange={(e) => {this.handleCheckboxChange(e, 'Parking')}} />
+                                            <div ref="Parking" className="ui checkbox" onClick={(e) => {this.handleCheckboxChange(e, 'Parking')}}>
+                                                <input type="checkbox" name="amenity-parking"/>
                                                 <label>Parking</label>
                                             </div>
                                         </div>
                                         <div className="five wide field">
-                                            <div className="ui checkbox">
-                                                <input type="checkbox" name="amenity-laundry" onChange={(e) => {this.handleCheckboxChange(e, 'Laundry: in building')}} />
+                                            <div ref="Laundry: in building" className="ui checkbox" onClick={(e) => {this.handleCheckboxChange(e, 'Laundry: in building')}} >
+                                                <input type="checkbox" name="amenity-laundry" />
                                                 <label>Laundry: in building</label>
                                             </div>
                                         </div>
@@ -297,6 +352,7 @@ class AddBuildingView extends React.Component {
                                             <div className="ui input">
                                                 <input type="text"
                                                     placeholder="Other amenities (separate by commas)"
+                                                    ref="customAmenities"
                                                     name="customAmenities"
                                                     onChange={(e) => { this.handleCustomAmenities(e, 'customAmenities'); }}
                                                 />
@@ -330,7 +386,6 @@ class AddBuildingView extends React.Component {
                                                 >
                                             </Marker>
                                         </Map>
-                                        <input value={this.state.mapMoved} type="hidden" name="mapMoved"/>
                                     </div>
                                 </div>
                             </div>
@@ -346,8 +401,12 @@ class AddBuildingView extends React.Component {
                                     {preview}
                                 </div>
                             </div>
+                            <div className={"sixteen wide field " + existingPhotosClass}>
+                                <label>Existing photos</label>
+                                {existingPhotos}
+                            </div>
                             <div className={"ui green button " + buttonClass }
-                                type="submit" onClick={this.createBuilding}
+                                type="submit" onClick={this.editBuilding}
                             >
                                 Submit
                             </div>
@@ -365,8 +424,11 @@ class AddBuildingView extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        isCreated: state.building.isCreated,
-        isCreating: state.building.isCreating,
+        isGettingBuilding: state.building.isGettingBuilding,
+        hasGottenBuilding: state.building.hasGottenBuilding,
+        building: state.building.building,
+        isEditing: state.building.isEditingBuilding,
+        hasEdited: state.building.hasEditedBuilding,
         statusText: state.building.statusText,
         isGettingNeighborhoodList: state.neighborhood.isGettingList,
         hasGottenNeighborhoodList: state.neighborhood.hasGottenList,
@@ -381,5 +443,5 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddBuildingView);
-export { AddBuildingView as AddBuildingViewNotConnected };
+export default connect(mapStateToProps, mapDispatchToProps)(EditBuildingView);
+export { EditBuildingView as EditBuildingViewNotConnected };

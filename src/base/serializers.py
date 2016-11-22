@@ -78,6 +78,7 @@ class BuildingSerializer(serializers.ModelSerializer):
     unit_summary = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField()
     neighborhood_name = serializers.SerializerMethodField(read_only=True)
+    existing_photos = serializers.JSONField(write_only=True, required=False)
 
     def get_is_favorite(self, building):
         if self.context['request'].user.is_authenticated:

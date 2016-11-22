@@ -7,6 +7,7 @@ export ConfirmEmailView from './ConfirmEmail/index';
 export LoggedInView from './LoggedIn/index';
 export MapView from './Map/index';
 export AddBuildingView from './Building/add';
+export EditBuildingView from './Building/edit';
 export PaddedContainer from './Padded/index';
 export AddUnitView from './Unit/add';
 export AddReviewView from './Review/add';

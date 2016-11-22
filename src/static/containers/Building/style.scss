@@ -1,4 +1,4 @@
-#add-building-container { 
+#edit-building-container, #add-building-container { 
     .leaflet-container {
         height: 350px;
         width: 100%;
@@ -29,6 +29,11 @@
     .field-header {
         margin-top: 0em;
         margin-bottom: 0.5em;
+    }
+
+    .existing-image-div {
+        display: inline;
+        margin-right: 20px;
     }
 }
 
@@ -69,5 +74,4 @@
     #units-table {
         margin-top: 25px;
     }
-
 }

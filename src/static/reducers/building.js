@@ -13,7 +13,11 @@ import {
     BUILDING_DELETE_REQUEST,
     BUILDING_DELETE_FAILURE,
     BUILDING_DELETE_SUCCESS,
-    BUILDING_DELETE_RESET
+    BUILDING_DELETE_RESET,
+    BUILDING_EDIT_REQUEST,
+    BUILDING_EDIT_FAILURE,
+    BUILDING_EDIT_SUCCESS,
+    BUILDING_EDIT_RESET
 } from '../constants';
 import jwtDecode from 'jwt-decode';
 
@@ -28,6 +32,8 @@ const initialState = {
     hasGottenBuilding: false,
     isDeletingBuilding: false,
     hasDeletedBuilding: false,
+    isEditingBuilding: false,
+    hasEditedBuilding: false,
     building: null,
     statusText: null
 };
@@ -124,7 +130,7 @@ export default createReducer(initialState, {
         return Object.assign({}, state, {
             isDeletingBuilding: false,
             hasDeletedBuilding: true,
-            statusText: 'Building returned'
+            statusText: 'Building deleted'
         });
     },
     [BUILDING_DELETE_FAILURE]: (state, payload) => {
@@ -138,6 +144,34 @@ export default createReducer(initialState, {
         return Object.assign({}, state, {
             isDeletingBuilding: false,
             hasDeletedBuilding: false,
+            statusText: null
+        });
+    },
+    [BUILDING_EDIT_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            isEditingBuilding: true,
+            hasEditedBuilding: false,
+            statusText: null
+        });
+    },
+    [BUILDING_EDIT_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            isEditingBuilding: false,
+            hasEditedBuilding: true,
+            statusText: 'Building edited'
+        });
+    },
+    [BUILDING_EDIT_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            isEditingBuilding: false,
+            hasEditedBuilding: false,
+            statusText: `Building editing error: ${payload.statusText}`
+        });
+    },
+    [BUILDING_EDIT_RESET]: (state, payload) => {
+        return Object.assign({}, state, {
+            isEditingBuilding: false,
+            hasEditedBuilding: false,
             statusText: null
         });
     }

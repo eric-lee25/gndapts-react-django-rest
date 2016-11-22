@@ -1,4 +1,5 @@
 import os
+import json
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.generic import View
@@ -14,9 +15,9 @@ from rest_framework import viewsets, mixins
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from rest_framework import status
-from base.permissions import IsOwnerForDeletePermission
+from base.permissions import IsOwnerForEditOrDeletePermission
+from django.shortcuts import get_object_or_404
 import requests
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.core.exceptions import ObjectDoesNotExist
 import uuid
 from lib.utils import generate_full_plus_thumb, savePublicPhotoToS3
@@ -33,14 +34,13 @@ class IndexView(View):
 class BuildingViewset(
         mixins.CreateModelMixin,
         mixins.ListModelMixin,
+        mixins.UpdateModelMixin,
         mixins.DestroyModelMixin,
         mixins.RetrieveModelMixin,
         viewsets.GenericViewSet):
     serializer_class = BuildingSerializer
 
-    # This is for retrieving a building - used for favorites
-    permission_classes = (IsAuthenticatedOrReadOnly,
-                          IsOwnerForDeletePermission, )
+    permission_classes = (IsOwnerForEditOrDeletePermission, )
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -96,6 +96,47 @@ class BuildingViewset(
 
         return Response(bs.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def update(self, request, pk):
+        queryset = Building.objects.all()
+        building = get_object_or_404(queryset, pk=pk)
+        self.check_object_permissions(self.request, building)
+        bs = BuildingSerializer(
+                building, data=request.data, context={'request': request})
+
+        if bs.is_valid(raise_exception=True):
+            building = bs.save()
+
+            # Convert files to jpeg and save to s3
+            urls = []
+            for name in request.FILES:
+                f = generate_full_plus_thumb(request.FILES[name])
+
+                # Unique filename
+                full_filename = name + "_" + str(time.time()) + "." + "jpeg"
+                thumb_filename = name + "_" + str(time.time()) +\
+                    "_THUMB." + "jpeg"
+
+                full_url = savePublicPhotoToS3(
+                            str(building.pk), "building",
+                            full_filename, "image/jpeg", f['full'])
+                thumb_url = savePublicPhotoToS3(
+                            str(building.pk), "building",
+                            thumb_filename, "image/jpeg", f['thumbnail'])
+                urls.append({"full": full_url, "full_width": f["full_width"],
+                             "full_height": f["full_height"],
+                             "thumb": thumb_url})
+
+            # Concatenation exisiting photos
+            building.photos = [] if len(urls) is 0 else urls
+            building.photos =\
+                json.loads(bs.validated_data['existing_photos']) +\
+                building.photos
+            building.save()
+
+            return Response(bs.data, status=status.HTTP_200_OK)
+
+        return Response(bs.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UnitViewset(
         mixins.CreateModelMixin,
@@ -106,9 +147,7 @@ class UnitViewset(
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
 
-    # This is for retrieving a unit - used for favorites
-    permission_classes = (IsAuthenticatedOrReadOnly,
-                          IsOwnerForDeletePermission, )
+    permission_classes = (IsOwnerForEditOrDeletePermission, )
 
     # Get my own
     def list(self, request):

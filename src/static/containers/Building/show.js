@@ -82,12 +82,18 @@ class ShowBuildingView extends React.Component {
             });
 
             if (this.props.isAuthenticated) {
-                let deleteBuilding = null;
-                
+                let deleteBuilding, editBuilding = null;
+
                 if (this.props.userID == this.props.building.creator) {
                     deleteBuilding = (
                         <div onClick={this.delete} className={"item " }>
                             Delete
+                        </div>
+                    )
+
+                    editBuilding = (
+                        <div onClick={() => {this.props.dispatch(push('/building/edit/' + this.props.building.uuid)) }} className={"item " }>
+                            Edit
                         </div>
                     )
                 }
@@ -100,10 +106,11 @@ class ShowBuildingView extends React.Component {
                         <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
                             <i className="wrench icon"></i>
                             <div className="menu">
+                                {editBuilding}
+                                {deleteBuilding}
                                 <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
                                     Add review 
                                 </div>
-                                {deleteBuilding}
                             </div>
                         </div>
                     </div>
