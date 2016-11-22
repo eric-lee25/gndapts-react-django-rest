@@ -454,7 +454,7 @@ class MapView extends React.Component {
                     <div className="ui horizontal segments">
                         <div className="ui half-width segment">
                             <div id="map-mode-controls" className="two ui buttons">
-                                <button className={"ui button " + (this.state.mapSatelliteMode == "streets" ? "active" : "")} onClick={() => this.setState({mapSatelliteMode: "streets"})}>Map</button>
+                                <button className={"ui button " + (this.state.mapSatelliteMode == "streets" ? "active" : "")} onClick={() => this.setState({mapSatelliteMode: "streets"})}>Street</button>
                                 <div className="or"></div>
                                 <button className={"ui button " + (this.state.mapSatelliteMode == "satellite" ? "active" : "")} onClick={() => this.setState({mapSatelliteMode: "satellite"})}>Satellite</button>
                             </div>
