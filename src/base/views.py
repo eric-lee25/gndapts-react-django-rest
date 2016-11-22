@@ -24,6 +24,8 @@ from lib.utils import generate_full_plus_thumb, savePublicPhotoToS3
 import time
 
 
+# TODO: consolidate image related code into a function
+
 class IndexView(View):
     def get(self, request):
         abspath = open(os.path.join(
@@ -107,6 +109,8 @@ class BuildingViewset(
             building = bs.save()
 
             # Convert files to jpeg and save to s3
+            # TODO: consolidate this with create()'s
+            # so we're not copy and pasting
             urls = []
             for name in request.FILES:
                 f = generate_full_plus_thumb(request.FILES[name])
@@ -184,6 +188,47 @@ class UnitViewset(
                              "thumb": thumb_url})
 
             unit.photos = None if len(urls) is 0 else urls
+            unit.save()
+
+            return Response(us.data, status=status.HTTP_200_OK)
+
+        return Response(us.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk):
+        queryset = Unit.objects.all()
+        unit = get_object_or_404(queryset, pk=pk)
+        self.check_object_permissions(self.request, unit)
+        us = UnitSerializer(
+                unit, data=request.data, context={'request': request})
+
+        if us.is_valid():
+            unit = us.save(creator=self.request.user)
+
+            # Convert files to jpeg and save to s3
+            urls = []
+            for name in request.FILES:
+                f = generate_full_plus_thumb(request.FILES[name])
+
+                # Unique filename
+                full_filename = name + "_" + str(time.time()) + "." + "jpeg"
+                thumb_filename = name + "_" + str(time.time()) +\
+                    "_THUMB." + "jpeg"
+
+                full_url = savePublicPhotoToS3(
+                            str(unit.pk), "unit",
+                            full_filename, "image/jpeg", f['full'])
+                thumb_url = savePublicPhotoToS3(
+                            str(unit.pk), "unit",
+                            thumb_filename, "image/jpeg", f['thumbnail'])
+                urls.append({"full": full_url, "full_width": f["full_width"],
+                             "full_height": f["full_height"],
+                             "thumb": thumb_url})
+
+            # Concatenation exisiting photos
+            unit.photos = [] if len(urls) is 0 else urls
+            unit.photos =\
+                json.loads(us.validated_data['existing_photos']) +\
+                unit.photos
             unit.save()
 
             return Response(us.data, status=status.HTTP_200_OK)

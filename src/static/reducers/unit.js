@@ -13,7 +13,11 @@ import {
     UNIT_DELETE_REQUEST,
     UNIT_DELETE_FAILURE,
     UNIT_DELETE_SUCCESS,
-    UNIT_DELETE_RESET
+    UNIT_DELETE_RESET,
+    UNIT_EDIT_REQUEST,
+    UNIT_EDIT_FAILURE,
+    UNIT_EDIT_SUCCESS,
+    UNIT_EDIT_RESET
 } from '../constants';
 import jwtDecode from 'jwt-decode';
 
@@ -29,6 +33,8 @@ const initialState = {
     hasGottenUnit: false,
     isDeletingUnit: false,
     hasDeletedUnit: false,
+    isEditingUnit: false,
+    hasEditedUnit: false,
     unit: null
 };
 
@@ -123,7 +129,7 @@ export default createReducer(initialState, {
         return Object.assign({}, state, {
             isDeletingUnit: false,
             hasDeletedUnit: true,
-            statusText: 'Unit returned'
+            statusText: 'Unit deleted'
         });
     },
     [UNIT_DELETE_FAILURE]: (state, payload) => {
@@ -137,6 +143,34 @@ export default createReducer(initialState, {
         return Object.assign({}, state, {
             isDeletingUnit: false,
             hasDeletedUnit: false,
+            statusText: null
+        });
+    },
+    [UNIT_EDIT_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            isEditingUnit: true,
+            hasEditedUnit: false,
+            statusText: null
+        });
+    },
+    [UNIT_EDIT_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            isEditingUnit: false,
+            hasEditedUnit: true,
+            statusText: 'Unit edited'
+        });
+    },
+    [UNIT_EDIT_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            isEditingUnit: false,
+            hasEditedUnit: false,
+            statusText: `Unit error: ${payload.statusText}`
+        });
+    },
+    [UNIT_EDIT_RESET]: (state, payload) => {
+        return Object.assign({}, state, {
+            isEditingUnit: false,
+            hasEditedUnit: false,
             statusText: null
         });
     }

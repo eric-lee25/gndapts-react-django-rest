@@ -17,7 +17,11 @@ import {
     UNIT_DELETE_REQUEST,
     UNIT_DELETE_FAILURE,
     UNIT_DELETE_SUCCESS,
-    UNIT_DELETE_RESET
+    UNIT_DELETE_RESET,
+    UNIT_EDIT_REQUEST,
+    UNIT_EDIT_FAILURE,
+    UNIT_EDIT_SUCCESS,
+    UNIT_EDIT_RESET
 } from '../constants';
 
 
@@ -105,6 +109,95 @@ export function createUnit(token, number, numBeds, numBaths, leaseType, title, a
             })
             .catch(error => {
                 dispatch(unitCreateFailure(error));
+            });
+    };
+}
+
+export function unitEditSuccess(unitID) {
+    return {
+        type: UNIT_EDIT_SUCCESS,
+        payload: {
+            unitID: unitID 
+        }
+    };
+}
+
+export function unitEditFailure(error) {
+    return {
+        type: UNIT_EDIT_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function unitEditRequest() {
+    return {
+        type: UNIT_EDIT_REQUEST
+    };
+}
+
+export function editUnit(token, unitID, number, numBeds, numBaths, leaseType, title, amenities, 
+    description, contactInformation, rent, securityDeposit, buildingID, photos, existingPhotos,
+    contactInfoName, contactInfoPhoneNumber, contactInfoFacebook, contactInfoEmail, contactInfoWhatsapp, contactInfoRelationshipProperty,
+    redirect) {
+    
+    // We'll build a form data object because we're packing files with it too
+    var data = new FormData()
+    data.append('type_lease', leaseType);
+    data.append('number', number);
+    data.append('num_beds', numBeds);
+    data.append('num_baths', numBaths);
+    data.append('title', title);
+    data.append('amenities', amenities);
+    data.append('description', description);
+    data.append('rent', rent);
+    securityDeposit != null ? data.append('security_deposit', securityDeposit) : null;
+    data.append('building', buildingID);
+    data.append('contact_name', contactInfoName);
+    data.append('contact_phone', contactInfoPhoneNumber);
+    data.append('contact_facebook', contactInfoFacebook);
+    data.append('contact_email', contactInfoEmail);
+    data.append('contact_whatsapp', contactInfoWhatsapp);
+    data.append('contact_relation_property', contactInfoRelationshipProperty);
+    data.append('existing_photos', existingPhotos);
+
+    // TODO - put these in a subarray because it
+    // cpuld conflict with above keys if file
+    // is named the same
+    photos.map(function(s,i) {
+        data.append(s.name, s);
+    });
+
+    return (dispatch) => {
+        dispatch(unitEditRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/units/${unitID}`, {
+            method: 'put',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+            body: data
+        })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(unitEditSuccess(response));
+                    dispatch(push(redirect));
+                } catch (e) {
+                    dispatch(unitEditFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Error creating unit.'
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(unitEditFailure(error));
             });
     };
 }

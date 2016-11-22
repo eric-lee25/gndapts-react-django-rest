@@ -44,7 +44,7 @@
 
 }
 
-#add-unit-container { 
+#edit-unit-container, #add-unit-container { 
     .standard-bubble {
         margin-top: 28px;
     }
@@ -80,5 +80,10 @@
     #contact-info-bubble {
         margin-left: 1em;
         margin-bottom: 5px;
+    }
+
+    .existing-image-div {
+        display: inline;
+        margin-right: 20px;
     }
 }

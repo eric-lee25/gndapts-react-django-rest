@@ -408,7 +408,7 @@ class EditBuildingView extends React.Component {
                             <div className={"ui green button " + buttonClass }
                                 type="submit" onClick={this.editBuilding}
                             >
-                                Submit
+                                Update
                             </div>
 
                             <div className="ui error message">

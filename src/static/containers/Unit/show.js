@@ -88,12 +88,18 @@ class ShowUnitView extends React.Component {
             });
 
             if (this.props.isAuthenticated) {
-                let deleteUnit = null;
+                let deleteUnit, editUnit = null;
                 
                 if (this.props.userID == this.props.unit.creator) {
                     deleteUnit = (
                         <div onClick={this.delete} className={"item " }>
                             Delete
+                        </div>
+                    )
+
+                    editUnit = (
+                        <div onClick={() => {this.props.dispatch(push('/unit/edit/' + this.props.unit.uuid)) }} className={"item " }>
+                            Edit
                         </div>
                     )
                 }
@@ -106,10 +112,11 @@ class ShowUnitView extends React.Component {
                         <div className="ui icon top right pointing blue dropdown button" ref="settingsDropdown">
                             <i className="wrench icon"></i>
                             <div className="menu">
+                                {editUnit}
+                                {deleteUnit}
                                 <div onClick={() => this.props.dispatch(push('/review/add'))}  className="item">
                                     Add review 
                                 </div>
-                                {deleteUnit}
                             </div>
                         </div>
                     </div>

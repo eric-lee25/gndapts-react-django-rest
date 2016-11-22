@@ -141,6 +141,7 @@ class UnitSerializer(serializers.ModelSerializer):
     amenities = serializers.JSONField(
             required=False, allow_null=True)
     security_deposit = serializers.IntegerField(required=False)
+    existing_photos = serializers.JSONField(write_only=True, required=False)
 
     def get_is_favorite(self, unit):
         if self.context['request'].user.is_authenticated:

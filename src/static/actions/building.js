@@ -134,7 +134,6 @@ export function editBuilding(token, buildingID, neighborhood, title, description
         data.append('longitude', parseFloat(longitude).toFixed(6));
         data.append('amenities', amenities);
         data.append('existing_photos', existingPhotos);
-        console.log(existingPhotos);
 
         photos.map(function(s,i) {
             data.append(s.name, s);

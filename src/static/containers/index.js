@@ -10,6 +10,7 @@ export AddBuildingView from './Building/add';
 export EditBuildingView from './Building/edit';
 export PaddedContainer from './Padded/index';
 export AddUnitView from './Unit/add';
+export EditUnitView from './Unit/edit';
 export AddReviewView from './Review/add';
 export ListUnitsView from './Unit/list';
 export ShowBuildingView from './Building/show';

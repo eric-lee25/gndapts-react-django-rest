@@ -11,11 +11,12 @@ import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
 import Dropzone from 'react-dropzone';
 
-class AddUnitView extends React.Component {
+class EditUnitView extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            unitID: null,
             buildingID: null,
             neighborhoodID: null,
             number: null,
@@ -35,7 +36,9 @@ class AddUnitView extends React.Component {
             leaseType: '',
             contactInfoRelationshipProperty : ["Broker/Agent", "Owner", "Property Manager", "Student/Tenant"],
             selectedContactInfoRelationshipProperty : '',
-            photos: []
+            photos: [],
+            existingPhotos: [],
+            populatedForm: false
         };
     }
 
@@ -72,8 +75,9 @@ class AddUnitView extends React.Component {
         });
 
         this.props.actions.listNeighborhoods(this.props.token);
+        this.props.actions.getUnit(this.props.token, this.props.params.id);
 
-        $(ReactDOM.findDOMNode(this.refs.createUnitForm))
+        $(ReactDOM.findDOMNode(this.refs.editUnitForm))
             .form({
                 fields: {
                     buildingID: {
@@ -175,26 +179,93 @@ class AddUnitView extends React.Component {
             this.props.actions.listBuildings(this.props.token);
     }
 
+    componentDidUpdate() {
+        if (this.props.hasGottenUnit == true && this.props.hasGottenNeighborhoodList == true && 
+            this.props.hasGottenList == true && this.state.populatedForm == false) {
+            $(ReactDOM.findDOMNode(this.refs.unitTitle)).val(this.props.unit.title);
+            $(ReactDOM.findDOMNode(this.refs.unitNumber)).val(this.props.unit.number);
+            $(ReactDOM.findDOMNode(this.refs.unitNumBeds)).val(this.props.unit.num_beds);
+            $(ReactDOM.findDOMNode(this.refs.unitNumBaths)).val(this.props.unit.num_baths);
+            $(ReactDOM.findDOMNode(this.refs.unitLeaseType)).val(this.props.unit.type_lease);
+            $(ReactDOM.findDOMNode(this.refs.unitDescription)).val(this.props.unit.description);
+            $(ReactDOM.findDOMNode(this.refs.unitRent)).val(this.props.unit.rent);
+            $(ReactDOM.findDOMNode(this.refs.unitSecurityDeposit)).val(this.props.unit.security_deposit);
+            $(ReactDOM.findDOMNode(this.refs.unitContactInfoName)).val(this.props.unit.contact_name);
+            $(ReactDOM.findDOMNode(this.refs.unitContactInfoPhone)).val(this.props.unit.contact_phone);
+            $(ReactDOM.findDOMNode(this.refs.unitContactInfoFacebook)).val(this.props.unit.contact_facebook);
+            $(ReactDOM.findDOMNode(this.refs.unitContactInfoEmail)).val(this.props.unit.contact_email);
+            $(ReactDOM.findDOMNode(this.refs.unitContactInfoWhatsApp)).val(this.props.unit.contact_whatsapp);
+            $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown('set selected', this.props.unit.building_data.neighborhood);
+            $(ReactDOM.findDOMNode(this.refs.contactInfoRelationshipPropertyDropdown)).dropdown('set selected', this.props.unit.contact_relation_property);
+
+            // THIS IS A HACK. Should find out why it doesn't work.
+            // Related to the filtering based on neighborhood
+            setTimeout(function() {
+                $(ReactDOM.findDOMNode(this.refs.buildingDropdown)).dropdown('set selected', this.props.unit.building);
+            }.bind(this), 200);
+
+            let selectedAmenities = [];
+            let customAmenities = [];
+            let customAmenitiesStr = '';
+
+            this.props.unit.amenities.forEach(function(s,i) {
+                if (this.refs[s] != null) {
+                    $(ReactDOM.findDOMNode(this.refs[s])).checkbox('check');
+                    selectedAmenities.push(s);
+                }
+
+                else {
+                    customAmenities.push(s);
+
+                    let str = '';
+                    if (customAmenitiesStr.length > 0) {
+                        str = ', ';
+                    }
+                
+                    customAmenitiesStr += str + s;
+                }
+            }, this);
+
+            $(ReactDOM.findDOMNode(this.refs.customAmenities)).val(customAmenitiesStr);
+
+            this.setState({
+                populatedForm: true, title: this.props.unit.title,
+                number: this.props.unit.number, numBeds: this.props.unit.num_beds,
+                numBaths: this.props.unit.num_baths, leaseType: this.props.unit.type_lease,
+                description: this.props.unit.description, rent: this.props.unit.rent,
+                securityDeposit: this.props.unit.security_deposit, contactInfoName: this.props.unit.contact_name,
+                contactInfoPhoneNumber: this.props.unit.contact_phone, contactInfoFacebook: this.props.unit.contact_facebook,
+                contactInfoEmail: this.props.unit.contact_email, contactInfoWhatsapp: this.props.unit.contact_whatsapp,
+                neighborhoodID: this.props.unit.building_data.neighborhood, selectedContactInfoRelationshipProperty : this.props.unit.contact_relation_property,
+                selectedAmenities: selectedAmenities,
+                unitID: this.props.unit.uuid,
+                customAmenities: customAmenities, existingPhotos: this.props.unit.photos
+            });
+        }
+    }
+
     handleInputChange = (e, state) => {
         this.setState({
             [state]: e.target.value
         });
     }
 
-    createUnit = (e) => {
-        $(ReactDOM.findDOMNode(this.refs.createUnitForm)).form('validate form');
-        if ($(ReactDOM.findDOMNode(this.refs.createUnitForm)).form('is valid')) {
-            this.props.actions.createUnit(
+    editUnit = (e) => {
+        $(ReactDOM.findDOMNode(this.refs.editUnitForm)).form('validate form');
+        if ($(ReactDOM.findDOMNode(this.refs.editUnitForm)).form('is valid')) {
+            this.props.actions.editUnit(
                 this.props.token,
+                this.state.unitID,
                 this.state.number, this.state.numBeds, this.state.numBaths, this.state.leaseType,
                 this.state.title,
                 JSON.stringify(this.state.selectedAmenities.concat(this.state.customAmenities)),
                 this.state.description, this.state.contactInformation,
                 this.state.rent, this.state.securityDeposit, this.state.buildingID, this.state.photos,
+                JSON.stringify(this.state.existingPhotos),
                 this.state.contactInfoName, this.state.contactInfoPhoneNumber, this.state.contactInfoFacebook,
                 this.state.contactInfoEmail, this.state.contactInfoWhatsapp,
                 this.state.selectedContactInfoRelationshipProperty,
-                '/map');
+                '/unit/show/' + this.state.unitID);
         }
     }
 
@@ -238,9 +309,19 @@ class AddUnitView extends React.Component {
         this.setState({customAmenities: currentCustomAmenities});
     }
 
+    removeExistingPicture = (i) => {
+        let existingPhotos = this.state.existingPhotos;
+        existingPhotos.splice(i, 1);
+        this.setState({existingPhotos: existingPhotos});
+    }
+
     render() {
         const buttonClass = classNames({
-            loading: this.props.isCreating
+            loading: this.props.isEditing
+        });
+
+        const existingPhotosClass = classNames({
+            hidden: this.state.existingPhotos.length == 0
         });
         
         const formClass = classNames({
@@ -257,6 +338,19 @@ class AddUnitView extends React.Component {
                     <img key={i} className="ui tiny image" src={s.preview} />
                 )
             })
+        )
+
+        let existingPhotos = (
+            this.state.existingPhotos.map(function(s,i) {
+                return (
+                    <div key={i} className="existing-image-div">
+                        <img className="ui middle aligned tiny image" src={s.thumb} />
+                        <span>
+                            <i onClick={() => this.removeExistingPicture(i)} className="big link remove icon"></i>
+                        </span>
+                    </div>
+                )
+            }, this)
         )
 
         let buildingList = null;
@@ -277,6 +371,7 @@ class AddUnitView extends React.Component {
                         <div key={i} className="item" data-value={s.uuid}>{s.title}</div>
                     )
                 }
+
             }, this);
         }
 
@@ -300,13 +395,13 @@ class AddUnitView extends React.Component {
         )
 
         return (
-            <div id="add-unit-container">
-                <DocumentTitle title='Add unit'>
+            <div id="edit-unit-container">
+                <DocumentTitle title='Edit unit'>
                     <div className="ui container">
                         <h2 className="ui header">
-                            Add unit
+                            Edit unit
                         </h2>
-                        <form className={"ui form " + formClass} ref="createUnitForm" >
+                        <form className={"ui form " + formClass} ref="editUnitForm" >
                             <div className="five wide field">
                                 <label>Neighborhood</label>
                                 <div className="ui selection dropdown" ref="neighborhoodDropdown">
@@ -320,7 +415,7 @@ class AddUnitView extends React.Component {
                             </div>
                             <div className="five wide field">
                                 <label>Building</label>
-                                <div className="ui selection dropdown" ref="buildingDropdown">
+                                <div id="xxx" className="ui selection dropdown" ref="buildingDropdown">
                                     <input type="hidden" name="buildingID"/>
                                     <i className="dropdown icon"></i>
                                     <div className="default text">Select a building</div>
@@ -335,6 +430,7 @@ class AddUnitView extends React.Component {
                                     <div className="ui input">
                                         <input type="text"
                                             name="title"
+                                            ref="unitTitle"
                                             onChange={(e) => { this.handleInputChange(e, 'title'); }}
                                         />
                                     </div>
@@ -349,6 +445,7 @@ class AddUnitView extends React.Component {
                                     <div className="ui input">
                                         <input type="text"
                                             name="number"
+                                            ref="unitNumber"
                                             onChange={(e) => { this.handleInputChange(e, 'number'); }}
                                         />
                                     </div>
@@ -362,6 +459,7 @@ class AddUnitView extends React.Component {
                                 <div className="ui input">
                                     <input type="text"
                                         name="numBeds"
+                                        ref="unitNumBeds"
                                         onChange={(e) => { this.handleInputChange(e, 'numBeds'); }}
                                     />
                                 </div>
@@ -371,6 +469,7 @@ class AddUnitView extends React.Component {
                                 <div className="ui input">
                                     <input type="text"
                                         name="numBaths"
+                                        ref="unitNumBaths"
                                         onChange={(e) => { this.handleInputChange(e, 'numBaths'); }}
                                     />
                                 </div>
@@ -381,6 +480,7 @@ class AddUnitView extends React.Component {
                                     <div className="ui input">
                                         <input type="text"
                                             name="leaseType"
+                                            ref="unitLeaseType"
                                             onChange={(e) => { this.handleInputChange(e, 'leaseType'); }}
                                         />
                                     </div>
@@ -391,52 +491,53 @@ class AddUnitView extends React.Component {
                             </div>
                             <h5 className="field-header" id="">Amenities</h5>
                             <div className="ui fields">
-                                <div className="three wide field"> <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-ac" onChange={(e) => {this.handleCheckboxChange(e, 'A/C')}} />
+                                <div className="three wide field">
+                                    <div ref="A/C" className="ui checkbox" onChange={(e) => {this.handleCheckboxChange(e, 'A/C')}}>
+                                        <input type="checkbox" name="amenity-ac"  />
                                         <label>A/C</label>
                                     </div>
                                 </div>
                                 <div className="three wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-microwave" onChange={(e) => {this.handleCheckboxChange(e, 'Microwave')}} />
+                                    <div ref="Microwave" className="ui checkbox" onChange={(e) => {this.handleCheckboxChange(e, 'Microwave')}} >
+                                        <input type="checkbox" name="amenity-microwave"/>
                                         <label>Microwave</label>
                                     </div>
                                 </div>
                                 <div className="three wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-dishwasher" onChange={(e) => {this.handleCheckboxChange(e, 'Dishwasher')}} />
+                                    <div ref="Dishwasher" className="ui checkbox" onChange={(e) => {this.handleCheckboxChange(e, 'Dishwasher')}} >
+                                        <input type="checkbox" name="amenity-dishwasher" />
                                         <label>Dishwasher</label>
                                     </div>
                                 </div>
                                 <div className="three wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-electricityincluded" onChange={(e) => {this.handleCheckboxChange(e, 'Electricity included')}} />
+                                    <div ref="Electricity included" className="ui checkbox" onChange={(e) => {this.handleCheckboxChange(e, 'Electricity included')}} >
+                                        <input type="checkbox" name="amenity-electricityincluded" />
                                         <label>Electricity included</label>
                                     </div>
                                 </div>
                             </div>
                             <div className="ui fields">
                                 <div className="three wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-furnished" onChange={(e) => {this.handleCheckboxChange(e, 'Furnished')}} />
+                                    <div ref="Furnished" className="ui checkbox" onChange={(e) => {this.handleCheckboxChange(e, 'Furnished')}} >
+                                        <input type="checkbox" name="amenity-furnished" />
                                         <label>Furnished</label>
                                     </div>
                                 </div>
                                 <div className="three wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-laundry" onChange={(e) => {this.handleCheckboxChange(e, 'Laundry: in unit')}} />
+                                    <div ref="Laundry: in unit" className="ui checkbox" onChange={(e) => {this.handleCheckboxChange(e, 'Laundry: in unit')}}>
+                                        <input type="checkbox" name="amenity-laundry"  />
                                         <label>Laundry: in unit</label>
                                     </div>
                                 </div>
                                 <div className="three wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-petfriendly" onChange={(e) => {this.handleCheckboxChange(e, 'Pet friendly')}} />
+                                    <div ref="Pet friendly" className="ui checkbox" onChange={(e) => {this.handleCheckboxChange(e, 'Pet friendly')}} >
+                                        <input type="checkbox" name="amenity-petfriendly" />
                                         <label>Pet friendly</label>
                                     </div>
                                 </div>
                                 <div className="three wide field">
-                                    <div className="ui checkbox">
-                                        <input type="checkbox" name="amenity-electricitynotincluded" onChange={(e) => {this.handleCheckboxChange(e, 'Electricity not included')}} />
+                                    <div className="ui checkbox" onChange={(e) => {this.handleCheckboxChange(e, 'Electricity not included')}}>
+                                        <input type="checkbox" name="amenity-electricitynotincluded"  />
                                         <label>Electricity not included</label>
                                     </div>
                                 </div>
@@ -447,6 +548,7 @@ class AddUnitView extends React.Component {
                                         <input type="text"
                                             placeholder="Other amenities (separate by commas)"
                                             name="customAmenities"
+                                            ref="customAmenities"
                                             onChange={(e) => { this.handleCustomAmenities(e, 'customAmenities'); }}
                                         />
                                     </div>
@@ -456,6 +558,7 @@ class AddUnitView extends React.Component {
                                 <label>Description</label>
                                 <textarea 
                                     name="description"
+                                    ref="unitDescription"
                                     rows="2"
                                     onChange={(e) => { this.handleInputChange(e, 'description')}}
                                 ></textarea> 
@@ -466,6 +569,7 @@ class AddUnitView extends React.Component {
                                     <div className="ui label">$</div>
                                     <input type="text"
                                         name="rent"
+                                        ref="unitRent"
                                         onChange={(e) => { this.handleInputChange(e, 'rent'); }}
                                     />
                                 </div>
@@ -476,6 +580,7 @@ class AddUnitView extends React.Component {
                                     <div className="ui label">$</div>
                                     <input type="text"
                                         name="securityDeposit"
+                                        ref="unitSecurityDeposit"
                                         onChange={(e) => { this.handleInputChange(e, 'securityDeposit'); }}
                                     />
                                 </div>
@@ -488,6 +593,7 @@ class AddUnitView extends React.Component {
                                         <input type="text"
                                             placeholder="Name"
                                             name="ci-name"
+                                            ref="unitContactInfoName"
                                             onChange={(e) => { this.handleInputChange(e, 'contactInfoName'); }}
                                         />
                                     </div>
@@ -497,6 +603,7 @@ class AddUnitView extends React.Component {
                                         <input type="text"
                                             placeholder="Phone number"
                                             name="ci-phone"
+                                            ref="unitContactInfoPhone"
                                             onChange={(e) => { this.handleInputChange(e, 'contactInfoPhoneNumber'); }}
                                         />
                                     </div>
@@ -506,6 +613,7 @@ class AddUnitView extends React.Component {
                                         <input type="text"
                                             placeholder="Facebook name or page"
                                             name="ci-facebook"
+                                            ref="unitContactInfoFacebook"
                                             onChange={(e) => { this.handleInputChange(e, 'contactInfoFacebook'); }}
                                         />
                                     </div>
@@ -517,6 +625,7 @@ class AddUnitView extends React.Component {
                                         <input type="text"
                                             placeholder="Email"
                                             name="ci-email"
+                                            ref="unitContactInfoEmail"
                                             onChange={(e) => { this.handleInputChange(e, 'contactInfoEmail'); }}
                                         />
                                     </div>
@@ -526,6 +635,7 @@ class AddUnitView extends React.Component {
                                         <input type="text"
                                             placeholder="WhatsApp phone"
                                             name="ci-whatsapp"
+                                            ref="unitContactInfoWhatsApp"
                                             onChange={(e) => { this.handleInputChange(e, 'contactInfoWhatsapp'); }}
                                         />
                                     </div>
@@ -556,11 +666,15 @@ class AddUnitView extends React.Component {
                                     {preview}
                                 </div>
                             </div>
+                            <div className={"sixteen wide field " + existingPhotosClass}>
+                                <label>Existing photos</label>
+                                {existingPhotos}
+                            </div>
 
                             <div className={"ui green button " + buttonClass }
-                                type="submit" onClick={this.createUnit}
+                                type="submit" onClick={this.editUnit}
                             >
-                                Submit
+                                Update
                             </div>
 
                             <div className="ui error message">
@@ -576,8 +690,11 @@ class AddUnitView extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        isCreated: state.unit.isCreated,
-        isCreating: state.unit.isCreating,
+        isEditing: state.unit.isEditingUnit,
+        hasEdited: state.unit.hasEditedUnit,
+        isGettingUnit: state.unit.isGettingUnit,
+        hasGottenUnit: state.unit.hasGottenUnit,
+        unit: state.unit.unit,
         statusText: state.unit.statusText,
         isGettingList: state.building.isGettingList,
         hasGottenList: state.building.hasGottenList,
@@ -595,5 +712,5 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddUnitView);
-export { AddUnitView as AddUnitViewNotConnected };
+export default connect(mapStateToProps, mapDispatchToProps)(EditUnitView);
+export { EditUnitView as EditUnitViewNotConnected };
