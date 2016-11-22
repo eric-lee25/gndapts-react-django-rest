@@ -12,6 +12,7 @@ import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'drmonty-leaflet-awesome-markers';
 import 'drmonty-leaflet-awesome-markers/css/leaflet.awesome-markers.css';
 import 'leaflet/dist/leaflet.css';
+import './style.scss';
 
 class FavoritesView extends React.Component {
     constructor(props) {
@@ -71,6 +72,16 @@ class FavoritesView extends React.Component {
                 inline:false
             });
         }
+
+        if (this.props.hasDeletedFavorite) {
+            this.props.actions.resetDeleteFavorite();
+            this.props.actions.getCurrentUser(this.props.token);
+        }
+
+        if (this.props.hasClearedFavorites) {
+            this.props.actions.resetClearFavorite();
+            this.props.actions.getCurrentUser(this.props.token);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -107,11 +118,15 @@ class FavoritesView extends React.Component {
             loading: this.props.isGettingCurrentUser
         });
 
-        let favoriteList = null;
+        let favoriteList, clearButton = null;
         let emailBox = null;
 
         const buttonClass = classNames({
             loading: this.props.isSendingFavorites
+        });
+
+        const clearFavoriteButtonClass = classNames({
+            loading: this.props.isClearingFavorites
         });
 
         if (this.props.hasGottenCurrentUser) {
@@ -128,15 +143,25 @@ class FavoritesView extends React.Component {
                             "/unit/show/" + s.unit; 
                         return (
                             <div key={i} className="item">
-                                <i className="fa-heart icon"></i> <div className="content"> <Link to={path}>{s.title}</Link>
+                                <div className="content">
+                                    <Link to={path}>{s.title}</Link>
+                                    <i onClick={() => this.props.actions.deleteFavorite(this.props.token, s.uuid) } className="link remove icon"></i>
                                 </div>
                             </div>
                         )
-                    })
+                    }, this)
+                )
+
+                clearButton = (
+                    <div className={"ui red submit button tiny " + clearFavoriteButtonClass }
+                        type="submit" onClick={() => this.props.actions.clearFavorites(this.props.token)}
+                    >
+                        Clear
+                    </div>
                 )
 
                 emailBox = (
-                    <div>
+                    <div id="share-container">
                         <h1 className="ui sub header">Share</h1>
                         <span>Share your favorites with up to three friends via email. You will receive a copy too.</span>
                         <br/>
@@ -195,6 +220,7 @@ class FavoritesView extends React.Component {
                     <div className="ui list">
                         {favoriteList}
                     </div>
+                    {clearButton}
                     <br/>
                     {emailBox}
                     <div className="ui error message">
@@ -226,6 +252,10 @@ const mapStateToProps = (state) => {
         hasGottenCurrentUser: state.user.hasGottenCurrentUser,
         isSendingFavorites: state.user.isSendingFavorites,
         hasSentFavorites: state.user.hasSentFavorites,
+        isDeletingFavorite: state.user.isDeletingFavorite,
+        hasDeletedFavorite: state.user.hasDeletedFavorite,
+        isClearingFavorites: state.user.isClearingFavorites,
+        hasClearedFavorites: state.user.hasClearedFavorites,
         user: state.user.user,
         statusText: state.user.statusText
     };

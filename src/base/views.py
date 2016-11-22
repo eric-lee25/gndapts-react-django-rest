@@ -257,9 +257,11 @@ class NeighborhoodViewset(
 class FavoriteViewset(
         mixins.CreateModelMixin,
         mixins.ListModelMixin,
+        mixins.DestroyModelMixin,
         viewsets.GenericViewSet):
     queryset = Favorite.objects.all().order_by('date_created')
     serializer_class = FavoriteSerializer
+    permission_classes = (IsOwnerForEditOrDeletePermission, )
 
     @list_route(methods=['post'])
     def share(self, request):
@@ -305,12 +307,14 @@ class FavoriteViewset(
             requests.post(url, auth=('api', settings.MAILGUN_API_KEY),
                           data=files)
 
-            # Deactivate favorites
-            request.user.favorite_set.filter(active=1).update(active=0)
-
             return Response({}, status=status.HTTP_200_OK)
 
         return Response(sf.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['post'])
+    def clear(self, request):
+        request.user.favorite_set.all().delete()
+        return Response({}, status=status.HTTP_200_OK)
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)

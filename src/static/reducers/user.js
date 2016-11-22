@@ -3,6 +3,8 @@ import {
     USER_GET_CURRENT_REQUEST, USER_GET_CURRENT_SUCCESS, USER_GET_CURRENT_FAILURE, USER_GET_CURRENT_RESET,
     USER_FAVORITE_CREATE_REQUEST, USER_FAVORITE_CREATE_SUCCESS, USER_FAVORITE_CREATE_FAILURE, USER_FAVORITE_CREATE_RESET,
     USER_FAVORITE_SHARE_REQUEST, USER_FAVORITE_SHARE_SUCCESS, USER_FAVORITE_SHARE_FAILURE, USER_FAVORITE_SHARE_RESET,
+    USER_FAVORITE_DELETE_REQUEST, USER_FAVORITE_DELETE_SUCCESS, USER_FAVORITE_DELETE_FAILURE, USER_FAVORITE_DELETE_RESET,
+    USER_FAVORITE_CLEAR_REQUEST, USER_FAVORITE_CLEAR_SUCCESS, USER_FAVORITE_CLEAR_FAILURE, USER_FAVORITE_CLEAR_RESET,
     USER_FAVORITE_COUNT_REQUEST, USER_FAVORITE_COUNT_SUCCESS, USER_FAVORITE_COUNT_FAILURE,
     USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_REQUEST, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_SUCCESS, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_FAILURE, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_RESET,
     USER_RESET_PASSWORD_REQUEST, USER_RESET_PASSWORD_SUCCESS, USER_RESET_PASSWORD_FAILURE, USER_RESET_PASSWORD_RESET,
@@ -23,6 +25,10 @@ const initialState = {
     hasSentPasswordRecoveryInstructions: false,
     isResettingPassword: false,
     hasResetPassword: false,
+    isDeletingFavorite: false,
+    hasDeletedFavorite: false,
+    isClearingFavorites: false,
+    hasClearedFavorites: false,
     statusText: null
 };
 
@@ -116,6 +122,62 @@ export default createReducer(initialState, {
         return Object.assign({}, state, {
             isSendingFavorites: false,
             hasSentFavorites: false,
+            statusText: null
+        });
+    },
+    [USER_FAVORITE_DELETE_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            isDeletingFavorite: true,
+            hasDeletedFavorite: false,
+            statusText: null
+        });
+    },
+    [USER_FAVORITE_DELETE_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            isDeletingFavorite: false,
+            hasDeletedFavorite: true,
+            statusText: null
+        });
+    },
+    [USER_FAVORITE_DELETE_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            isDeletingFavorite: false,
+            hasDeletedFavorite: false,
+            statusText: `${payload.statusText}`
+        });
+    },
+    [USER_FAVORITE_DELETE_RESET]: (state, payload) => {
+        return Object.assign({}, state, {
+            isDeletingFavorite: false,
+            hasDeletedFavorite: false,
+            statusText: null
+        });
+    },
+    [USER_FAVORITE_CLEAR_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            isClearingFavorites: true,
+            hasClearedFavorites: false,
+            statusText: null
+        });
+    },
+    [USER_FAVORITE_CLEAR_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            isClearingFavorites: false,
+            hasClearedFavorites: true,
+            statusText: null
+        });
+    },
+    [USER_FAVORITE_CLEAR_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            isClearingFavorites: false,
+            hasClearedFavorites: false,
+            statusText: `${payload.statusText}`
+        });
+    },
+    [USER_FAVORITE_CLEAR_RESET]: (state, payload) => {
+        return Object.assign({}, state, {
+            isClearingFavorites: false,
+            hasClearedFavorites: false,
             statusText: null
         });
     },

@@ -57,6 +57,7 @@ class ListUnitsView extends React.Component {
                 )
             }
 
+            // This needs fixing. These link tags end up refreshing the page
             else {
                 unitList = 
                 this.props.unitList.results.map(function(s, i){

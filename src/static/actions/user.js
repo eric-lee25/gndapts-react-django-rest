@@ -7,6 +7,8 @@ import {
     USER_GET_CURRENT_REQUEST, USER_GET_CURRENT_SUCCESS, USER_GET_CURRENT_FAILURE, USER_GET_CURRENT_RESET,
     USER_FAVORITE_CREATE_REQUEST, USER_FAVORITE_CREATE_SUCCESS, USER_FAVORITE_CREATE_FAILURE, USER_FAVORITE_CREATE_RESET,
     USER_FAVORITE_SHARE_REQUEST, USER_FAVORITE_SHARE_SUCCESS, USER_FAVORITE_SHARE_FAILURE, USER_FAVORITE_SHARE_RESET,
+    USER_FAVORITE_DELETE_REQUEST, USER_FAVORITE_DELETE_SUCCESS, USER_FAVORITE_DELETE_FAILURE, USER_FAVORITE_DELETE_RESET,
+    USER_FAVORITE_CLEAR_REQUEST, USER_FAVORITE_CLEAR_SUCCESS, USER_FAVORITE_CLEAR_FAILURE, USER_FAVORITE_CLEAR_RESET,
     USER_FAVORITE_COUNT_REQUEST, USER_FAVORITE_COUNT_SUCCESS, USER_FAVORITE_COUNT_FAILURE,
     USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_REQUEST, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_SUCCESS, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_FAILURE, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_RESET,
     USER_RESET_PASSWORD_REQUEST, USER_RESET_PASSWORD_SUCCESS, USER_RESET_PASSWORD_FAILURE, USER_RESET_PASSWORD_RESET,
@@ -225,6 +227,136 @@ export function shareFavorite(token, emails) {
                             }
                         }));
                     })
+            });
+    };
+}
+
+export function favoriteDeleteSuccess() {
+    return {
+        type: USER_FAVORITE_DELETE_SUCCESS,
+    };
+}
+
+export function favoriteDeleteFailure(error) {
+    return {
+        type: USER_FAVORITE_DELETE_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function favoriteDeleteRequest() {
+    return {
+        type: USER_FAVORITE_DELETE_REQUEST
+    };
+}
+
+export function favoriteDeleteReset() {
+    return {
+        type: USER_FAVORITE_DELETE_RESET
+    };
+}
+
+export function resetDeleteFavorite() {
+    return (dispatch) => {
+        dispatch(favoriteDeleteReset());
+    }
+}
+
+export function deleteFavorite(token, favoriteID, redirect) {
+    return (dispatch) => {
+        dispatch(favoriteDeleteRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/favorites/${favoriteID}`, {
+            method: 'delete',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(response => {
+                try {
+                    dispatch(favoriteDeleteSuccess(response));
+                } catch (e) {
+                    dispatch(favoriteDeleteFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Error deleting favorite.'
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(favoriteCreateFailure(error));
+            });
+    };
+}
+
+export function favoriteClearSuccess() {
+    return {
+        type: USER_FAVORITE_CLEAR_SUCCESS,
+    };
+}
+
+export function favoriteClearFailure(error) {
+    return {
+        type: USER_FAVORITE_CLEAR_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function favoriteClearRequest() {
+    return {
+        type: USER_FAVORITE_CLEAR_REQUEST
+    };
+}
+
+export function favoriteClearReset() {
+    return {
+        type: USER_FAVORITE_CLEAR_RESET
+    };
+}
+
+export function resetClearFavorite() {
+    return (dispatch) => {
+        dispatch(favoriteClearReset());
+    }
+}
+
+export function clearFavorites(token) {
+    return (dispatch) => {
+        dispatch(favoriteClearRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/favorites/clear`, {
+            method: 'post',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(favoriteClearSuccess(response));
+                } catch (e) {
+                    dispatch(favoriteClearFailure({
+                        response: {
+                            status: 403,
+                            statusText: 'Error clearing favorite.'
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(favoriteCreateFailure(error));
             });
     };
 }
