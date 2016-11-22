@@ -30,6 +30,7 @@ class MapView extends React.Component {
             maximumRent: 6000,
             numberBedrooms: 0,
             numberBathrooms: 0,
+            mapSatelliteMode: "streets",
             flag: false,
             favoriteBuildings: {},
             busRoutes: {
@@ -400,7 +401,7 @@ class MapView extends React.Component {
                     <DocumentTitle title='Map'>
                         <Map style={mapStyle} center={centerPosition} zoom={15}>
                             <TileLayer
-                                url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
+                                url={'https://api.mapbox.com/styles/v1/mapbox/' + this.state.mapSatelliteMode + '-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'}
                                 attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://mapbox.com">Mapbox</a>'
                             />
                             {polyLine}
@@ -448,6 +449,15 @@ class MapView extends React.Component {
                             <a href="#" onClick={this.clearBusRoutes} className="ui icon button">
                                 <i className="remove icon"></i>
                             </a>
+                        </div>
+                    </div>
+                    <div className="ui horizontal segments">
+                        <div className="ui half-width segment">
+                            <div id="map-mode-controls" className="two ui buttons">
+                                <button className={"ui button " + (this.state.mapSatelliteMode == "streets" ? "active" : "")} onClick={() => this.setState({mapSatelliteMode: "streets"})}>Map</button>
+                                <div className="or"></div>
+                                <button className={"ui button " + (this.state.mapSatelliteMode == "satellite" ? "active" : "")} onClick={() => this.setState({mapSatelliteMode: "satellite"})}>Satellite</button>
+                            </div>
                         </div>
                     </div>
                 </div>
