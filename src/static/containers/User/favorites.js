@@ -20,6 +20,7 @@ class FavoritesView extends React.Component {
 
         this.state = {
             emails: [],
+            count: 1,
             favoriteShareSuccess: false
         };
     }
@@ -42,26 +43,6 @@ class FavoritesView extends React.Component {
                                 type   : 'empty',
                                 prompt : 'Please enter an e-mail'
                             },
-                            {
-                                type   : 'email',
-                                prompt : 'Please enter a valid e-mail'
-                            }
-                        ]
-                    },
-                    emailoptional: {
-                        identifier  : 'email-optional',
-                        optional   : true,
-                        rules: [
-                            {
-                                type   : 'email',
-                                prompt : 'Please enter a valid e-mail'
-                            }
-                        ]
-                    },
-                    emailoptionalsecond: {
-                        identifier  : 'email-optional-second',
-                        optional   : true,
-                        rules: [
                             {
                                 type   : 'email',
                                 prompt : 'Please enter a valid e-mail'
@@ -100,7 +81,7 @@ class FavoritesView extends React.Component {
         });
     };
 
-    shareFavorites = () => {
+    shareFavorites = (index) => {
         $(ReactDOM.findDOMNode(this.refs.favoritesForm)).form('validate form');
         if ($(ReactDOM.findDOMNode(this.refs.favoritesForm)).form('is valid')) {
             this.props.actions.shareFavorite(this.props.token, this.state.emails);
@@ -113,13 +94,24 @@ class FavoritesView extends React.Component {
         }
     }
 
+    removeEmailBox = (index) => {
+        if (this.state.count != 1) {
+            let newEmailList = this.state.emails.splice(index, 1);
+            this.setState({count: this.state.count-1, emails: newEmailList});
+        }
+    }
+
+    addEmailBox = () => {
+        this.setState({count: this.state.count+1});
+    }
+
     render() {
         const formClass = classNames({
             loading: this.props.isGettingCurrentUser
         });
 
         let favoriteList, clearButton = null;
-        let emailBox = null;
+        let emailBoxContainer = null;
 
         const buttonClass = classNames({
             loading: this.props.isSendingFavorites
@@ -160,42 +152,37 @@ class FavoritesView extends React.Component {
                     </div>
                 )
 
-                emailBox = (
+                // Probably a better way to do this?
+                let emailBoxes = (
+                    Array.from(Array(this.state.count)).map(function(s,i) {
+                        return (
+                            <div key={i} className="six wide field">
+                                <div className="ui left icon action input">
+                                    <i className="mail icon"></i>
+                                    <input type="text"
+                                        name="email"
+                                        placeholder="Enter email address"
+                                        onChange={(e) => { this.handleEmailInputChange(e, i); }}
+                                    />
+                                    <a className="ui button" onClick={() => this.removeEmailBox(i)}>
+                                        Remove
+                                    </a>
+                                </div>
+                            </div>
+                        )
+                    }, this)
+                )
+
+
+                emailBoxContainer = (
                     <div id="share-container">
                         <h1 className="ui sub header">Share</h1>
                         <span>Share your favorites with up to three friends via email. You will receive a copy too.</span>
                         <br/>
-                        <br/>
-                        <div className="four wide field">
-                            <div className="ui left icon input">
-                                <i className="mail icon"></i>
-                                <input type="text"
-                                    name="email"
-                                    placeholder="Enter email address"
-                                    onChange={(e) => { this.handleEmailInputChange(e, 0); }}
-                                />
-                            </div>
-                        </div>
-                        <div className="four wide field">
-                            <div className="ui left icon input">
-                                <i className="mail icon"></i>
-                                <input type="text"
-                                    name="email-optional"
-                                    placeholder="Enter email address"
-                                    onChange={(e) => { this.handleEmailInputChange(e, 1); }}
-                                />
-                            </div>
-                        </div>
-                        <div className="four wide field">
-                            <div className="ui left icon input">
-                                <i className="mail icon"></i>
-                                <input type="text"
-                                    name="email-optional-second"
-                                    placeholder="Enter email address"
-                                    onChange={(e) => { this.handleEmailInputChange(e, 2); }}
-                                />
-                            </div>
-                        </div>
+                        <a id="add-email-btn" className="ui button tiny purple" onClick={() => this.addEmailBox()}>
+                            Add email
+                        </a>
+                        {emailBoxes}
                         <div className={"ui green submit button " + buttonClass }
                             type="submit" onClick={this.shareFavorites}
                         >
@@ -222,7 +209,7 @@ class FavoritesView extends React.Component {
                     </div>
                     {clearButton}
                     <br/>
-                    {emailBox}
+                    {emailBoxContainer}
                     <div className="ui error message">
                     </div>
                 </div>
