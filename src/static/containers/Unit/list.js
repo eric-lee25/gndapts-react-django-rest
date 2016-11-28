@@ -8,7 +8,7 @@ import './style.scss';
 import * as unitActionCreators from '../../actions/unit';
 import { bindActionCreators } from 'redux';
 import ReactDOM from 'react-dom';
-import './tablesort.js';
+import './jquery.tablesort.js';
 
 class ListUnitsView extends React.Component {
     constructor(props) {
@@ -30,12 +30,11 @@ class ListUnitsView extends React.Component {
     componentDidUpdate() {
         if (this.props.hasGottenList) {
             $(ReactDOM.findDOMNode(this.refs.unitTable)).tablesort();
-            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'asc');
-            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'asc'); // weird glitch
 
-            for (let i=0; i<this.props.unitList.results.length; ++i) {
-                //$(ReactDOM.findDOMNode(this.refs['unitActionsDropdown' + i])).dropdown();
-            }
+            // Weird glitch - TODO fix. Probably this: https://github.com/kylefox/jquery-tablesort/issues/30
+            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'desc');
+            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'desc');
+            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'desc');
         }
     }
 
@@ -63,16 +62,16 @@ class ListUnitsView extends React.Component {
                 this.props.unitList.results.map(function(s, i){
                     return (
                         <tr key={i}>
-                            <td><Link to={`/unit/show/${s.uuid}`}>{s.title}</Link></td>
+                            <td><a href="#" onClick={() => this.props.dispatch(push(`/unit/show/${s.uuid}`))}>{s.title}</a></td>
                             <td>{s.number}</td>
-                            <td><Link to={`/building/show/${s.building_data.uuid}`}>{s.building_data.title}</Link></td>
+                            <td><a href="#" onClick={() => this.props.dispatch(push(`/building/show/${s.building_data.uuid}`))}>{s.building_data.title}</a></td>
                             <td>{s.building_data.neighborhood_name}</td>
                             <td>${s.rent}</td>
                             <td>{s.num_beds}</td>
                             <td>{s.num_baths}</td>
                         </tr>
                     )
-                });
+                }, this);
             }
         }
 
