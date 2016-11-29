@@ -5,6 +5,7 @@ import { authLogoutAndRedirect } from '../../actions/auth';
 import { push } from 'react-router-redux';
 import * as userActionCreators from '../../actions/user';
 import { bindActionCreators } from 'redux';
+import ReactDOM from 'react-dom';
 
 class LoggedInView extends React.Component {
 
@@ -19,7 +20,6 @@ class LoggedInView extends React.Component {
         super(props);
 
         this.state = {
-            favoritesCount: 0
         };
     }
 
@@ -34,8 +34,7 @@ class LoggedInView extends React.Component {
     };
 
     jiggleFavorites = () => {
-        $('#favorites-icon').transition('flash');
-        this.setState({ favoritesCount: this.state.favoritesCount+1 });
+        $(ReactDOM.findDOMNode(this.refs.favoritesIcon)).transition('flash');
     }
 
     render() {
@@ -46,7 +45,8 @@ class LoggedInView extends React.Component {
             upperRight = (
                 <div className="right menu">
                     <a href="#" onClick={() => this.props.dispatch(push('/user/favorites'))} className="item">
-                        <i id="favorites-icon" className="fa-heart icon" aria-hidden="true"></i>Favorites
+                        <i ref="favoritesIcon" id="favorites-icon" className="fa-heart icon" aria-hidden="true"></i>Favorites
+                        ({this.props.favoritesCount})
                     </a>
                     <div className="ui simple dropdown item">
                         {this.props.firstName} <i className="dropdown icon"></i>
@@ -121,6 +121,7 @@ const mapStateToProps = (state, ownProps) => {
     return {
         isAuthenticated: state.auth.isAuthenticated,
         firstName: state.auth.firstName,
+        favoritesCount: state.user.favoritesCount,
         isGettingFavoritesCount: state.user.isGettingFavoritesCount,
         hasGottenFavoritesCount: state.user.hasGottenFavoritesCount,
         pathName: ownProps.location.pathname

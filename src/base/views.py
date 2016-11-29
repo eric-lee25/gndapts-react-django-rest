@@ -278,7 +278,7 @@ class FavoriteViewset(
                 destination += e + ","
             destination = destination[:-1]
 
-            for f in request.user.favorite_set.filter(active=1):
+            for f in request.user.favorite_set:
                 url = title = ""
                 if f.unit is not None:
                     url = settings.DOMAIN + "/unit/show/" + str(f.unit.pk)
@@ -330,12 +330,6 @@ class UserViewSet(
         if request.user and pk == 'current':
             return Response(UserSerializer(request.user).data)
         return super(UserViewSet, self).retrieve(request, pk)
-
-    @list_route(methods=['get'])
-    def favoritescount(self, request):
-        data = {"active_favorite_count":
-                request.user.favorite_set.filter(active=1).count()}
-        return Response(data, status=status.HTTP_200_OK)
 
     @list_route(methods=['post'], permission_classes=[])
     def sendpasswordrecoveryinstructions(self, request):

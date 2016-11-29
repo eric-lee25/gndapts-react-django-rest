@@ -8,9 +8,12 @@ import {
     USER_FAVORITE_COUNT_REQUEST, USER_FAVORITE_COUNT_SUCCESS, USER_FAVORITE_COUNT_FAILURE,
     USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_REQUEST, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_SUCCESS, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_FAILURE, USER_SEND_PASSWORD_RECOVERY_INSTRUCTIONS_RESET,
     USER_RESET_PASSWORD_REQUEST, USER_RESET_PASSWORD_SUCCESS, USER_RESET_PASSWORD_FAILURE, USER_RESET_PASSWORD_RESET,
+    AUTH_LOGIN_USER_SUCCESS
 } from '../constants';
+import jwtDecode from 'jwt-decode';
 
 const initialState = {
+    favoritesCount: 0,
     isGettingCurrentUser: false,
     hasGottenCurrentUser: false,
     user: null,
@@ -33,6 +36,11 @@ const initialState = {
 };
 
 export default createReducer(initialState, {
+    [AUTH_LOGIN_USER_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            favoritesCount: jwtDecode(payload.token).favorites_count
+        });
+    },
     [USER_GET_CURRENT_REQUEST]: (state, payload) => {
         return Object.assign({}, state, {
             isGettingCurrentUser: true,
@@ -77,6 +85,7 @@ export default createReducer(initialState, {
         return Object.assign({}, state, {
             isCreatingFavorite: false,
             hasCreatedFavorite: true,
+            favoritesCount: state.favoritesCount+1,
             favoriteID: payload.uuid,
             statusText: null
         });
@@ -135,6 +144,7 @@ export default createReducer(initialState, {
     [USER_FAVORITE_DELETE_SUCCESS]: (state, payload) => {
         return Object.assign({}, state, {
             isDeletingFavorite: false,
+            favoritesCount: state.favoritesCount-1,
             hasDeletedFavorite: true,
             statusText: null
         });
@@ -162,6 +172,7 @@ export default createReducer(initialState, {
     },
     [USER_FAVORITE_CLEAR_SUCCESS]: (state, payload) => {
         return Object.assign({}, state, {
+            favoritesCount: 0,
             isClearingFavorites: false,
             hasClearedFavorites: true,
             statusText: null

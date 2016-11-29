@@ -122,7 +122,7 @@ class FavoritesView extends React.Component {
         });
 
         if (this.props.hasGottenCurrentUser) {
-            if (this.props.user.active_favorites.length == 0) {
+            if (this.props.user.favorites.length == 0) {
                 favoriteList = (
                     <span>No favorites</span>
                 )
@@ -130,7 +130,7 @@ class FavoritesView extends React.Component {
 
             else {
                 favoriteList = (
-                    this.props.user.active_favorites.map(function(s,i) {
+                    this.props.user.favorites.map(function(s,i) {
                         const path = s.building ? "/building/show/" + s.building :
                             "/unit/show/" + s.unit; 
                         return (

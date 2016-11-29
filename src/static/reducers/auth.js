@@ -33,7 +33,6 @@ export default createReducer(initialState, {
             userID: jwtDecode(payload.token).user_id,
             firstName: jwtDecode(payload.token).user_firstname,
             lastName: jwtDecode(payload.token).user_lastname,
-            activeFavoriteCount: jwtDecode(payload.token).active_favorite_count,
             emailAddress: jwtDecode(payload.token).email_address,
             statusText: 'You have been successfully logged in.'
         });

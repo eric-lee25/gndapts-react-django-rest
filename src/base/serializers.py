@@ -51,11 +51,11 @@ class ShareFavoriteSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    active_favorites = serializers.SerializerMethodField()
+    favorites = serializers.SerializerMethodField()
 
-    def get_active_favorites(self, user):
+    def get_favorites(self, user):
         return FavoriteSerializer(
-                user.favorite_set.filter(active=True), many=True).data
+                user.favorite_set, many=True).data
 
     class Meta:
         model = User
@@ -68,6 +68,7 @@ class UserSerializer(serializers.ModelSerializer):
 class NeighborhoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Neighborhood
+
 
 class BuildingSerializer(serializers.ModelSerializer):
     photos = serializers.JSONField(
@@ -84,7 +85,7 @@ class BuildingSerializer(serializers.ModelSerializer):
         if self.context['request'].user.is_authenticated:
             count = Favorite.objects.filter(
                     creator=self.context['request'].user,
-                    building=building, active=True).count()
+                    building=building).count()
             return True if count > 0 else False
         return {}
 
@@ -147,7 +148,7 @@ class UnitSerializer(serializers.ModelSerializer):
         if self.context['request'].user.is_authenticated:
             count = Favorite.objects.filter(
                     creator=self.context['request'].user,
-                    unit=unit, active=True).count()
+                    unit=unit).count()
             return True if count > 0 else False
         return {}
 
@@ -180,7 +181,7 @@ class FullBuildingSerializer(serializers.ModelSerializer):
         if self.context['request'].user.is_authenticated:
             count = Favorite.objects.filter(
                     creator=self.context['request'].user,
-                    building=building, active=True).count()
+                    building=building).count()
             return True if count > 0 else False
         return {}
 
