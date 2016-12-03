@@ -22,6 +22,7 @@ class HomeView extends React.Component {
     render() {
         return (
             <div id="home-view-container" className="">
+                123
             <DocumentTitle title='Home'></DocumentTitle>
                 <div className="ui vertical masthead center aligned segment">
                     <div id="masthead-content" className="ui middle aligned center aligned grid">

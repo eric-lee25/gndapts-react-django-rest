@@ -6,6 +6,7 @@ import configureStore from './store/configureStore';
 import { authLoginUserSuccess } from './actions/auth';
 import { browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
+import { AppContainer } from 'react-hot-loader';
 
 
 const target = document.getElementById('root');
@@ -23,3 +24,19 @@ if (token !== null) {
 }
 
 ReactDOM.render(node, target);
+
+if (module.hot) {
+console.log(module.hot);
+    module.hot.accept('./containers/Root/Root', () => {
+        ReactDOM.render(
+            <AppContainer>
+    <Root store={store} history={history}/>
+</AppContainer>
+
+            , target);
+
+
+    });
+}
+
+

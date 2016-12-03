@@ -36,22 +36,21 @@ process.env.BABEL_ENV = TARGET;
 
 const common = {
     entry: {
-        app: PATHS.app,
+        app: [PATHS.app],
         vendor: VENDOR,
     },
 
     output: {
         filename: '[name].[hash].js',
         path: PATHS.build,
-        publicPath: '/static'
+        //publicPath: '/static'
     },
 
     plugins: [
         new HtmlWebpackPlugin({
             template: path.join(__dirname, '../src/static/index.html'),
             hash: true,
-            filename: 'index.html',
-            inject: 'body'
+            inject: true
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',
@@ -63,8 +62,8 @@ const common = {
     ],
 
     resolve: {
-        extensions: ['', '.jsx', '.js', '.json', '.scss'],
-        modulesDirectories: ['node_modules', PATHS.app],
+        extensions: ['.jsx', '.js', '.json', '.scss'],
+        modules: ['node_modules', PATHS.app],
     },
 
     module: {
@@ -76,7 +75,7 @@ const common = {
             },
             {
                 test: /\.jpe?g$|\.gif$|\.png$/,
-                loader: 'file?name=/images/[name].[ext]?[hash]'
+                loader: 'file-loader?name=/images/[name].[ext]?[hash]'
             },
             {
                 test: /\.woff(\?.*)?$/,
@@ -106,29 +105,30 @@ const common = {
                 test: /\.json(\?.*)?$/,
                 loader: 'file-loader?name=/files/[name].[ext]'
             },
-            {test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader")}
+            {test: /\.css$/, loader: ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader' })}
 
         ]
     },
 
-    sassLoader: {
+    // sassLoader: {
 
-    },
+    // },
 
-    postcss: (param) => {
-        return [
-            autoprefixer({
-                browsers: ['last 2 versions'],
-            }),
-            postcssImport({
-                addDependencyTo: param,
-            }),
-        ];
-    },
+    // postcss: (param) => {
+    //     return [
+    //         autoprefixer({
+    //             browsers: ['last 2 versions'],
+    //         }),
+    //         postcssImport({
+    //             addDependencyTo: param,
+    //         }),
+    //     ];
+    // },
 };
 
 if (TARGET === 'dev' || !TARGET) {
     module.exports = merge(development, common);
+    console.log(module.exports);
 }
 
 if (TARGET === 'prod' || !TARGET) {
