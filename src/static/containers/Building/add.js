@@ -197,7 +197,7 @@ class AddBuildingView extends React.Component {
 
         if (this.props.hasGottenNeighborhoodList == true) {
             neighborhoodList = 
-            this.props.neighborhoodList.results.map(function(s, i){
+            this.props.neighborhoodList.map(function(s, i){
                 return (
                     <div key={i} className="item" data-value={s.uuid}>{s.name}</div>
                 )

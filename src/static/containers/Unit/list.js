@@ -47,7 +47,7 @@ class ListUnitsView extends React.Component {
         let unitCount = null;
 
         if (this.props.hasGottenList == true) {
-            unitCount = this.props.unitList.results.length;
+            unitCount = this.props.unitList.length;
             if (unitCount == 0) {
                 unitList = ( 
                     <tr key="0">
@@ -59,7 +59,7 @@ class ListUnitsView extends React.Component {
             // This needs fixing. These link tags end up refreshing the page
             else {
                 unitList = 
-                this.props.unitList.results.map(function(s, i){
+                this.props.unitList.map(function(s, i){
                     return (
                         <tr key={i}>
                             <td><a href="#" onClick={() => this.props.dispatch(push(`/unit/show/${s.uuid}`))}>{s.title}</a></td>

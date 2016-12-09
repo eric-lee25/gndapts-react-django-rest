@@ -291,7 +291,7 @@ class MapView extends React.Component {
 
         if (this.props.hasGottenBuildingList == true) {
             buildingList = 
-            this.props.buildingList.results.map(function(s, i){
+            this.props.buildingList.map(function(s, i){
                 const favoriteClass = classNames({
                     disabled: s.is_favorite || (s.uuid in this.state.favoriteBuildings)
                 });

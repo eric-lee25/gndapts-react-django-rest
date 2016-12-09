@@ -116,7 +116,7 @@ class AddReviewView extends React.Component {
 
         if (this.props.hasGottenList == true) {
             buildingList = 
-            this.props.buildingList.results.map(function(s, i){
+            this.props.buildingList.map(function(s, i){
                 return (
                     <div key={i} className="item" data-value={s.uuid}>{s.title}</div>
                 )
