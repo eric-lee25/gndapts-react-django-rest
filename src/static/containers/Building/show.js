@@ -142,6 +142,7 @@ class ShowBuildingView extends React.Component {
                 this.props.building.unit_set.map(function(s,i) {
                     return (
                         <tr key={i}>
+                            <td>{s.number ? s.number : "-"}</td>
                             <td><b><Link to={`/unit/show/${s.uuid}`}>{s.title}</Link></b></td>
                             <td>${s.rent}</td>
                             <td>{s.num_beds}</td>
@@ -250,9 +251,10 @@ class ShowBuildingView extends React.Component {
                                 <thead>
                                     <tr>
                                         <th>Unit</th>
+                                        <th>Title</th>
                                         <th>Price</th>
-                                        <th>Beds</th>
-                                        <th>Baths</th>
+                                        <th>Bedrooms</th>
+                                        <th>Bathrooms</th>
                                     </tr>
                                 </thead>
                                 <tbody>

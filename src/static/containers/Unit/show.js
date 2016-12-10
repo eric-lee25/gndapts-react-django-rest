@@ -90,7 +90,8 @@ class ShowUnitView extends React.Component {
 
             if (this.props.isAuthenticated) {
                 let deleteUnit, editUnit = null;
-                
+                console.log(this.props.userID);
+               console.log(this.props.unit.creator); 
                 if (this.props.userID == this.props.unit.creator) {
                     deleteUnit = (
                         <div onClick={this.delete} className={"item " }>

@@ -69,6 +69,7 @@ class NeighborhoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Neighborhood
 
+
 class BuildingSerializer(serializers.ModelSerializer):
     photos = serializers.JSONField(
             read_only=True, required=False, allow_null=True)
@@ -154,8 +155,10 @@ class UnitSerializer(serializers.ModelSerializer):
     def get_building_reviews(self, unit):
         return ReviewSerializer(unit.building.review_set, many=True).data
 
+    # TODO - figure out why we need this here but no up above
+    # for the building serializer
     def get_creator(self, unit):
-        return self.context['request'].user.pk
+        return unit.creator.pk
 
     # Validate uploaded images
     def validate(self, data):

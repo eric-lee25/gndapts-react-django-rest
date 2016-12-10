@@ -30,11 +30,15 @@ class ListUnitsView extends React.Component {
     componentDidUpdate() {
         if (this.props.hasGottenList) {
             $(ReactDOM.findDOMNode(this.refs.unitTable)).tablesort();
+            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'desc');
+            $(ReactDOM.findDOMNode(this.refs.unitTable)).find('th.rent').data('sortBy', function(th, td, tablesort) {
+                return parseInt(td.text().replace('$',''), 16);
+            });
+        }
+    }
 
-            // Weird glitch - TODO fix. Probably this: https://github.com/kylefox/jquery-tablesort/issues/30
-            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'desc');
-            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'desc');
-            $(ReactDOM.findDOMNode(this.refs.unitTable)).data('tablesort').sort($("th.building"), 'desc');
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.hasGottenList) {
         }
     }
 
@@ -62,8 +66,8 @@ class ListUnitsView extends React.Component {
                 this.props.unitList.map(function(s, i){
                     return (
                         <tr key={i}>
+                            <td>{s.number ? s.number : "-"}</td>
                             <td><a href="#" onClick={() => this.props.dispatch(push(`/unit/show/${s.uuid}`))}>{s.title}</a></td>
-                            <td>{s.number}</td>
                             <td><a href="#" onClick={() => this.props.dispatch(push(`/building/show/${s.building_data.uuid}`))}>{s.building_data.title}</a></td>
                             <td>{s.building_data.neighborhood_name}</td>
                             <td>${s.rent}</td>
@@ -103,11 +107,11 @@ class ListUnitsView extends React.Component {
                             <table ref="unitTable" className="ui sortable fixed table">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
                                         <th>Unit</th>
+                                        <th>Title</th>
                                         <th className="building">Building</th>
                                         <th>Neighborhood</th>
-                                        <th>Rent</th>
+                                        <th className="rent">Rent</th>
                                         <th>Bedrooms</th>
                                         <th>Bathrooms</th>
                                     </tr>
