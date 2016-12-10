@@ -455,7 +455,7 @@ class EditUnitView extends React.Component {
                                 </div>
                             </div>
                             <div className="two wide field">
-                                <label>Number of beds</label>
+                                <label>Number of bedrooms</label>
                                 <div className="ui input">
                                     <input type="text"
                                         name="numBeds"
@@ -465,7 +465,7 @@ class EditUnitView extends React.Component {
                                 </div>
                             </div>
                             <div className="two wide field">
-                                <label>Number of baths</label>
+                                <label>Number of bathrooms</label>
                                 <div className="ui input">
                                     <input type="text"
                                         name="numBaths"

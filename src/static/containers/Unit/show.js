@@ -329,7 +329,7 @@ class ShowUnitView extends React.Component {
                                 <div className="item">
                                     <i className="icon fa-bed"></i>
                                     <div className="content">
-                                        {this.props.unit.num_beds} bed / {this.props.unit.num_baths} bath
+                                        {this.props.unit.num_beds} bedrooms / {this.props.unit.num_baths} bathrooms
                                     </div>
                                 </div>
                                 <div className="item">
