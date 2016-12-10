@@ -309,9 +309,9 @@ class AddBuildingView extends React.Component {
                                         <label>Location (drag the pin)</label>
                                         <Map 
                                             OnZoomend={this.updateZoom}
-                                            center={center} zoom={this.state.zoom}>
+                                            center={center} zoom={this.state.zoom} maxZoom={17}>
                                             <TileLayer
-                                                url='https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
+                                                url='https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'
                                                 attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://mapbox.com">Mapbox</a>'
                                             />
                                             <Marker 
