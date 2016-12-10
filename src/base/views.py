@@ -159,7 +159,7 @@ class UnitViewset(
             order_by('date_created')
         serializer = UnitSerializer(queryset, many=True,
                                     context={'request': request})
-        return Response({"results": serializer.data})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):
         us = UnitSerializer(data=request.data,

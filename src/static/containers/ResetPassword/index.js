@@ -8,6 +8,8 @@ import { push } from 'react-router-redux';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import DocumentTitle from 'react-document-title';
+import BodyClassName from 'react-body-classname';
+import './style.scss';
 
 class ResetPasswordView extends React.Component {
 
@@ -111,16 +113,18 @@ class ResetPasswordView extends React.Component {
         }
 
         return (
-            <DocumentTitle title='Reset password'>
-                <div className="ui middle aligned center aligned grid">
-                    <div className="column">
-                        <h2 className="ui header">
-                            Reset password
-                        </h2>
-                        {body}
+            <BodyClassName className='body-background'>
+                <DocumentTitle title='Reset password'>
+                    <div id="reset-password-container" className="ui middle aligned center aligned grid">
+                        <div className="column">
+                            <h2 className="ui header">
+                                Reset password
+                            </h2>
+                            {body}
+                        </div>
                     </div>
-                </div>
-            </DocumentTitle>
+                </DocumentTitle>
+            </BodyClassName>
         );
     }
 }

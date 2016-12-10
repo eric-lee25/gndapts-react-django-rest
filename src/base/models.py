@@ -33,7 +33,7 @@ class Unit(models.Model):
            primary_key=True)
     building = models.ForeignKey(Building)
     type_lease = models.CharField(max_length=64)
-    number = models.CharField(max_length=64)
+    number = models.CharField(max_length=64, blank=True, null=True)
     num_beds = models.PositiveIntegerField()
     num_baths = models.PositiveIntegerField()
     title = models.CharField(max_length=128)
@@ -44,6 +44,8 @@ class Unit(models.Model):
     photos = JSONField(blank=True, null=True)
     contact_name = models.CharField(max_length=128, blank=True, null=True)
     contact_phone = models.CharField(max_length=128, blank=True, null=True)
+    contact_secondary_phone = models.CharField(
+            max_length=128, blank=True, null=True)
     contact_facebook = models.CharField(max_length=128, blank=True, null=True)
     contact_email = models.CharField(max_length=128, blank=True, null=True)
     contact_whatsapp = models.CharField(max_length=128, blank=True, null=True)

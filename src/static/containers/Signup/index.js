@@ -114,8 +114,8 @@ class SignupView extends React.Component {
 
             body = (
                 <div className="column">
-                    <h2 className="ui inverted header">
-                        Signup
+                    <h2 className="ui header">
+                        Sign up
                     </h2>
                     <form className="ui large form" ref="signupForm" >
                         <div className="ui stacked segment">

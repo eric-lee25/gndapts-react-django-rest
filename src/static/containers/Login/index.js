@@ -111,8 +111,8 @@ class LoginView extends React.Component {
                 <DocumentTitle title='Login'>
                     <div id="login-container" className="ui middle aligned center aligned grid">
                         <div className="column">
-                            <h2 className="ui inverted header">
-                                Login
+                            <h2 className="ui header">
+                                Log in
                             </h2>
                             <form className="ui large form" ref="loginForm" >
                                 <div className="ui stacked segment">
@@ -141,7 +141,7 @@ class LoginView extends React.Component {
                                 <div className={"ui fluid large green submit button " + buttonClass}
                                     type="submit" onClick={this.login}
                                 >
-                                    Login
+                                    Log in
                                 </div>
 
                                 <div className="ui error message">sdsd</div>
@@ -152,7 +152,7 @@ class LoginView extends React.Component {
                                 <Link to="signup">Sign up</Link>
                                 <br/>
                                 <Link to="forgotpassword">Forgot your password?</Link>
-                                &nbsp;• Contact us
+                                &nbsp;• <a href="mailto: wklaine@mac.com">Contact us</a>
                             </div>
                         </div>
                     </div>

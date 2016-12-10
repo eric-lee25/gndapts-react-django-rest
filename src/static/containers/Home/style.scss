@@ -17,13 +17,8 @@
             font-size: 3em;
         }
 
-        #masthead-text {
-            width: 70%;
-            margin-top: -5em; // HACK - fix this
-        }
-
-        #cta {
-            margin-top: -12em; // HACK - fix this
+        .ui.massive.button {
+            margin-top: 10em;
         }
     }
 
@@ -49,5 +44,13 @@
 
     #selling-points, #three-benefits {
         margin-top: 2em;
+    }
+
+    #pitch {
+        background: url("./images/bottom.jpg") no-repeat center top;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
     }
 }

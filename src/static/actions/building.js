@@ -80,7 +80,8 @@ export function createBuilding(token, neighborhood, title, description, latitude
             .then(response => {
                 try {
                     dispatch(buildingCreateSuccess(response));
-                    dispatch(push(redirect));
+                    console.log(response);
+                    dispatch(push(redirect + "?buildingid=" + response.uuid + "&neighborhoodid=" + response.neighborhood));
                 } catch (e) {
                     dispatch(buildingCreateFailure({
                         response: {

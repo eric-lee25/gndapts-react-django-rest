@@ -52,7 +52,8 @@ export function unitCreateRequest() {
 
 export function createUnit(token, number, numBeds, numBaths, leaseType, title, amenities, 
     description, contactInformation, rent, securityDeposit, buildingID, photos, 
-    contactInfoName, contactInfoPhoneNumber, contactInfoFacebook, contactInfoEmail, contactInfoWhatsapp, contactInfoRelationshipProperty,
+    contactInfoName, contactInfoPhoneNumber, contactInfoSecondaryPhoneNumber, 
+    contactInfoFacebook, contactInfoEmail, contactInfoWhatsapp, contactInfoRelationshipProperty,
     redirect) {
     
     // We'll build a form data object because we're packing files with it too
@@ -69,6 +70,7 @@ export function createUnit(token, number, numBeds, numBaths, leaseType, title, a
     data.append('building', buildingID);
     data.append('contact_name', contactInfoName);
     data.append('contact_phone', contactInfoPhoneNumber);
+    data.append('contact_secondary_phone', contactInfoSecondaryPhoneNumber);
     data.append('contact_facebook', contactInfoFacebook);
     data.append('contact_email', contactInfoEmail);
     data.append('contact_whatsapp', contactInfoWhatsapp);

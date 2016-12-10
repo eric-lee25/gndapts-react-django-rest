@@ -8,6 +8,8 @@ import { push } from 'react-router-redux';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 import DocumentTitle from 'react-document-title';
+import BodyClassName from 'react-body-classname';
+import './style.scss';
 
 class ForgotPasswordView extends React.Component {
 
@@ -108,21 +110,26 @@ class ForgotPasswordView extends React.Component {
 
         else {
             body = (
-                <div>Password recovery instructions sent. Check your email.</div>
+                <div id="confirm-text">Password recovery instructions sent. Check your email.</div>
             )
         }
 
         return (
-            <DocumentTitle title='Recover password'>
-                <div className="ui middle aligned center aligned grid">
-                    <div className="column">
-                        <h2 className="ui header">
-                            Recover password
-                        </h2>
-                        {body}
+            <BodyClassName className='body-background'>
+                <DocumentTitle title='Recover password'>
+                    <div id="forgot-password-container" className="ui middle aligned center aligned grid">
+                        <div className="column">
+                            <h2 className="ui header">
+                                Recover password
+                            </h2>
+                            {body}
+                            <div className="ui message">
+                                Already have an account? Log in <Link to="/">here.</Link>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </DocumentTitle>
+                </DocumentTitle>
+            </BodyClassName>
         );
     }
 }

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import classNames from 'classnames';
 import DocumentTitle from 'react-document-title';
+import { Link } from 'react-router';
 import './style.scss';
 import * as unitActionCreators from '../../actions/unit';
 import * as userActionCreators from '../../actions/user';
@@ -159,7 +160,7 @@ class ShowUnitView extends React.Component {
             }
 
             else {
-                let contactInfoRelationProperty, contactInfoName, contactInfoPhone, contactInfoWhatsapp, contactInfoEmail, contactInfoFacebook = null;
+                let contactInfoRelationProperty, contactInfoName, contactInfoPhone, contactInfoSecondaryPhone, contactInfoWhatsapp, contactInfoEmail, contactInfoFacebook = null;
 
                 if (this.props.unit.contact_relation_property) {
                     contactInfoRelationProperty = (
@@ -181,6 +182,14 @@ class ShowUnitView extends React.Component {
                     contactInfoPhone = (
                         <div>
                             Phone: {this.props.unit.contact_phone}
+                        </div>
+                    )
+                }
+
+                if (this.props.unit.contact_secondary_phone) {
+                    contactInfoSecondaryPhone = (
+                        <div>
+                            Secondary phone: {this.props.unit.contact_secondary_phone}
                         </div>
                     )
                 }
@@ -209,7 +218,7 @@ class ShowUnitView extends React.Component {
                     )
                 }
 
-                if (!contactInfoRelationProperty && !contactInfoName && !contactInfoPhone && !contactInfoWhatsapp
+                if (!contactInfoRelationProperty && !contactInfoName && !contactInfoPhone && !contactInfoSecondaryPhone && !contactInfoWhatsapp
                     && !contactInfoEmail && !contactInfoFacebook) {
                         contactBlock = (
                             <div>
@@ -224,6 +233,7 @@ class ShowUnitView extends React.Component {
                             {contactInfoRelationProperty}
                             {contactInfoName}
                             {contactInfoPhone}
+                            {contactInfoSecondaryPhone}
                             {contactInfoWhatsapp}
                             {contactInfoEmail}
                             {contactInfoFacebook}
@@ -304,7 +314,9 @@ class ShowUnitView extends React.Component {
                         </div>
                         <div className="seven wide column">
                             <h1 id="building-header" className="ui header">
-                                {this.props.unit.building_data.title}
+                                <Link to={`/building/show/${this.props.unit.building}`}>
+                                    {this.props.unit.building_data.title}
+                                </Link>
                             </h1>
                             <h3 className="ui header" id="title-header">
                                 {this.props.unit.title}

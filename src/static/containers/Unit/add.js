@@ -18,7 +18,7 @@ class AddUnitView extends React.Component {
         this.state = {
             buildingID: null,
             neighborhoodID: null,
-            number: null,
+            number: '',
             numBeds: null,
             numBaths: null,
             title: null,
@@ -29,6 +29,7 @@ class AddUnitView extends React.Component {
             securityDeposit: null,
             contactInfoName: '',
             contactInfoPhoneNumber: '',
+            contactInfoSecondaryPhoneNumber: '',
             contactInfoFacebook: '',
             contactInfoEmail: '',
             contactInfoWhatsapp: '',
@@ -59,8 +60,12 @@ class AddUnitView extends React.Component {
 
         $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown({
             'onChange': function(val){
-                this.setState({neighborhoodID: val, buildingID: null});
-                $(ReactDOM.findDOMNode(this.refs.buildingDropdown)).dropdown('clear');
+                this.setState({neighborhoodID: val});
+
+                if (!this.props.location.query.buildingid && !this.props.location.query.neighborhoodid) {
+                    $(ReactDOM.findDOMNode(this.refs.buildingDropdown)).dropdown('clear');
+                    this.setState({buildingID: null});
+                }
             }.bind(this)
         });
 
@@ -91,15 +96,6 @@ class AddUnitView extends React.Component {
                             {
                                 type   : 'empty',
                                 prompt : 'Please enter a lease type'
-                            },
-                        ]
-                    },
-                    number: {
-                        identifier  : 'number',
-                        rules: [
-                            {
-                                type   : 'empty',
-                                prompt : 'Please enter a value'
                             },
                         ]
                     },
@@ -181,6 +177,46 @@ class AddUnitView extends React.Component {
         });
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.hasGottenList && nextProps.hasGottenNeighborhoodList && 
+        this.props.location.query.buildingid && this.props.location.query.neighborhoodid) {
+
+            // BUILDING 
+            // THis will trigger an onChange which will change our component's state. 
+            $(ReactDOM.findDOMNode(this.refs.buildingDropdown)).dropdown('set value', this.props.location.query.buildingid);
+
+            // Still need to change the text though. First, get the text
+            let buildingName = null;
+
+            nextProps.buildingList.forEach(function(s,i) {
+                if (s.uuid == this.props.location.query.buildingid) {
+                    buildingName = s.title;
+                }
+            }, this)
+
+            // Set the text
+            $(ReactDOM.findDOMNode(this.refs.buildingDropdown)).dropdown('set text', buildingName);
+            $(ReactDOM.findDOMNode(this.refs.buildingDropdown)).dropdown('set selected', this.props.location.query.buildingid);
+            
+            // NEIGHBORHOOD 
+            // THis will trigger an onChange which will change our component's state. 
+            $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown('set value', this.props.location.query.neighborhoodid);
+
+            // Still need to change the text though. First, get the text
+            let neighborhoodName = null;
+
+            nextProps.neighborhoodList.forEach(function(s,i) {
+                if (s.uuid == this.props.location.query.neighborhoodid) {
+                    neighborhoodName = s.title;
+                }
+            }, this)
+
+            // Set the text
+            $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown('set text', neighborhoodName);
+            $(ReactDOM.findDOMNode(this.refs.neighborhoodDropdown)).dropdown('set selected', this.props.location.query.neighborhoodid);
+        }
+    }
+
     createUnit = (e) => {
         $(ReactDOM.findDOMNode(this.refs.createUnitForm)).form('validate form');
         if ($(ReactDOM.findDOMNode(this.refs.createUnitForm)).form('is valid')) {
@@ -191,8 +227,8 @@ class AddUnitView extends React.Component {
                 JSON.stringify(this.state.selectedAmenities.concat(this.state.customAmenities)),
                 this.state.description, this.state.contactInformation,
                 this.state.rent, this.state.securityDeposit, this.state.buildingID, this.state.photos,
-                this.state.contactInfoName, this.state.contactInfoPhoneNumber, this.state.contactInfoFacebook,
-                this.state.contactInfoEmail, this.state.contactInfoWhatsapp,
+                this.state.contactInfoName, this.state.contactInfoPhoneNumber, this.state.contactInfoSecondaryPhoneNumber,
+                this.state.contactInfoFacebook, this.state.contactInfoEmail, this.state.contactInfoWhatsapp,
                 this.state.selectedContactInfoRelationshipProperty,
                 '/map');
         }
@@ -249,6 +285,14 @@ class AddUnitView extends React.Component {
 
         const photoPreviewClass = classNames({
             hidden: this.state.photos.length == 0
+        });
+
+        const buildingDropdownClass = classNames({
+            disabled: this.props.location.query.buildingid
+        });
+
+        const neighborhoodDropdownClass = classNames({
+            disabled: this.props.location.query.neighborhoodid
         });
 
         let preview = (
@@ -309,7 +353,7 @@ class AddUnitView extends React.Component {
                         <form className={"ui form " + formClass} ref="createUnitForm" >
                             <div className="five wide field">
                                 <label>Neighborhood</label>
-                                <div className="ui selection dropdown" ref="neighborhoodDropdown">
+                                <div className={"ui selection dropdown " + neighborhoodDropdownClass} ref="neighborhoodDropdown">
                                     <input type="hidden" name="neighborhoodID"/>
                                     <i className="dropdown icon"></i>
                                     <div className="default text">Select a neighborhood</div>
@@ -320,7 +364,7 @@ class AddUnitView extends React.Component {
                             </div>
                             <div className="five wide field">
                                 <label>Building</label>
-                                <div className="ui selection dropdown" ref="buildingDropdown">
+                                <div className={"ui selection dropdown " + buildingDropdownClass} ref="buildingDropdown">
                                     <input type="hidden" name="buildingID"/>
                                     <i className="dropdown icon"></i>
                                     <div className="default text">Select a building</div>
@@ -504,9 +548,9 @@ class AddUnitView extends React.Component {
                                 <div className="three wide field"> 
                                     <div className="ui input">
                                         <input type="text"
-                                            placeholder="Facebook name or page"
-                                            name="ci-facebook"
-                                            onChange={(e) => { this.handleInputChange(e, 'contactInfoFacebook'); }}
+                                            placeholder="Secondary phone number"
+                                            name="ci-secondary-phone"
+                                            onChange={(e) => { this.handleInputChange(e, 'contactInfoSecondaryPhoneNumber'); }}
                                         />
                                     </div>
                                 </div>
@@ -527,6 +571,15 @@ class AddUnitView extends React.Component {
                                             placeholder="WhatsApp phone"
                                             name="ci-whatsapp"
                                             onChange={(e) => { this.handleInputChange(e, 'contactInfoWhatsapp'); }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="three wide field"> 
+                                    <div className="ui input">
+                                        <input type="text"
+                                            placeholder="Facebook name or page"
+                                            name="ci-facebook"
+                                            onChange={(e) => { this.handleInputChange(e, 'contactInfoFacebook'); }}
                                         />
                                     </div>
                                 </div>
