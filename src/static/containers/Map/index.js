@@ -399,7 +399,7 @@ class MapView extends React.Component {
             <div id="map-view-container">
                 <form className={"ui form " + formClass}>
                     <DocumentTitle title='Map'>
-                        <Map style={mapStyle} center={centerPosition} zoom={15} maxZoom={17} >
+                        <Map style={mapStyle} center={centerPosition} zoom={14} maxZoom={17} >
                             <TileLayer
                                 url={'https://api.mapbox.com/styles/v1/mapbox/' + this.state.mapSatelliteMode + '-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZ25kYXB0cyIsImEiOiJjaXN5enVjenEwZzdrMnlraDFkZzYwb2V1In0.V6HJ--BCJ9LjC-iJtIeuKA'}
                                 attribution='<a href="http://openstreetmap.org">OpenStreetMap</a>, <a href="http://mapbox.com">Mapbox</a>'
