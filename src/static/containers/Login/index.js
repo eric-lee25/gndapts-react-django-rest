@@ -111,9 +111,12 @@ class LoginView extends React.Component {
                 <DocumentTitle title='Login'>
                     <div id="login-container" className="ui middle aligned center aligned grid">
                         <div className="column">
-                            <h2 className="ui header">
-                                Log in
-                            </h2>
+                            <div className="ui segment">
+                                <img className="ui centered medium image" src={require("./images/logo.png")}/>
+                                <h1 className="ui header">
+                                    Log in
+                                </h1>
+                            </div>
                             <form className="ui large form" ref="loginForm" >
                                 <div className="ui stacked segment">
                                     <div className="field">
