@@ -299,7 +299,6 @@ class FavoriteViewset(
                 'from': 'gndapts@mail.gndapts.com',
                 'to': destination,
                 'cc': request.user.email,
-                'h:Content-type': 'multipart/alternative',
                 'subject': request.user.first_name + " has shared their " +
                         "favorite listings from GNDAPTS with you",
                 'html': "<html><body>" + email_text + "</body></html>"
