@@ -301,7 +301,7 @@ class FavoriteViewset(
                 'cc': request.user.email,
                 'subject': request.user.first_name + " has shared their " +
                         "favorite listings from GNDAPTS with you",
-                'html': email_text
+                'html': "<html><body>" + email_text + "</body></html>"
                 }
 
             requests.post(url, auth=('api', settings.MAILGUN_API_KEY),
