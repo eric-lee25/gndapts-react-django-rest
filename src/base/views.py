@@ -305,7 +305,7 @@ class FavoriteViewset(
                 }
 
             requests.post(url, auth=('api', settings.MAILGUN_API_KEY),
-                          data=files)
+                    data=files, headers={"Content-Type": 'text/html; charset="us-ascii"')
 
             return Response({}, status=status.HTTP_200_OK)
 
