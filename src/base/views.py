@@ -299,13 +299,14 @@ class FavoriteViewset(
                 'from': 'gndapts@mail.gndapts.com',
                 'to': destination,
                 'cc': request.user.email,
+                'h:Content-type': 'text/html; charset=utf-8',
                 'subject': request.user.first_name + " has shared their " +
                         "favorite listings from GNDAPTS with you",
                 'html': "<html><body>" + email_text + "</body></html>"
                 }
 
             requests.post(url, auth=('api', settings.MAILGUN_API_KEY),
-                    data=files, headers={"Content-Type": 'text/html; charset="us-ascii"')
+                          data=files)
 
             return Response({}, status=status.HTTP_200_OK)
 
