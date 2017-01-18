@@ -18,6 +18,7 @@ import { push } from 'react-router-redux';
 
 
 class MapView extends React.Component {
+    
 
     static propTypes = {
         statusText: React.PropTypes.string
