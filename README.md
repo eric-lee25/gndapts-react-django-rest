@@ -1,4 +1,4 @@
-# django-react-redux-jwt-heroku-boilerplate
+# gndapts
 
 This is a fork of Seedstars' brilliant [django-react-redux-jwt-base boilerplate project](https://github.com/Seedstars/django-react-redux-jwt-base). It is adapted to be deployed on Heroku. There's a couple other changes I've made based on my preferences. I didn't make a formal fork because it's different enough to merit its own repo.
 
@@ -37,3 +37,22 @@ For some reason, Heroku doesn't like the node & npm versions set on the first co
 s3
 cloudfront
 
+## Local development instructions
+
+1.   Clone this repo
+
+```
+git@github.com:dopeboy/gndapts.git
+```
+
+2. Create a virtual environment in the project folder:
+```
+cd gndapts
+virtualenv -p python3 venv
+```
+
+3. Load the virtual environment:
+```
+source venv/bin/activate
+```
+    
