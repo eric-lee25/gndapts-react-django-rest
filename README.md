@@ -83,3 +83,14 @@ cloudfront
     ```
     npm run dev
     ```
+    
+## Development process
+
+1. Everytime you work on a piece of work, create a branch for it. 
+
+    ```
+    git pull origin master
+    git checkout -b <feature_name>
+    ```
+
+2. Any code you add or change should go only on that new branch. Once you're done making changes, go to github and submit a pull request. Please fill out details about what you changed and how you made your changes. I will look it over and approve.
