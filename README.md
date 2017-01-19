@@ -86,7 +86,7 @@ cloudfront
     
 ## Development process
 
-1. Everytime you work on a piece of work, create a branch for it. 
+1. Everytime you work on a new feature, create a branch for it. 
 
     ```
     git pull origin master
