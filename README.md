@@ -40,8 +40,14 @@
     ```
     python src/manage.py runserver 
     ```
+   
+2. Run the migrations
+
+    ```
+    python src/manage.py migrate
+    ```
     
-2. Start the frontend server in another terminal:
+3. Start the frontend server in another terminal:
 
     ```
     npm run dev
