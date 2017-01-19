@@ -93,4 +93,11 @@ cloudfront
     git checkout -b <feature_name>
     ```
 
-2. Any code you add or change should go only on that new branch. Once you're done making changes, go to github and submit a pull request. Please fill out details about what you changed and how you made your changes. I will look it over and approve.
+2. Any code you add or change should go only on that new branch. Once you're done making changes, commit and push:
+
+    ```
+    git commit -m "<insert msg here>"
+    git push origin <branch name>
+    ```
+    
+3. Go to github and submit a pull request. Please fill out details about what you changed and how you made your changes. I will look it over and approve.
