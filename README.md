@@ -37,22 +37,49 @@ For some reason, Heroku doesn't like the node & npm versions set on the first co
 s3
 cloudfront
 
-## Local development instructions
+## Installing it locally
 
-1.   Clone this repo
+1. Clone this repo
 
-```
-git@github.com:dopeboy/gndapts.git
-```
+   ```
+   git@github.com:dopeboy/gndapts.git
+   ```
 
-2. Create a virtual environment in the project folder:
-```
-cd gndapts
-virtualenv -p python3 venv
-```
+2. Create a virtual environment in the project folder (assuming you have python3 installed):
+   ```
+   cd gndapts
+   virtualenv -p python3 venv
+   ```
 
 3. Load the virtual environment:
-```
-source venv/bin/activate
-```
+   ```
+   source venv/bin/activate
+   ```
+   
+4. Install all the python and node.js depedencies:
+
+    ```
+    pip3 install -r requirements.txt
+    npm install
+    ```
+
+5. Setup your db (assuming you have postgres installed):
+
+    ```
+    sudo -u postgres createuser -P postgres #make password 'admin'
+    sudo -u postgres createdb -O postgres mydb
+    ```
     
+## Running it locally
+
+1. Start the backend server in the terminal where you ran the `source` command above:
+
+    ```
+    python manage.py runserver 
+    ```
+    
+2. Start the frontend server in another terminal:
+
+    ```
+    npm run dev
+    ```
