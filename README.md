@@ -26,12 +26,7 @@
     npm install
     ```
 
-5. Setup your db (assuming you have postgres installed):
-
-    ```
-    sudo -u postgres createuser -P postgres #make password 'admin'
-    sudo -u postgres createdb -O postgres mydb
-    ```
+5. Install postgres. Create a user called 'postgres' and give them a password of 'admin'. Create a database called 'mydb' and make sure this postgres user can access it.
     
 ## Running it locally
 
