@@ -38,7 +38,7 @@
 1. Start the backend server in the terminal where you ran the `source` command above:
 
     ```
-    python manage.py runserver 
+    python src/manage.py runserver 
     ```
     
 2. Start the frontend server in another terminal:
