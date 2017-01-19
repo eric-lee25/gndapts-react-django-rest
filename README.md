@@ -48,13 +48,19 @@
     npm run dev
     ```
     
-4. Create a superuser:
+4. Install the fixtures:
+
+    ```
+    python src/manage.py loaddata src/base/fixtures/initial_data.json
+    ```
+
+5. Create a superuser:
 
     ```
     python src/manage.py createsuperuser
     ```
     
-5. Go to localhost:8000/admin and login with the credentials from above. Create a user and then logout of the admin panel. 
+6. Go to localhost:8000/admin and login with the credentials from above. Create a user and then logout of the admin panel. Then login to the main site.
 
 ## Development process
 
