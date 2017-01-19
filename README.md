@@ -53,6 +53,14 @@
     npm run dev
     ```
     
+4. Create a superuser:
+
+    ```
+    python src/manage.py createsuperuser
+    ```
+    
+5. Go to localhost:8000/admin and login with the credentials from above. Create a user and then logout of the admin panel. 
+
 ## Development process
 
 1. Everytime you work on a new feature, create a branch for it. 
