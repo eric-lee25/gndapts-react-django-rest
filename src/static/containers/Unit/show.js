@@ -92,7 +92,7 @@ class ShowUnitView extends React.Component {
                 let deleteUnit, editUnit = null;
                 console.log(this.props.userID);
                console.log(this.props.unit.creator); 
-                if (this.props.userID == this.props.unit.creator) {
+                if (this.props.userID == this.props.unit.creator || this.props.isStaff == true) {
                     deleteUnit = (
                         <div onClick={this.delete} className={"item " }>
                             Delete
@@ -399,6 +399,7 @@ const mapStateToProps = (state) => {
         hasCreatedFavorite: state.user.hasCreatedFavorite,
         favoriteID: state.user.favoriteID,
         isAuthenticated: state.auth.isAuthenticated,
+        isStaff: state.auth.isStaff,
         userID: state.auth.userID,
         token: state.auth.token // We usually get this from requireAuthentication wrapper but this does not go through that
     };

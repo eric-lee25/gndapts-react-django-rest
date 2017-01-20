@@ -84,7 +84,7 @@ class ShowBuildingView extends React.Component {
             if (this.props.isAuthenticated) {
                 let deleteBuilding, editBuilding = null;
 
-                if (this.props.userID == this.props.building.creator) {
+                if (this.props.userID == this.props.building.creator || this.props.isStaff == true) {
                     deleteBuilding = (
                         <div onClick={this.delete} className={"item " }>
                             Delete
@@ -298,6 +298,7 @@ const mapStateToProps = (state) => {
         hasCreatedFavorite: state.user.hasCreatedFavorite,
         favoriteID: state.user.favoriteID,
         isAuthenticated: state.auth.isAuthenticated,
+        isStaff:state.auth.isStaff,
         userID: state.auth.userID,
         token: state.auth.token // We usually get this from requireAuthentication wrapper but this does not go through that
     };

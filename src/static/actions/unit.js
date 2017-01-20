@@ -286,14 +286,14 @@ export function listUnits(token) {
 export function adminlistUnits(token) {
     return (dispatch) => {
         dispatch(adminunitListRequest());
-        return fetch(`${SERVER_URL}/api/v1/base/units`, {
+        return fetch(`${SERVER_URL}/api/v1/base/units?admin_list=true`, {
             method: 'get',
             credentials: 'include',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: `JWT ${token}`
-            },
+            }
         })
             .then(checkHttpStatus)
             .then(parseJSON)

@@ -155,7 +155,12 @@ class UnitViewset(
 
     # Get my own
     def list(self, request):
-        queryset = Unit.objects.filter(creator=self.request.user).\
+        admin_list = self.request.query_params.get('admin_list', None)
+        if admin_list is not None:
+            queryset = Unit.objects.all().\
+            order_by('date_created')
+        else:
+            queryset = Unit.objects.filter(creator=self.request.user).\
             order_by('date_created')
         serializer = UnitSerializer(queryset, many=True,
                                     context={'request': request})
