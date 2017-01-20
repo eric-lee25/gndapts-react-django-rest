@@ -15,6 +15,7 @@ const initialState = {
     emailAddress: null,
     isAuthenticated: false,
     isAuthenticating: false,
+    isStaff:null,
     statusText: null
 };
 
@@ -35,6 +36,7 @@ export default createReducer(initialState, {
             lastName: jwtDecode(payload.token).user_lastname,
             activeFavoriteCount: jwtDecode(payload.token).active_favorite_count,
             emailAddress: jwtDecode(payload.token).email_address,
+            isStaff:jwtDecode(payload.token).is_staff,
             statusText: 'You have been successfully logged in.'
         });
     },

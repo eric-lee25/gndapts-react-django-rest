@@ -10,6 +10,7 @@ class LoggedInView extends React.Component {
 
     static propTypes = {
         isAuthenticated: React.PropTypes.bool.isRequired,
+        isStaff: React.PropTypes.bool.isRequired,
         children: React.PropTypes.element.isRequired,
         dispatch: React.PropTypes.func.isRequired,
         pathName: React.PropTypes.string.isRequired
@@ -43,33 +44,69 @@ class LoggedInView extends React.Component {
         let mapItem = null;
 
         if (this.props.isAuthenticated) {
-            upperRight = (
-                <div className="right menu">
-                    <a href="#" onClick={() => this.props.dispatch(push('/user/favorites'))} className="item">
-                        <i id="favorites-icon" className="fa-heart icon" aria-hidden="true"></i>Favorites
-                    </a>
-                    <div className="ui simple dropdown item">
-                        {this.props.firstName} <i className="dropdown icon"></i>
-                        <div className="menu">
-                            <a className="item" href="#" onClick={() => this.props.dispatch(push('/building/add'))}>
-                                Add building
-                            </a>
-                            <a className="item" href="#" onClick={() => this.props.dispatch(push('/unit/add'))}>
-                                Add unit
-                            </a>
-                            <a className="item" href="#" onClick={() => this.props.dispatch(push('/review/add'))}>
-                                Add review
-                            </a>
-                            <a className="item" href="#" onClick={() => this.props.dispatch(push('/unit/list'))}>
-                                My units
-                            </a>
-                            <a className="item" href="#" onClick={this.logout}>
-                                Logout
-                            </a>
+            if(this.props.isStaff){
+                upperRight = (
+                    <div className="right menu">
+                        <a href="#" onClick={() => this.props.dispatch(push('/user/favorites'))} className="item">
+                            <i id="favorites-icon" className="fa-heart icon" aria-hidden="true"></i>Favorites
+                        </a>
+                        <div className="ui simple dropdown item">
+                            {this.props.firstName} <i className="dropdown icon"></i>
+                            <div className="menu">
+                                <a className="item" href="#" onClick={() => this.props.dispatch(push('/building/add'))}>
+                                    Add building
+                                </a>
+                                <a className="item" href="#" onClick={() => this.props.dispatch(push('/unit/add'))}>
+                                    Add unit
+                                </a>
+                                <a className="item" href="#" onClick={() => this.props.dispatch(push('/review/add'))}>
+                                    Add review
+                                </a>
+                                <a className="item" href="#" onClick={() => this.props.dispatch(push('/unit/admin_list'))}>
+                                    All units
+                                </a>
+                                <a className="item" href="#" onClick={() => this.props.dispatch(push('/unit/list'))}>
+                                    My units
+                                </a>
+                                <a className="item" href="#" onClick={this.logout}>
+                                    Logout
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )
+                )
+            }
+            else{
+                upperRight = (
+                    <div className="right menu">
+                        <a href="#" onClick={() => this.props.dispatch(push('/user/favorites'))} className="item">
+                            <i id="favorites-icon" className="fa-heart icon" aria-hidden="true"></i>Favorites
+                        </a>
+                        <div className="ui simple dropdown item">
+                            {this.props.firstName} <i className="dropdown icon"></i>
+                            <div className="menu">
+                                <a className="item" href="#" onClick={() => this.props.dispatch(push('/building/add'))}>
+                                    Add building
+                                </a>
+                                <a className="item" href="#" onClick={() => this.props.dispatch(push('/unit/add'))}>
+                                    Add unit
+                                </a>
+                                <a className="item" href="#" onClick={() => this.props.dispatch(push('/review/add'))}>
+                                    Add review
+                                </a>
+                                <a className="item" href="#" onClick={() => this.props.dispatch(push('/unit/list'))}>
+                                    My units
+                                </a>
+                                <a className="item" href="#" onClick={this.logout}>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                )
+
+            }
+
 
             mapItem = (
                 <a href="#" onClick={() => this.props.dispatch(push('/map'))} className="item">
@@ -120,6 +157,7 @@ class LoggedInView extends React.Component {
 const mapStateToProps = (state, ownProps) => {
     return {
         isAuthenticated: state.auth.isAuthenticated,
+        isStaff: state.auth.isStaff,
         firstName: state.auth.firstName,
         isGettingFavoritesCount: state.user.isGettingFavoritesCount,
         hasGottenFavoritesCount: state.user.hasGottenFavoritesCount,

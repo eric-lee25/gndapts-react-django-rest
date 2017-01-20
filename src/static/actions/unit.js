@@ -10,6 +10,9 @@ import {
     UNIT_LIST_REQUEST,
     UNIT_LIST_FAILURE,
     UNIT_LIST_SUCCESS,
+    ADMIN_UNIT_LIST_REQUEST,
+    ADMIN_UNIT_LIST_FAILURE,
+    ADMIN_UNIT_LIST_SUCCESS,
     UNIT_GET_REQUEST,
     UNIT_GET_FAILURE,
     UNIT_GET_SUCCESS,
@@ -226,6 +229,28 @@ export function unitListRequest() {
         type: UNIT_LIST_REQUEST
     };
 }
+export function adminunitListSuccess(unitList) {
+    return {
+        type: ADMIN_UNIT_LIST_SUCCESS,
+        payload: unitList
+    };
+}
+
+export function adminunitListFailure(error) {
+    return {
+        type: ADMIN_UNIT_LIST_FAILURE,
+        payload: {
+            status: error.response.status,
+            statusText: error.response.statusText
+        }
+    };
+}
+
+export function adminunitListRequest() {
+    return {
+        type: ADMIN_UNIT_LIST_REQUEST
+    };
+}
 
 export function listUnits(token) {
     return (dispatch) => {
@@ -255,6 +280,37 @@ export function listUnits(token) {
             })
             .catch(error => {
                 dispatch(unitListFailure(error));
+            });
+    };
+}
+export function adminlistUnits(token) {
+    return (dispatch) => {
+        dispatch(adminunitListRequest());
+        return fetch(`${SERVER_URL}/api/v1/base/units`, {
+            method: 'get',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `JWT ${token}`
+            },
+        })
+            .then(checkHttpStatus)
+            .then(parseJSON)
+            .then(response => {
+                try {
+                    dispatch(adminunitListSuccess(response));
+                } catch (e) {
+                    dispatch(adminunitListFailure({
+                        response: {
+                            status: 403,
+                            statusText: e
+                        }
+                    }));
+                }
+            })
+            .catch(error => {
+                dispatch(adminunitListFailure(error));
             });
     };
 }

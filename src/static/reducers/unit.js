@@ -6,6 +6,9 @@ import {
     UNIT_LIST_REQUEST,
     UNIT_LIST_FAILURE,
     UNIT_LIST_SUCCESS,
+    ADMIN_UNIT_LIST_REQUEST,
+    ADMIN_UNIT_LIST_FAILURE,
+    ADMIN_UNIT_LIST_SUCCESS,
     UNIT_GET_REQUEST,
     UNIT_GET_FAILURE,
     UNIT_GET_SUCCESS,
@@ -27,6 +30,7 @@ const initialState = {
     isCreating: false,
     statusText: null,
     unitList: null,
+    adminunitList:null,
     isGettingList: false,
     hasGottenList: false,
     isGettingUnit: false,
@@ -81,6 +85,30 @@ export default createReducer(initialState, {
     [UNIT_LIST_FAILURE]: (state, payload) => {
         return Object.assign({}, state, {
             unitList: null,
+            isGettingList: false,
+            hasGottenList: false,
+            statusText: `Unit list error: ${payload.statusText}`
+        });
+    },
+    [ADMIN_UNIT_LIST_REQUEST]: (state, payload) => {
+        return Object.assign({}, state, {
+            adminunitList: null,
+            isGettingList: true,
+            hasGottenList: false,
+            statusText: null
+        });
+    },
+    [ADMIN_UNIT_LIST_SUCCESS]: (state, payload) => {
+        return Object.assign({}, state, {
+            adminunitList: payload,
+            isGettingList: false,
+            hasGottenList: true,
+            statusText: 'List of units returned'
+        });
+    },
+    [ADMIN_UNIT_LIST_FAILURE]: (state, payload) => {
+        return Object.assign({}, state, {
+            adminunitList: null,
             isGettingList: false,
             hasGottenList: false,
             statusText: `Unit list error: ${payload.statusText}`

@@ -13,6 +13,7 @@ export AddUnitView from './Unit/add';
 export EditUnitView from './Unit/edit';
 export AddReviewView from './Review/add';
 export ListUnitsView from './Unit/list';
+export AdminListUnitsView from './Unit/admin_list';
 export ShowBuildingView from './Building/show';
 export ShowUnitView from './Unit/show';
 export FavoritesView from './User/favorites';

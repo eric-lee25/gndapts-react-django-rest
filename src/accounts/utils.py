@@ -13,6 +13,7 @@ def jwt_payload_handler(user):
         'user_id': user.pk,
         'active_favorite_count': user.favorite_set.filter(active=1).count(),
         'email_address': user.email,
+        'is_staff': user.is_staff,
         'exp': datetime.utcnow() + api_settings.JWT_EXPIRATION_DELTA
     }
 
