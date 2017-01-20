@@ -26,27 +26,42 @@
     npm install
     ```
 
-5. Setup your db (assuming you have postgres installed):
-
-    ```
-    sudo -u postgres createuser -P postgres #make password 'admin'
-    sudo -u postgres createdb -O postgres mydb
-    ```
+5. Install postgres. Create a user called 'postgres' and give them a password of 'admin'. Create a database called 'mydb' and make sure this postgres user can access it.
     
 ## Running it locally
 
 1. Start the backend server in the terminal where you ran the `source` command above:
 
     ```
-    python manage.py runserver 
+    python src/manage.py runserver 
+    ```
+   
+2. Run the migrations
+
+    ```
+    python src/manage.py migrate
     ```
     
-2. Start the frontend server in another terminal:
+3. Start the frontend server in another terminal:
 
     ```
     npm run dev
     ```
     
+4. Install the fixtures:
+
+    ```
+    python src/manage.py loaddata src/base/fixtures/initial_data.json
+    ```
+
+5. Create a superuser:
+
+    ```
+    python src/manage.py createsuperuser
+    ```
+    
+6. Go to localhost:8000/admin and login with the credentials from above. Create a user and then logout of the admin panel. Then login to the main site.
+
 ## Development process
 
 1. Everytime you work on a new feature, create a branch for it. 
