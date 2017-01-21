@@ -82,6 +82,7 @@ export function createUnit(token, number, numBeds, numBaths, leaseType, title, a
     // TODO - put these in a subarray because it
     // cpuld conflict with above keys if file
     // is named the same
+
     photos.map(function(s,i) {
         data.append(s.name, s);
     });

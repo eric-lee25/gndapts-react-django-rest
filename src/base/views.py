@@ -192,7 +192,7 @@ class UnitViewset(
                              "full_height": f["full_height"],
                              "thumb": thumb_url})
 
-            unit.photos = None if len(urls) is 0 else urls
+            unit.photos = [] if len(urls) is 0 else urls
             unit.save()
 
             return Response(us.data, status=status.HTTP_200_OK)
@@ -207,7 +207,8 @@ class UnitViewset(
                 unit, data=request.data, context={'request': request})
 
         if us.is_valid():
-            unit = us.save(creator=self.request.user)
+            unit = us.save(creator=unit.creator)
+            #unit = us.save(creator=self.request.user)
 
             # Convert files to jpeg and save to s3
             urls = []

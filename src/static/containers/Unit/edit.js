@@ -321,7 +321,7 @@ class EditUnitView extends React.Component {
         });
 
         const existingPhotosClass = classNames({
-            hidden: this.state.existingPhotos.length == 0
+            hidden: this.state.existingPhotos == null || this.state.existingPhotos.length == 0
         });
         
         const formClass = classNames({
