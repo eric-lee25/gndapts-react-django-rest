@@ -5,7 +5,7 @@
 1. Clone this repo
 
    ```
-   git@github.com:dopeboy/gndapts.git
+   git@github.com:eric-lee25/gndapts.git
    ```
 
 2. Create a virtual environment in the project folder (assuming you have python3 installed):
